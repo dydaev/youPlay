@@ -1,11 +1,16 @@
 import * as React from 'react';
 
-const Main = () => {
-	return(<div>
-		<button>
-		OKay
-		</button>
-	</div>)
-}
+// import './style.scss';
+import './main.scss';
 
-export default Main
+
+const Main = () => {
+	return (
+		<div>
+			<h1 className="bla">You-play</h1>
+			<button className="btn btn-primary">OKay</button>
+		</div>
+	);
+};
+
+export default Main;
