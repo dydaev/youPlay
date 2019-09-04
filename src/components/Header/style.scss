@@ -1,0 +1,15 @@
+@import "../../conf.scss";
+
+header#main-header{
+	display: flex;
+	justify-content: space-between;
+	// width: 100%;
+	padding: 10px 20px;
+	background: $head-color;
+
+	&> button{
+		height: 60px;
+		width: 60px;
+		border-radius: 50%;
+	}
+}
