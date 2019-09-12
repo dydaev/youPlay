@@ -1,4 +1,5 @@
 type playItemType = {
+	url: string,
 	image: string,
 	title: string,
 	album: string,
