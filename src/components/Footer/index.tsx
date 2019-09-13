@@ -37,7 +37,7 @@ const Footer = ({
 
 
 	const handlePlay = () => {
-	    onPlay()
+	    onPlay(undefined)
 	};
 	const handleStop = () => {
 	    onStop()
@@ -54,7 +54,6 @@ const Footer = ({
 	}
 	const handleProgress = (newProgress: progressType) : void => {
 	    setProgress(newProgress);
-	    console.log(newProgress.played)
 // 	    if (newProgress.played === 1) onNext();
 	}
 

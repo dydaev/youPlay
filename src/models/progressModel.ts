@@ -1,4 +1,4 @@
-import { progressType } from './types/progressType';
+import { progressType } from '../types/progressType';
 
 export const progressModel: progressType = {
     playedSeconds: 0,

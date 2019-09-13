@@ -1,5 +1,7 @@
 import * as React from 'react';
-import MainContext from '../../context'
+import MainContext from '../../context';
+
+import ProgressLine from '../ProgressLine';
 
 import { playItemType } from '../../types/playItemType';
 import { mainContextType } from '../../types/mainContextType';
@@ -30,25 +32,29 @@ const PlayList = ({ playList, onPlay, onSetCurrentTrack}: propsType) => {
 								src={ playItem.image || "http://dummyimage.com/800x600/4d494d/686a82.gif&text=placeholder+image"}
 								alt="placeholder+image"
 							/>
-							<div>
-                                <div
-                                    className={mainContext.currentTrackNumber === index ? 'track-time-line' : ''}
-                                    style={index === mainContext.currentTrackNumber ? {
-                                        width: !mainContext.progress || !mainContext.progress.played ? '100%' : `${mainContext.progress.played * 100}%`
-                                    } : {}}
-                                />
-                                <div
-                                    className={mainContext.currentTrackNumber === index ? 'track-time-line' : ''}
-                                    style={{
-                                        height: 2,
-                                        bottom: 0,
-                                    ...index === mainContext.currentTrackNumber ? {
-                                        width: !mainContext.progress || !mainContext.progress.loaded ? '100%' : `${mainContext.progress.loaded * 100}%`
-                                    } : {}}}
-                                />
-							    <p><span style={{ color: 'darksalmon'}}>{playItem.artist}</span><span>{playItem.title}</span></p>
-							    <span>{playItem.length}</span>
-							</div>
+							{
+							    index !== mainContext.currentTrackNumber
+							    ? (
+							        <div>
+							            <p>
+							                <span style={{ color: 'darksalmon'}}>{playItem.artist}</span>
+							                <span>{playItem.title}</span>
+							            </p>
+							            <span>{playItem.length}</span>
+							        </div>
+							    ) : (
+							    	<div>
+                                        <ProgressLine color="gray" filling={mainContext.progress.played * 100 } invert={true}/>
+                                        <ProgressLine color="gray" height={2} filling={mainContext.progress.loaded * 100 } />
+                                        <p>
+                                            <span style={{ color: 'darksalmon'}}>{playItem.artist}</span>
+                                            <span>{playItem.title}</span>
+                                        </p>
+                                        <span>{playItem.length}</span>
+                                    </div>
+							    )
+							}
+
 						</li>
 					))}
 			</ul>

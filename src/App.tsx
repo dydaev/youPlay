@@ -10,13 +10,16 @@ import Footer from './components/Footer';
 import Tabs from './components/Tabs';
 import PlayListContainer from './containers/PlayList';
 import Player from './components/Player';
+import Settings from './components/Settings';
 
 import {bodyType} from './types/bodyType'
 import {progressType } from './types/progressType'
 import {playItemType} from './types/playItemType'
 import {playStrategicType} from './types/playStrategicType'
+import {settingsType} from './types/settingsType'
 
 import {progressModel} from './models/progressModel';
+import {settingsModel} from './models/settingsModel';
 
 import './main.scss';
 
@@ -26,13 +29,14 @@ function randomInteger(min: number, max: number): number {
 }
 
 const Main = () => {
-	const [bodyFill, setBodyFill] = React.useState<bodyType>('player');
-	const [currentTrackNumber, setCurrentTrackNumber] = React.useState<number>(0);
-	const [isPlaying, setPlaying] = React.useState<boolean>(false);
 	const [playUrl, setPlayUrl] = React.useState<string>('');
-	const [playList, setPlayList] = React.useState<playItemType[]>([]);
 	const [duration, setDuration] = React.useState<number>(0);
+	const [isPlaying, setPlaying] = React.useState<boolean>(false);
+	const [bodyFill, setBodyFill] = React.useState<bodyType>('player');
+	const [playList, setPlayList] = React.useState<playItemType[]>([]);
 	const [progress, setProgress] = React.useState<progressType>(progressModel);
+	const [settings, setSettings] = React.useState<settingsType>(settingsModel);
+	const [currentTrackNumber, setCurrentTrackNumber] = React.useState<number>(0);
 	const [playStrategic, setPlayStrategic] = React.useState<playStrategicType>('normal');
 
 	const handleSetBody = (newFill: bodyType): void => {
@@ -60,12 +64,11 @@ const Main = () => {
 	    setPlaying(false)
 	}
 	const handlePrev = (): void => {
-    const prevTrackNumber: number = Array.isArray(playList) && playList.length
+        const prevTrackNumber: number = Array.isArray(playList) && playList.length
 	    ? (currentTrackNumber > 0 ? currentTrackNumber - 1 : playList.length - 1)
 	    : 0;
 
 	    handlePlay(prevTrackNumber);
-// 	    setCurrentTrackNumber()
 	}
 	const handleNext = (): void => {
 	    const nextTrackNumber: number = Array.isArray(playList) && playList.length && currentTrackNumber < playList.length-1
@@ -73,24 +76,14 @@ const Main = () => {
 	    : 0;
 
 	    handlePlay(nextTrackNumber);
-// 	    setCurrentTrackNumber()
 	}
 	const currentSong: playItemType | undefined =
 	    Array.isArray(playList) && playList.length
 	    ? playList[currentTrackNumber]
 	    : undefined;
 
-// 	const handleDuration = (newDuration: number) : void => {
-// 	console.log(newDuration)
-// 	    setDuration(newDuration);
-// 	}
-// 	const handleProgress = (newProgress: progressType) : void => {
-// 	console.log(newProgress)
-// 	    setProgress(newProgress);
-// 	}
-
 	return (
-		<MainContext.Provider value={{ duration: duration, progress: progress,isPlaying: isPlaying, currentTrackNumber: currentTrackNumber }}>
+		<MainContext.Provider value={{ settings: settings,duration: duration, progress: progress,isPlaying: isPlaying, currentTrackNumber: currentTrackNumber }}>
 			<Header onClickButton={setBodyFill} bodyType={bodyFill}/>
 			{bodyFill === 'list'
 			? <PlayListContainer
@@ -100,7 +93,7 @@ const Main = () => {
 			    onSetCurrentTrack={setCurrentTrackNumber}
 			    />
 			: bodyFill === 'settings'
-			    ? <p>Settings</p>
+			    ? <Settings onSetSettings={setSettings}/>
 			    : <img src={currentSong ? currentSong.image : 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTCzlqv9WfntXDekHwsLkf5NXI9isMvdwoVLgrQveqgexa10bWp'} alt='song image'/>}
 			<Footer
                 isPlaying={isPlaying}
