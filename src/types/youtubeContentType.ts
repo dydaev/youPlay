@@ -42,7 +42,12 @@ type content = {
 		},
 		thumbnailOverlays: [],
 		title: {
-			simpleText: string // "TOP HITS 2019 🌴"
+			simpleText: string, // "TOP HITS 2019 🌴"
+			runs: [
+			{
+				text: string
+			}
+		]
 		}
 		trackingParams: string, // "CEoQyCAYACITCJDQtdui3OQCFQHonAodruIPjg=="
 		videoId: string, //"P6KwHkpN-W0"

@@ -113,7 +113,7 @@ class PlayListContainer extends React.Component <propsType>
     	.catch(() => console.log("Cant access response. Blocked by browser?"))
 
 			if (playObj && playObj.playlist && Array.isArray(playObj.playlist.contents)) {
-
+console.log(playObj)
 				const playLists: any = playObj.playlist.contents.map(contentItem => {
 					const imagesArray = contentItem.playlistPanelVideoRenderer.thumbnail.thumbnails
 					const imageUrl = imagesArray && Array.isArray(imagesArray) && imagesArray.length
@@ -132,7 +132,7 @@ class PlayListContainer extends React.Component <propsType>
 					return {
 						image: parsedImage.slice(0, parsedImage.length - 1 ),
 						url: 'https://youtube.com' + url.slice(0, url.length - 6) || '',
-						title: contentItem.playlistPanelVideoRenderer.title.simpleText || '',
+						title: contentItem.playlistPanelVideoRenderer.title.runs[0].text || '',
 						album: '',
 						artist: '',
 						length: contentItem.playlistPanelVideoRenderer.lengthText.simpleText || ''
