@@ -9,12 +9,11 @@ import { mainContextType } from '../../types/mainContextType';
 import './style.scss';
 
 type propsType = {
-	playList: playItemType[],
 	onPlay(trackNumber: number):void,
 	onSetCurrentTrack(trackNumber: number):void
 };
 
-const PlayList = ({ playList, onPlay, onSetCurrentTrack}: propsType) => {
+const PlayList = ({  onPlay, onSetCurrentTrack}: propsType) => {
     const mainContext: mainContextType = React.useContext<mainContextType>(MainContext);
 
     const handlePlay = (track: number) => {
@@ -25,8 +24,8 @@ const PlayList = ({ playList, onPlay, onSetCurrentTrack}: propsType) => {
 
 	return (
 			<ul className="main-component_play-list">
-				{Array.isArray(playList) &&
-					playList.map((playItem: playItemType, index: number): any => (
+				{Array.isArray(mainContext.playList) &&
+					mainContext.playList.map((playItem: playItemType, index: number): any => (
 						<li key={'listOfTracks' + index.toString()} onClick={()=>handlePlay(index)}>
 							<img
 								src={ playItem.image || "http://dummyimage.com/800x600/4d494d/686a82.gif&text=placeholder+image"}

@@ -83,11 +83,18 @@ const Main = () => {
 	    : undefined;
 
 	return (
-		<MainContext.Provider value={{ settings: settings,duration: duration, progress: progress,isPlaying: isPlaying, currentTrackNumber: currentTrackNumber }}>
+		<MainContext.Provider value={{
+      settings: settings,
+      duration: duration,
+      progress: progress,
+      isPlaying: isPlaying,
+      currentTrackNumber: currentTrackNumber,
+      playList: playList
+    }}>
 			<Header onClickButton={setBodyFill} bodyType={bodyFill}/>
 			{bodyFill === 'list'
 			? <PlayListContainer
-			    urlOfList="kkj"
+			    urlOfList="https://www.youtube.com/watch?v=P6KwHkpN-W0&list=PLvdDCgNk3ugIwuujayLHNEOXuTtQeXphU"
 			    onPlay={handlePlay}
 			    onSetPlayList={setPlayList}
 			    onSetCurrentTrack={setCurrentTrackNumber}
