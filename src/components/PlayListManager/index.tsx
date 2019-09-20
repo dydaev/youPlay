@@ -12,19 +12,19 @@ const clearModel:listOfPlaylistItemType = {
 const PlayListManager = () => {
 	const [listOfPlaylist, setList] = React.useState<listOfPlaylistItemType[]>([]);
 	const [selectedItem, setSelectedItem] = React.useState<listOfPlaylistItemType>(clearModel);
-	const [indexForListEditor, setIndexForListEditor] = React.useState<any>(undefined);
+	const [indexForListEditor, setIndexForListEditor] = React.useState<number | undefined | null>(undefined);
 
 	const handleAddItem = (newItem: listOfPlaylistItemType) =>
 		setList([...listOfPlaylist, newItem]);
 
-	const handleChangeItem ({target} : {target: { id: string, value: string}}) =>
-		setSelectedItem({...selectedItem, [id]: value})
+	const handleChangeItem = ({target} : {target: { id: string, value: string}}) =>
+		setSelectedItem({...selectedItem, [target.id]: target.value});
 
 	const handleRemoveItem = (removingIndex: number) =>
 		setList([...listOfPlaylist.filter((_: any, index: number) => index !== removingIndex)]);
 
 	const handleUpdateItem = (newItem: listOfPlaylistItemType, indexOfItem: number) =>
-		setList([...listOfPlaylist.map((item: string, index: number) => (index === indexOfItem
+		setList([...listOfPlaylist.map((item: listOfPlaylistItemType, index: number) => (index === indexOfItem
 			? newItem
 			: item))]);
 
@@ -38,7 +38,7 @@ const PlayListManager = () => {
 		setSelectedItem(clearModel)
 	}
 
-	const handleSelectItem = (item: listOfPlaylistItemType) => onSelectItem(item);
+	const handleSelectItem = (index: number) => console.log(listOfPlaylist[index]);// onSelectItem(listOfPlaylist[index]);
 
 	return (
 		<div id="component-listOfPlaylistItemType">
@@ -46,7 +46,7 @@ const PlayListManager = () => {
 			{
 				listOfPlaylist.map((playlistItem: listOfPlaylistItemType, index: number) => (
 					<li key={'playItemListIndex' + index.toString()}>
-						<a onClick={()=>}>
+						<a onClick={() => handleSelectItem(index)}>
 							<span>{playlistItem.name}</span>
 							<span>{playlistItem.url}</span>
 						</a>
@@ -55,7 +55,8 @@ const PlayListManager = () => {
 				))
 			}
 				<li>
-					<button type="button" onClick={() => setVisiblePlayListEditor(null)}>
+					<button type="button" onClick={() =>
+						setIndexForListEditor(indexForListEditor === undefined ? null : undefined)}>
 						Add playlist
 					</button>
 				</li>

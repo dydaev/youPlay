@@ -1,5 +1,8 @@
-type bodyType = 'player' | 'settings' | 'list'
+type listOfPlaylistItemType = {
+	name: string,
+	url: string
+}
 
 export {
-	bodyType
+	listOfPlaylistItemType
 }
