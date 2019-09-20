@@ -1,0 +1,31 @@
+div#component-listOfPlaylistItemType{
+  height: 100%;
+  background: green;
+
+  & > ul {
+    height: 100%;
+
+    & > li {
+      & > a {
+
+        & > span {
+          color: blue;
+          
+          &:last-child {
+            color: gray;
+          }
+        }
+      }
+
+        & > button {
+          width: 100%;
+        }
+    }
+  }
+
+  div.component-listOfPlaylistItemType{
+    display: flex;
+    justify-content: center;
+    align-items: stretch;
+  }
+}
