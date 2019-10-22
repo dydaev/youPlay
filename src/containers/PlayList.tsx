@@ -5,12 +5,15 @@ import PlayListManager from '../components/PlayListManager/index';
 
 import { playItemType } from '../types/playItemType';
 import { youtubeContentType } from '../types/youtubeContentType';
+import { listOfPlaylistItemType } from '../types/listOfPlaylistItemType';
 
 type propsType = {
 	urlOfList: string,
 	onPlay(trackNumber: number):void,
 	onSetCurrentTrack(trackNumber: number):void,
-	onSetPlayList(playlist: playItemType[]):void
+	onSetPlayList(playlist: playItemType[]):void,
+	onSetCurrentPlaylistNumber(number: number): void,
+  onSetList(playList: listOfPlaylistItemType[]): void
 }
 type stateType = {
 	playListUrl: string,
@@ -81,10 +84,9 @@ class PlayListContainer extends React.Component <propsType>
 
 				return playObj;
 			})
-    	.catch(() => console.log("Cant access response. Blocked by browser?"))
+    	.catch((ee) => console.log("Cant access response. Blocked by browser?", ee))
 
 			if (playObj && playObj.playlist && Array.isArray(playObj.playlist.contents)) {
-console.log(playObj)
 				const playLists: any = playObj.playlist.contents.map(contentItem => {
 					const imagesArray = contentItem.playlistPanelVideoRenderer.thumbnail.thumbnails
 					const imageUrl = imagesArray && Array.isArray(imagesArray) && imagesArray.length
@@ -103,7 +105,9 @@ console.log(playObj)
 					return {
 						image: parsedImage.slice(0, parsedImage.length - 1 ),
 						url: 'https://youtube.com' + url.slice(0, url.length - 6) || '',
-						title: contentItem.playlistPanelVideoRenderer.title.runs[0].text || '',
+						title: Array.isArray(contentItem.playlistPanelVideoRenderer.title.runs)
+						?	contentItem.playlistPanelVideoRenderer.title.runs[0].text
+						: (contentItem.playlistPanelVideoRenderer.title.simpleText || ''),
 						album: '',
 						artist: '',
 						length: contentItem.playlistPanelVideoRenderer.lengthText.simpleText || ''
@@ -130,26 +134,39 @@ console.log(playObj)
 	}
 
 	render(){
-		const { onPlay, onSetCurrentTrack } = this.props;
+		const { onPlay, onSetCurrentTrack, onSetList, onSetCurrentPlaylistNumber } = this.props;
 		const { managerIsVisible } = this.state;
 
 		const styles = {
 			flexGrow: 1,
 	    display: 'flex',
 	    flexDirection: 'column',
-	    justifyContent: 'space-between'
+	    justifyContent: 'space-between',
+			overflow: 'hidden',
+			position: 'relative'
 		}
 
 		return (
 			<div style={styles}>
-				<PlayList
-						onPlay={onPlay}
-						onSetCurrentTrack={onSetCurrentTrack}
-				/>
-				<button type="button" onClick={this.handleShowManager}>manager</button>
+				<div style={{ overflow: 'hidden'}}>
+					<PlayList
+							onPlay={onPlay}
+							onSetCurrentTrack={onSetCurrentTrack}
+					/>
+				</div>
+				<button
+					type="button"
+					className="play-list__main-manager-button"
+					onClick={this.handleShowManager}
+				>
+					manager
+				</button>
 				{
 					managerIsVisible
-					&& <PlayListManager />
+					&& <PlayListManager
+						onSetCurrentPlaylistNumber={onSetCurrentPlaylistNumber}
+					  onSetList={onSetList}
+					/>
 				}
 		</div>
 		);

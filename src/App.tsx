@@ -12,11 +12,14 @@ import PlayListContainer from './containers/PlayList';
 import Player from './components/Player';
 import Settings from './components/Settings';
 
-import {bodyType} from './types/bodyType'
-import {progressType } from './types/progressType'
-import {playItemType} from './types/playItemType'
-import {playStrategicType} from './types/playStrategicType'
-import {settingsType} from './types/settingsType'
+import db from './db';
+
+import { bodyType } from './types/bodyType';
+import { progressType } from './types/progressType';
+import { playItemType } from './types/playItemType';
+import { playStrategicType } from './types/playStrategicType';
+import { listOfPlaylistItemType } from './types/listOfPlaylistItemType';
+import { settingsType } from './types/settingsType';
 
 import {progressModel} from './models/progressModel';
 import {settingsModel} from './models/settingsModel';
@@ -37,7 +40,33 @@ const Main = () => {
 	const [progress, setProgress] = React.useState<progressType>(progressModel);
 	const [settings, setSettings] = React.useState<settingsType>(settingsModel);
 	const [currentTrackNumber, setCurrentTrackNumber] = React.useState<number>(0);
+  const [listOfPlaylist, setList] = React.useState<listOfPlaylistItemType[]>([]);
+  const [currentPlaylistNumber, setCurrentPlaylistNumber] = React.useState<number>(0);
 	const [playStrategic, setPlayStrategic] = React.useState<playStrategicType>('normal');
+
+  const handleGetPlaylistFromStorage = () => {
+    const setFunc = (params: any) => {
+      if (params && params.rows && params.rows.length) {
+        let playlist: listOfPlaylistItemType[] = [];
+
+        for(let i = 0; i < params.rows.length; i++) {
+          const rowItem: listOfPlaylistItemType = params.rows.item(i);
+          playlist = [ ...playlist, rowItem ];
+        }
+        setList(playlist)
+      } else {
+        console.log('Storage data is empty, or:', params );
+      }
+    }
+
+    db.getPlaylists(setFunc);
+  }
+
+  React.useEffect(()=> {
+    if(Array.isArray(listOfPlaylist) && !listOfPlaylist.length) {
+      handleGetPlaylistFromStorage();
+    }
+  });
 
 	const handleSetBody = (newFill: bodyType): void => {
 		console.log(newFill)
@@ -89,19 +118,30 @@ const Main = () => {
       progress: progress,
       isPlaying: isPlaying,
       currentTrackNumber: currentTrackNumber,
+      currentPlaylistNumber: currentPlaylistNumber,
+      listOfPlaylist: listOfPlaylist,
       playList: playList
     }}>
 			<Header onClickButton={setBodyFill} bodyType={bodyFill}/>
 			{bodyFill === 'list'
 			? <PlayListContainer
-			    urlOfList="https://www.youtube.com/watch?v=P6KwHkpN-W0&list=PLvdDCgNk3ugIwuujayLHNEOXuTtQeXphU"
+			    urlOfList={
+            Array.isArray(listOfPlaylist) && listOfPlaylist[currentPlaylistNumber]
+            ? listOfPlaylist[currentPlaylistNumber].url
+            : "https://www.youtube.com/watch?v=P6KwHkpN-W0&list=PLvdDCgNk3ugIwuujayLHNEOXuTtQeXphU"
+          }
 			    onPlay={handlePlay}
 			    onSetPlayList={setPlayList}
 			    onSetCurrentTrack={setCurrentTrackNumber}
+          onSetCurrentPlaylistNumber={setCurrentPlaylistNumber}
+          onSetList={setList}
 			    />
 			: bodyFill === 'settings'
 			    ? <Settings onSetSettings={setSettings}/>
-			    : <img src={currentSong ? currentSong.image : 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTCzlqv9WfntXDekHwsLkf5NXI9isMvdwoVLgrQveqgexa10bWp'} alt='song image'/>}
+			    : (
+            <main>
+              <img src={currentSong ? currentSong.image : 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTCzlqv9WfntXDekHwsLkf5NXI9isMvdwoVLgrQveqgexa10bWp'} alt='song image'/>
+          </main>)}
 			<Footer
                 isPlaying={isPlaying}
                 playStrategic={playStrategic}

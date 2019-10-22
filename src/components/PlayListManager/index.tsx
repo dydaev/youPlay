@@ -1,6 +1,11 @@
 import * as React from 'react';
+import MainContext from '../../context';
+
+import db from '../../db';
 
 import { listOfPlaylistItemType } from '../../types/listOfPlaylistItemType';
+
+import { mainContextType } from '../../types/mainContextType';
 
 import './style.scss';
 
@@ -9,58 +14,98 @@ const clearModel:listOfPlaylistItemType = {
 	url: ''
 }
 
-const PlayListManager = () => {
-	const [listOfPlaylist, setList] = React.useState<listOfPlaylistItemType[]>([]);
+export type propTypes = {
+	onSetCurrentPlaylistNumber(number: number): void,
+  onSetList(playList: listOfPlaylistItemType[]): void
+}
+
+const PlayListManager = ({onSetList, onSetCurrentPlaylistNumber}: propTypes) => {
+	// const [listOfPlaylist, props.onSetList] = React.useState<listOfPlaylistItemType[]>([]);
 	const [selectedItem, setSelectedItem] = React.useState<listOfPlaylistItemType>(clearModel);
 	const [indexForListEditor, setIndexForListEditor] = React.useState<number | undefined | null>(undefined);
 
+	const mainContext: mainContextType = React.useContext<mainContextType>(MainContext);
+
 	const handleAddItem = (newItem: listOfPlaylistItemType) =>
-		setList([...listOfPlaylist, newItem]);
+		onSetList([...mainContext.listOfPlaylist, newItem]);
 
 	const handleChangeItem = ({target} : {target: { id: string, value: string}}) =>
 		setSelectedItem({...selectedItem, [target.id]: target.value});
 
-	const handleRemoveItem = (removingIndex: number) =>
-		setList([...listOfPlaylist.filter((_: any, index: number) => index !== removingIndex)]);
+	const handleRemoveItem = (removingIndex: number) => {
+		const removingItem = mainContext.listOfPlaylist.find((_: any, index: number) => index === removingIndex)
+		db.removePlaylist(removingItem);
+		onSetList([...mainContext.listOfPlaylist.filter((_: any, index: number) => index !== removingIndex)]);
+	}
 
 	const handleUpdateItem = (newItem: listOfPlaylistItemType, indexOfItem: number) =>
-		setList([...listOfPlaylist.map((item: listOfPlaylistItemType, index: number) => (index === indexOfItem
+		onSetList([...mainContext.listOfPlaylist.map((item: listOfPlaylistItemType, index: number) => (index === indexOfItem
 			? newItem
 			: item))]);
 
-	const handleSave = () => {
+	const handleSavePlaylistToStorage = (playlist: listOfPlaylistItemType): void => {
+		db.setPlaylist(playlist);
+	};
 
+	const handleSave = () => {
 		if (indexForListEditor === null) {
-				handleAddItem(selectedItem)
+			handleSavePlaylistToStorage(selectedItem);
+			handleAddItem(selectedItem);
+
 		} else if (indexForListEditor) {
-			handleUpdateItem(selectedItem, indexForListEditor)
+			handleUpdateItem(selectedItem, indexForListEditor);
 		}
-		setSelectedItem(clearModel)
+		// closing form for input
+		setIndexForListEditor(indexForListEditor === undefined ? null : undefined);
+		setSelectedItem(clearModel);
 	}
 
-	const handleSelectItem = (index: number) => console.log(listOfPlaylist[index]);// onSelectItem(listOfPlaylist[index]);
+	const handleAddPlaylist = () => {
+		setIndexForListEditor(indexForListEditor === undefined ? null : undefined);
+	}
+
+	const handleSelectPlaylist = (index: number) => {
+		onSetCurrentPlaylistNumber(index)
+	}
+
+	const handleSelectItem = (index: number) => console.log(mainContext.listOfPlaylist[index]);// onSelectItem(listOfPlaylist[index]);
 
 	return (
 		<div id="component-listOfPlaylistItemType">
 			<ul>
 			{
-				listOfPlaylist.map((playlistItem: listOfPlaylistItemType, index: number) => (
+				mainContext.listOfPlaylist.map((playlistItem: listOfPlaylistItemType, index: number) => (
 					<li key={'playItemListIndex' + index.toString()}>
+						<button onClick={() => handleSelectPlaylist(index)}>
+							{
+								mainContext.currentPlaylistNumber !== index
+								? <i className="fas fa-play" />
+								: <i className="fas fa-stop" />
+							}
+						</button>
 						<a onClick={() => handleSelectItem(index)}>
 							<span>{playlistItem.name}</span>
 							<span>{playlistItem.url}</span>
 						</a>
-						<button type="button" onClick={()=>handleRemoveItem(index)}>-</button>
+						<button className="component-listOfPlaylistItemType__remove-button" type="button" onClick={()=>handleRemoveItem(index)}>-</button>
 					</li>
 				))
 			}
-				<li>
-					<button type="button" onClick={() =>
-						setIndexForListEditor(indexForListEditor === undefined ? null : undefined)}>
-						Add playlist
-					</button>
-				</li>
+
 			</ul>
+			<button
+				type="button"
+				onClick={handleAddPlaylist}
+				style={{
+					background: indexForListEditor === undefined ? 'green' : 'yellow'
+				}}
+			>
+				{
+					indexForListEditor === undefined
+					? 'Add'
+					: 'cancel'
+				}
+			</button>
 			{
 				indexForListEditor !== undefined
 				&& <div className="component-listOfPlaylistItemType-editor">

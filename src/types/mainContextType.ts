@@ -1,6 +1,7 @@
 import {progressType} from './progressType';
 import {settingsType} from './settingsType';
 import {playItemType} from './playItemType';
+import { listOfPlaylistItemType } from './listOfPlaylistItemType';
 
 type mainContextType = {
     duration: number,
@@ -9,6 +10,8 @@ type mainContextType = {
     currentTrackNumber: number,
     settings: settingsType,
     playList: playItemType[],
+    currentPlaylistNumber: number,
+    listOfPlaylist: listOfPlaylistItemType[],
 }
 
 export {
