@@ -2,13 +2,35 @@
 
 footer#main-footer{
 	display: flex;
+	flex-direction: column;
 	justify-content: space-between;
 	background: $footer-color;
 	padding: 3px 1px;
 
-	& > button {
-		height: 50px;
+	& > div.main-footer__progress-liner {
+		position: relative;
+		height: 5px;
 		width: 100%;
-		font-size: 18px
+
+		& > button {
+			position: absolute;
+		}
+
+		& > div {
+			height: 3px;
+			background: lightblue;
+		}
+	}
+	& > div.main-footer__control-buttons {
+			display: flex;
+			justify-content: space-between;
+			background: $footer-color;
+			padding: 3px 1px;
+
+			& > button {
+				height: 50px;
+				width: 100%;
+				font-size: 18px
+			}
 	}
 }

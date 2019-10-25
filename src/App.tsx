@@ -4,13 +4,13 @@ import ReactPlayer from 'react-player';
 
 import MainContext from './context';
 
-import Header from './components/Header';
-import Roll from './components/PlayRoll';
-import Footer from './components/Footer';
-import Tabs from './components/Tabs';
+import Header from './components/Header/index';
+// import Roll from './components/PlayRoll';
+import Footer from './components/Footer/index';
+// import Tabs from './components/Tabs';
 import PlayListContainer from './containers/PlayList';
-import Player from './components/Player';
-import Settings from './components/Settings';
+// import Player from './components/Player';
+import Settings from './components/Settings/index';
 
 import db from './db';
 
@@ -55,7 +55,7 @@ const Main = () => {
         }
         setList(playlist)
       } else {
-        console.log('Storage data is empty, or:', params );
+        // console.log('Storage data is empty, or:', params );
       }
     }
 
@@ -68,9 +68,9 @@ const Main = () => {
     }
   });
 
-	const handleSetBody = (newFill: bodyType): void => {
-		console.log(newFill)
-	}
+	// const handleSetBody = (newFill: bodyType): void => {
+	// 	console.log(newFill)
+	// }
 
 	const handlePlay = (trackNumber: number | undefined): void => {
 	    if(Array.isArray(playList) && playList.length && trackNumber !== undefined) {
@@ -111,6 +111,22 @@ const Main = () => {
 	    ? playList[currentTrackNumber]
 	    : undefined;
 
+// window.scrollTo(0,1);
+  // if(typeof document.hidden !== "undefined") {
+  //   // handlePlay(currentTrackNumber);
+  // }
+
+  // @ts-ignore
+  // document.body.requestFullScreen();
+  window.addEventListener("visibilitychange", () => {
+    console.log('lost the focus', isPlaying)
+    if(!isPlaying) {
+      console.log('playing after lost the focus')
+      setPlaying(true);
+    }
+
+  }, false);
+
 	return (
 		<MainContext.Provider value={{
       settings: settings,
@@ -141,6 +157,15 @@ const Main = () => {
 			    : (
             <main>
               <img src={currentSong ? currentSong.image : 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTCzlqv9WfntXDekHwsLkf5NXI9isMvdwoVLgrQveqgexa10bWp'} alt='song image'/>
+              <div>
+                <span>
+                  {
+                currentSong
+                ? `${currentSong.title || ''}`
+                : ''
+                }
+              </span>
+            </div>
           </main>)}
 			<Footer
                 isPlaying={isPlaying}
@@ -157,5 +182,4 @@ const Main = () => {
 		</MainContext.Provider>
 	);
 };
-// 			<Roll />
 export default Main;

@@ -97,7 +97,7 @@ const PlayListManager = ({onSetList, onSetCurrentPlaylistNumber}: propTypes) => 
 				type="button"
 				onClick={handleAddPlaylist}
 				style={{
-					background: indexForListEditor === undefined ? 'green' : 'yellow'
+					background: indexForListEditor === undefined ? 'lightgreen' : '#ffef95'
 				}}
 			>
 				{

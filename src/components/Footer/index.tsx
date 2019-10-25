@@ -59,29 +59,35 @@ const Footer = ({
 
 	return (
 		<footer id="main-footer">
-		    <ReactPlayer
-                url={currentTrack ? currentTrack.url : ''}
-                onPlay={() => setPlaying(true)}
-                onEnded={() => playStrategic !== 'once' && onNext()}
-                onPause={() => setPlaying(false)}
-                onProgress={handleProgress}
-                onDuration={handleDuration}
-                playing={isPlaying}
-                width={0}
-                height={0}
+		  <ReactPlayer
+        url={currentTrack ? currentTrack.url : ''}
+        onPlay={() => setPlaying(true)}
+        onEnded={() => playStrategic !== 'once' && onNext()}
+        onPause={() => setPlaying(false)}
+        onProgress={handleProgress}
+        onDuration={handleDuration}
+        playing={isPlaying}
+        width={0}
+        height={0}
 			/>
-			<button style={{ fontSize: 30 }} onClick={handlePrev}>
-				<i className="fas fa-angle-double-left"></i>
-			</button>
-			<button onClick={handlePlay}>
-				<i className={isPlaying ? 'fas fa-pause' : 'fas fa-play'}></i>
-			</button>
-			<button onClick={handleStop}>
-				<i className="fas fa-stop"></i>
-			</button>
-			<button style={{ fontSize: 30 }} onClick={handleNext}>
-				<i className="fas fa-angle-double-right"></i>
-			</button>
+      <div className="main-footer__progress-liner">
+        <button><i className="fas fa-biking"></i></button>
+        <div />
+      </div>
+      <div className="main-footer__control-buttons">
+  			<button style={{ fontSize: 30 }} onClick={handlePrev}>
+  				<i className="fas fa-angle-double-left"></i>
+  			</button>
+  			<button onClick={handlePlay}>
+  				<i className={isPlaying ? 'fas fa-pause' : 'fas fa-play'}></i>
+  			</button>
+  			<button onClick={handleStop}>
+  				<i className="fas fa-stop"></i>
+  			</button>
+  			<button style={{ fontSize: 30 }} onClick={handleNext}>
+  				<i className="fas fa-angle-double-right"></i>
+  			</button>
+      </div>
 		</footer>
 	);
 };

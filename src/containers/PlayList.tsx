@@ -122,7 +122,7 @@ class PlayListContainer extends React.Component <propsType>
 	handleUpdatePlaylist = async () => {
 		const newList: any  = await this.handleGetYouList(this.props.urlOfList);
 		if(newList) {
-			console.log('updateList->',newList)
+			// console.log('updateList->',newList)
 			this.props.onSetPlayList(newList);
 		}
 	}

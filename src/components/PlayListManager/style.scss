@@ -10,8 +10,9 @@ button.play-list__main-manager-button {
 
 div#component-listOfPlaylistItemType {
   height: 100%;
-  background: lightblue;
-  position: relative;
+  width: 100%;
+  background: aliceblue;
+  position: absolute;
 
   & > button {
     width: 60px;
@@ -34,6 +35,8 @@ div#component-listOfPlaylistItemType {
 
     & > li {
       display: flex;
+      border-bottom: 1px dotted lightgray;
+      padding: 4px 0;
 
       & > a {
         flex-grow: 1;
