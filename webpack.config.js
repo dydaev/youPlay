@@ -58,7 +58,7 @@ module.exports = {
     // lazy: true,
     // compress: true,
     filename: 'bundle.js',
-    port: 3000,
+    port: 3030,
   },
   plugins: [
     new MiniCssExtractPlugin({
