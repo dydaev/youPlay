@@ -1,8 +1,9 @@
 body {
 	margin: 0;
 	padding: 0;
+	font-family: 'Oswald', sans-serif;
 }
-main#main{
+main#main {
 	position: fixed;
 	height: 100%;
 	width: 100%;
@@ -18,9 +19,9 @@ main#main{
 
 	& > main {
 		height: 100%;
-    display: flex;
-    align-items: center;
-    width: 100%;
+		display: flex;
+		align-items: center;
+		width: 100%;
 		overflow: hidden;
 		position: relative;
 
@@ -33,28 +34,28 @@ main#main{
 			bottom: 0;
 
 			& > span {
-			position: initial;
-    	bottom: 0;
-			font-size: 27px;
-			white-space: nowrap;
-			animation-duration: 5s;
-  		animation-name: slidein;
-			animation-timing-function: linear
+				position: initial;
+				bottom: 0;
+				font-size: 27px;
+				white-space: nowrap;
+				animation-duration: 5s;
+				animation-name: slidein;
+				animation-timing-function: linear;
 			}
 		}
 	}
 }
 
 @keyframes slidein {
-  from {
-    margin-left: 100%;
-    width: 300%;
-  }
+	from {
+		margin-left: 100%;
+		width: 300%;
+	}
 
-  to {
-    margin-left: -100%;
-    width: 100%;
-  }
+	to {
+		margin-left: -100%;
+		width: 100%;
+	}
 }
 
 .bla {
