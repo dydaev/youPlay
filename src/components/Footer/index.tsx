@@ -8,6 +8,7 @@ import { progressType } from '../../types/progressType';
 import { playStrategicType } from '../../types/playStrategicType';
 
 import './style.scss';
+import { log } from 'util';
 
 type propsType = {
   isPlaying: boolean;
@@ -36,6 +37,9 @@ const Footer = ({
   onPrev,
   onNext,
 }: propsType) => {
+  const [bikeProgress, setBikeProgress] = React.useState(0);
+  const [songLength, setSongLength] = React.useState(0);
+
   const handlePlay = () => {
     onSavePlay(true);
     onPlay(undefined);
@@ -52,11 +56,21 @@ const Footer = ({
   };
 
   const handleDuration = (newDuration: number): void => {
+    setSongLength(newDuration);
     setDuration(newDuration);
   };
+
   const handleProgress = (newProgress: progressType): void => {
     setProgress(newProgress);
     //       if (newProgress.played === 1) onNext();
+
+    setBikeProgress(~~(newProgress.played * 100) || 0);
+  };
+
+  const handleBikePress = (e: any) => {
+    console.log('====================================');
+    console.log(e.clientX, e.target.getBoundingClientRect());
+    console.log('====================================');
   };
 
   return (
@@ -73,7 +87,7 @@ const Footer = ({
         height={0}
       />
       <div className="main-footer__progress-liner">
-        <button>
+        <button style={{ marginLeft: `${bikeProgress}%` }} onMouseMove={handleBikePress}>
           <i className="fas fa-biking"></i>
         </button>
         <div />
