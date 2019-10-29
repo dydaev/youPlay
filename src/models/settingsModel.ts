@@ -1,5 +1,7 @@
 import { settingsType } from '../types/settingsType';
 
 export const settingsModel: settingsType = {
-    directYoutubeLoad: true
+	directYoutubeLoad: true,
+	fullScreenMode: true,
+	playInTray: true,
 };

@@ -11,7 +11,8 @@ import Footer from './components/Footer/index';
 import PlayListContainer from './containers/PlayList';
 // import Player from './components/Player';
 import Settings from './components/Settings/index';
-
+// @ts-ignore: Unreachable code error
+import lib from './lib';
 import db from './db';
 
 import { bodyType } from './types/bodyType';
@@ -67,6 +68,11 @@ const Main = () => {
     if (Array.isArray(listOfPlaylist) && !listOfPlaylist.length) {
       handleGetPlaylistFromStorage();
     }
+
+    if (settings.playInTray && window) lib.usePlaingInTry(isSavePlaying, setPlaying);
+
+    if (settings.fullScreenMode && window) lib.useFullScreenMode(settings.fullScreenMode);
+    console.log('full', settings.fullScreenMode, 'tray', settings.playInTray);
   });
 
   // const handleSetBody = (newFill: bodyType): void => {
@@ -121,18 +127,6 @@ const Main = () => {
 
   // @ts-ignore
   // document.body.requestFullScreen();
-  window.addEventListener(
-    'visibilitychange',
-    () => {
-      if (isSavePlaying) {
-        console.log('playing after lost the focus');
-        setPlaying(true);
-      } else {
-        setPlaying(false);
-      }
-    },
-    false,
-  );
 
   return (
     <MainContext.Provider

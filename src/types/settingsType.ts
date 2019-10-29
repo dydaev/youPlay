@@ -1,7 +1,7 @@
 type settingsType = {
-	directYoutubeLoad: boolean
-}
+	directYoutubeLoad: boolean;
+	fullScreenMode: boolean;
+	playInTray: boolean;
+};
 
-export {
-	settingsType
-}
+export { settingsType };

@@ -1,0 +1,12 @@
+section#main-settings {
+	padding: 20px;
+	display: flex;
+	flex-direction: column;
+
+	& > label {
+		padding: 5px 0;
+	}
+	& > button {
+		height: 40px;
+	}
+}

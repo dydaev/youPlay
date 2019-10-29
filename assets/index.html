@@ -15,21 +15,7 @@
   <body>
     <script>
       window.addEventListener('load', function() {
-        try {
-          if (typeof window.orientation !== 'undefined') {
-            addEventListener('click', function() {
-              var el = document.documentElement,
-                rfs =
-                  el.requestFullscreen ||
-                  el.webkitRequestFullScreen ||
-                  el.mozRequestFullScreen ||
-                  el.msRequestFullscreen;
-              rfs.call(el);
-            });
-          }
-        } catch (e) {
-          console.log('scrolling broken:', e);
-        }
+        console.log('Player is started');
       });
     </script>
     <main id="main"></main>
