@@ -6,7 +6,16 @@ section#main-settings {
 	& > label {
 		padding: 5px 0;
 	}
-	& > button {
-		height: 40px;
+	& > div {
+		margin-top: 20px;
+		display: flex;
+		justify-content: space-between;
+		width: 100%;
+
+		& > button {
+			height: 40px;
+			width: 47%;
+			border-radius: 5px;
+		}
 	}
 }

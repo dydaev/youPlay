@@ -18,6 +18,9 @@ const Settings = ({ onSetSettings }: propsType) => {
     onSetSettings(settings);
   };
 
+  const handleCancelSettings = () => {
+    setSettings(mainContext.settings);
+  };
   const handleChangeSettings = ({ target }: any) => {
     setSettings({
       ...settings,
@@ -44,7 +47,10 @@ const Settings = ({ onSetSettings }: propsType) => {
           onChange={handleChangeSettings}
         />
       </label>
-      <button onClick={handleSaveSettings}>Save</button>
+      <div>
+        <button onClick={handleSaveSettings}>Save</button>
+        <button onClick={handleCancelSettings}>Cancel</button>
+      </div>
     </section>
   );
 };

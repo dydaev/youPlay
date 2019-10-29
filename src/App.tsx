@@ -28,7 +28,7 @@ import { settingsModel } from './models/settingsModel';
 import './main.scss';
 
 function randomInteger(min: number, max: number): number {
-  let rand = min + Math.random() * (max + 1 - min);
+  const rand = min + Math.random() * (max + 1 - min);
   return Math.floor(rand);
 }
 
@@ -71,8 +71,7 @@ const Main = () => {
 
     if (settings.playInTray && window) lib.usePlaingInTry(isSavePlaying, setPlaying);
 
-    if (settings.fullScreenMode && window) lib.useFullScreenMode(settings.fullScreenMode);
-    console.log('full', settings.fullScreenMode, 'tray', settings.playInTray);
+    if (window) lib.useFullScreenMode(settings.fullScreenMode);
   });
 
   // const handleSetBody = (newFill: bodyType): void => {
