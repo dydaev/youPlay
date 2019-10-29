@@ -1,31 +1,31 @@
-import * as React from 'react';
+import * as React from "react";
 // @ts-ignore: Unreachable code error
-import ReactPlayer from 'react-player';
+import ReactPlayer from "react-player";
 
-import MainContext from './context';
+import MainContext from "./context";
 
-import Header from './components/Header/index';
 // import Roll from './components/PlayRoll';
-import Footer from './components/Footer/index';
-// import Tabs from './components/Tabs';
-import PlayListContainer from './containers/PlayList';
+import Footer from "./components/Footer/index";
+import Header from "./components/Header/index";
 // import Player from './components/Player';
-import Settings from './components/Settings/index';
+import Settings from "./components/Settings/index";
+// import Tabs from './components/Tabs';
+import PlayListContainer from "./containers/PlayList";
+import db from "./db";
 // @ts-ignore: Unreachable code error
-import lib from './lib';
-import db from './db';
+import lib from "./lib";
 
-import { bodyType } from './types/bodyType';
-import { progressType } from './types/progressType';
-import { playItemType } from './types/playItemType';
-import { playStrategicType } from './types/playStrategicType';
-import { listOfPlaylistItemType } from './types/listOfPlaylistItemType';
-import { settingsType } from './types/settingsType';
+import { bodyType } from "./types/bodyType";
+import { progressType } from "./types/progressType";
+import { playItemType } from "./types/playItemType";
+import { playStrategicType } from "./types/playStrategicType";
+import { listOfPlaylistItemType } from "./types/listOfPlaylistItemType";
+import { settingsType } from "./types/settingsType";
 
-import { progressModel } from './models/progressModel';
-import { settingsModel } from './models/settingsModel';
+import { progressModel } from "./models/progressModel";
+import { settingsModel } from "./models/settingsModel";
 
-import './main.scss';
+import "./main.scss";
 
 function randomInteger(min: number, max: number): number {
   const rand = min + Math.random() * (max + 1 - min);
@@ -33,18 +33,18 @@ function randomInteger(min: number, max: number): number {
 }
 
 const Main = () => {
-  const [playUrl, setPlayUrl] = React.useState<string>('');
+  const [playUrl, setPlayUrl] = React.useState<string>("");
   const [duration, setDuration] = React.useState<number>(0);
   const [isPlaying, setPlaying] = React.useState<boolean>(false);
   const [isSavePlaying, setSavePlaying] = React.useState<boolean>(false);
-  const [bodyFill, setBodyFill] = React.useState<bodyType>('player');
+  const [bodyFill, setBodyFill] = React.useState<bodyType>("player");
   const [playList, setPlayList] = React.useState<playItemType[]>([]);
   const [progress, setProgress] = React.useState<progressType>(progressModel);
   const [settings, setSettings] = React.useState<settingsType>(settingsModel);
   const [currentTrackNumber, setCurrentTrackNumber] = React.useState<number>(0);
   const [listOfPlaylist, setList] = React.useState<listOfPlaylistItemType[]>([]);
   const [currentPlaylistNumber, setCurrentPlaylistNumber] = React.useState<number>(0);
-  const [playStrategic, setPlayStrategic] = React.useState<playStrategicType>('normal');
+  const [playStrategic, setPlayStrategic] = React.useState<playStrategicType>("normal");
 
   const handleGetPlaylistFromStorage = () => {
     const setFunc = (params: any) => {
@@ -69,9 +69,13 @@ const Main = () => {
       handleGetPlaylistFromStorage();
     }
 
-    if (settings.playInTray && window) lib.usePlaingInTry(isSavePlaying, setPlaying);
+    if (settings.playInTray && window && false) {
+      lib.usePlaingInTry(isSavePlaying, setPlaying);
+    }
 
-    if (window) lib.useFullScreenMode(settings.fullScreenMode);
+    if (window) {
+      lib.useFullScreenMode(settings.fullScreenMode);
+    }
   });
 
   // const handleSetBody = (newFill: bodyType): void => {
@@ -80,7 +84,7 @@ const Main = () => {
 
   const handlePlay = (trackNumber: number | undefined): void => {
     if (Array.isArray(playList) && playList.length && trackNumber !== undefined) {
-      setPlayUrl(playList[trackNumber]['url']);
+      setPlayUrl(playList[trackNumber].url);
       setCurrentTrackNumber(trackNumber);
 
       if (trackNumber !== currentTrackNumber) {
@@ -119,34 +123,26 @@ const Main = () => {
   const currentSong: playItemType | undefined =
     Array.isArray(playList) && playList.length ? playList[currentTrackNumber] : undefined;
 
-  // window.scrollTo(0,1);
-  // if(typeof document.hidden !== "undefined") {
-  //   // handlePlay(currentTrackNumber);
-  // }
-
-  // @ts-ignore
-  // document.body.requestFullScreen();
-
   return (
     <MainContext.Provider
       value={{
-        settings: settings,
-        duration: duration,
-        progress: progress,
-        isPlaying: isPlaying,
-        currentTrackNumber: currentTrackNumber,
-        currentPlaylistNumber: currentPlaylistNumber,
-        listOfPlaylist: listOfPlaylist,
-        playList: playList,
+        settings,
+        duration,
+        progress,
+        isPlaying,
+        currentTrackNumber,
+        currentPlaylistNumber,
+        listOfPlaylist,
+        playList,
       }}
     >
       <Header onClickButton={setBodyFill} bodyType={bodyFill} />
-      {bodyFill === 'list' ? (
+      {bodyFill === "list" ? (
         <PlayListContainer
           urlOfList={
             Array.isArray(listOfPlaylist) && listOfPlaylist[currentPlaylistNumber]
               ? listOfPlaylist[currentPlaylistNumber].url
-              : 'https://www.youtube.com/watch?v=P6KwHkpN-W0&list=PLvdDCgNk3ugIwuujayLHNEOXuTtQeXphU'
+              : "https://www.youtube.com/watch?v=P6KwHkpN-W0&list=PLvdDCgNk3ugIwuujayLHNEOXuTtQeXphU"
           }
           onPlay={handlePlay}
           onSetPlayList={setPlayList}
@@ -154,7 +150,7 @@ const Main = () => {
           onSetCurrentPlaylistNumber={setCurrentPlaylistNumber}
           onSetList={setList}
         />
-      ) : bodyFill === 'settings' ? (
+      ) : bodyFill === "settings" ? (
         <Settings onSetSettings={setSettings} />
       ) : (
         <main>
@@ -162,19 +158,22 @@ const Main = () => {
             src={
               currentSong
                 ? currentSong.image
-                : 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTCzlqv9WfntXDekHwsLkf5NXI9isMvdwoVLgrQveqgexa10bWp'
+                : "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTCzlqv9WfntXDekHwsLkf5NXI9isMvdwoVLgrQveqgexa10bWp"
             }
             alt="song image"
           />
           <div>
-            <span>{currentSong ? `${currentSong.title || ''}` : ''}</span>
+            <span>{currentSong ? `${currentSong.title || ""}` : ""}</span>
           </div>
         </main>
       )}
       <Footer
+        isShowProgress={bodyFill !== "list"}
         isPlaying={isPlaying}
         playStrategic={playStrategic}
-        currentTrack={Array.isArray(playList) && playList.length ? playList[currentTrackNumber] : null}
+        currentTrack={
+          Array.isArray(playList) && playList.length ? playList[currentTrackNumber] : null
+        }
         setPlaying={setPlaying}
         setDuration={setDuration}
         setProgress={setProgress}

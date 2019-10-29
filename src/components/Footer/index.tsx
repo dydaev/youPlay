@@ -11,6 +11,7 @@ import './style.scss';
 import { log } from 'util';
 
 type propsType = {
+  isShowProgress: boolean;
   isPlaying: boolean;
   currentTrack: playItemType;
   playStrategic: playStrategicType;
@@ -25,6 +26,7 @@ type propsType = {
 };
 
 const Footer = ({
+  isShowProgress = true,
   playStrategic,
   currentTrack,
   setDuration,
@@ -86,12 +88,14 @@ const Footer = ({
         width={0}
         height={0}
       />
-      <div className="main-footer__progress-liner">
-        <button style={{ marginLeft: `${bikeProgress}%` }} onMouseMove={handleBikePress}>
-          <i className="fas fa-biking"></i>
-        </button>
-        <div />
-      </div>
+      {isShowProgress && (
+        <div className="main-footer__progress-liner">
+          <button style={{ marginLeft: `${bikeProgress}%` }} onMouseMove={handleBikePress}>
+            <i className="fas fa-biking"></i>
+          </button>
+          <div />
+        </div>
+      )}
       <div className="main-footer__control-buttons">
         <button style={{ fontSize: 30 }} onClick={handlePrev}>
           <i className="fas fa-angle-double-left"></i>
