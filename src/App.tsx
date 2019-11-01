@@ -41,7 +41,7 @@ const Main = () => {
   const [playList, setPlayList] = React.useState<playItemType[]>([]);
   const [progress, setProgress] = React.useState<progressType>(progressModel);
   const [settings, setSettings] = React.useState<settingsType>(settingsModel);
-  const [isShowHeader, setShowHeader] = React.useState<boolean>(false);
+  const [isShowMenu, setShowMenu] = React.useState<boolean>(true);
   const [currentTrackNumber, setCurrentTrackNumber] = React.useState<number>(0);
   const [listOfPlaylist, setList] = React.useState<listOfPlaylistItemType[]>([]);
   const [currentPlaylistNumber, setCurrentPlaylistNumber] = React.useState<number>(0);
@@ -139,7 +139,7 @@ const Main = () => {
         playList,
       }}
     >
-      <Header isShow={isShowHeader} onClickButton={setBodyFill} bodyType={bodyFill} />
+      <Header isShow={isShowMenu} onClickButton={setBodyFill} bodyType={bodyFill} />
       {bodyFill === "list" ? (
         <PlayListContainer
           urlOfList={
@@ -158,7 +158,7 @@ const Main = () => {
       ) : (
         <main>
           <img
-            onClick={() => setShowHeader(!isShowHeader)}
+            onClick={() => setShowMenu(!isShowMenu)}
             src={
               currentSong
                 ? currentSong.image
@@ -166,12 +166,11 @@ const Main = () => {
             }
             alt="song image"
           />
-          <div>
-            <span>{currentSong ? `${currentSong.title || ""}` : ""}</span>
-          </div>
         </main>
       )}
       <Footer
+        runString={currentSong ? `${currentSong.title || ""}` : ""}
+        isShowFooter={isShowMenu && bodyFill !== "settings"}
         isShowProgress={bodyFill !== "list"}
         isPlaying={isPlaying}
         playStrategic={playStrategic}

@@ -1,16 +1,18 @@
-import * as React from 'react';
+import * as React from "react";
 
 // @ts-ignore: Unreachable code error
-import ReactPlayer from 'react-player';
+import ReactPlayer from "react-player";
 
-import { playItemType } from '../../types/playItemType';
-import { progressType } from '../../types/progressType';
-import { playStrategicType } from '../../types/playStrategicType';
+import { playItemType } from "../../types/playItemType";
+import { progressType } from "../../types/progressType";
+import { playStrategicType } from "../../types/playStrategicType";
 
-import './style.scss';
-import { log } from 'util';
+import "./style.scss";
+import { log } from "util";
 
 type propsType = {
+  runString: string;
+  isShowFooter: boolean;
   isShowProgress: boolean;
   isPlaying: boolean;
   currentTrack: playItemType;
@@ -26,7 +28,9 @@ type propsType = {
 };
 
 const Footer = ({
+  runString,
   isShowProgress = true,
+  isShowFooter,
   playStrategic,
   currentTrack,
   setDuration,
@@ -70,17 +74,21 @@ const Footer = ({
   };
 
   const handleBikePress = (e: any) => {
-    console.log('====================================');
+    console.log("====================================");
     console.log(e.clientX, e.target.getBoundingClientRect());
-    console.log('====================================');
+    console.log("====================================");
+  };
+
+  const styleShowingFooter = {
+    bottom: 0,
   };
 
   return (
-    <footer id="main-footer">
+    <footer id="main-footer" style={isShowFooter ? styleShowingFooter : {}}>
       <ReactPlayer
-        url={currentTrack ? currentTrack.url : ''}
+        url={currentTrack ? currentTrack.url : ""}
         onPlay={() => setPlaying(true)}
-        onEnded={() => playStrategic !== 'once' && onNext()}
+        onEnded={() => playStrategic !== "once" && onNext()}
         onPause={() => setPlaying(false)}
         onProgress={handleProgress}
         onDuration={handleDuration}
@@ -90,6 +98,7 @@ const Footer = ({
       />
       {isShowProgress && (
         <div className="main-footer__progress-liner">
+          <span>{runString}</span>
           <button style={{ marginLeft: `${bikeProgress}%` }} onMouseMove={handleBikePress}>
             <i className="fas fa-biking"></i>
           </button>
@@ -101,11 +110,11 @@ const Footer = ({
           <i className="fas fa-angle-double-left"></i>
         </button>
         <button onClick={handlePlay}>
-          <i className={isPlaying ? 'fas fa-pause' : 'fas fa-play'}></i>
+          <i className={isPlaying ? "fas fa-pause" : "fas fa-biking"}></i>
         </button>
-        <button onClick={handleStop}>
-          <i className="fas fa-stop"></i>
-        </button>
+        {/*// <button onClick={handleStop}>
+        //   <i className="fas fa-stop"></i>
+        // </button>*/}
         <button style={{ fontSize: 30 }} onClick={handleNext}>
           <i className="fas fa-angle-double-right"></i>
         </button>
