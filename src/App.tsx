@@ -41,6 +41,7 @@ const Main = () => {
   const [playList, setPlayList] = React.useState<playItemType[]>([]);
   const [progress, setProgress] = React.useState<progressType>(progressModel);
   const [settings, setSettings] = React.useState<settingsType>(settingsModel);
+  const [isShowHeader, setShowHeader] = React.useState<boolean>(false);
   const [currentTrackNumber, setCurrentTrackNumber] = React.useState<number>(0);
   const [listOfPlaylist, setList] = React.useState<listOfPlaylistItemType[]>([]);
   const [currentPlaylistNumber, setCurrentPlaylistNumber] = React.useState<number>(0);
@@ -123,6 +124,8 @@ const Main = () => {
   const currentSong: playItemType | undefined =
     Array.isArray(playList) && playList.length ? playList[currentTrackNumber] : undefined;
 
+  const handleShowHeader = () => {};
+
   return (
     <MainContext.Provider
       value={{
@@ -136,7 +139,7 @@ const Main = () => {
         playList,
       }}
     >
-      <Header onClickButton={setBodyFill} bodyType={bodyFill} />
+      <Header isShow={isShowHeader} onClickButton={setBodyFill} bodyType={bodyFill} />
       {bodyFill === "list" ? (
         <PlayListContainer
           urlOfList={
@@ -155,6 +158,7 @@ const Main = () => {
       ) : (
         <main>
           <img
+            onClick={() => setShowHeader(!isShowHeader)}
             src={
               currentSong
                 ? currentSong.image

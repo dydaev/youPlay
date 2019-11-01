@@ -1,15 +1,39 @@
 @import "../../conf.scss";
 
-header#main-header{
+header#main-header {
+	position: fixed;
+	z-index: 1;
+	width: 100%;
+	top: -80px;
 	display: flex;
 	justify-content: space-between;
-	// width: 100%;
-	padding: 10px 20px;
-	background: $head-color;
+	padding: 7px 0px;
+	background: rgb(0, 0, 0);
+	background: linear-gradient(
+		180deg,
+		rgba(0, 0, 0, 0.4) 0%,
+		rgba(0, 0, 0, 0.4) 20%,
+		rgba(0, 0, 0, 0) 95%
+	);
 
-	&> button{
+	transition: 1s;
+
+	h5 {
+		font-size: 20px;
+		// padding: 5px;
+		margin: 7px auto;
+		// color: tomato;
+		color: white;
+	}
+
+	& > button {
+		margin: 0 10px;
 		height: 60px;
 		width: 60px;
 		border-radius: 50%;
+		font-size: 25px;
+		color: #de6ac2;
+		border: 0;
+		background: none;
 	}
 }
