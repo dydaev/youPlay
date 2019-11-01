@@ -1,7 +1,7 @@
 body {
 	margin: 0;
 	padding: 0;
-	font-family: 'Oswald', sans-serif;
+	font-family: "Oswald", sans-serif;
 }
 main#main {
 	position: fixed;
@@ -16,15 +16,26 @@ main#main {
 	justify-content: space-between;
 	position: relative;
 	height: 100vh;
-	font-family: 'Oswald', sans-serif;
+	font-family: "Oswald", sans-serif;
 
 	& > main {
 		height: 100%;
 		display: flex;
+		flex-direction: column;
+		justify-content: center;
 		align-items: center;
 		width: 100%;
 		overflow: hidden;
 		position: relative;
+
+		& > span {
+			position: absolute;
+			top: 65px;
+			font-size: 45px;
+			font-weight: bold;
+			color: lightgray;
+			font-family: "Raleway Dots", cursive;
+		}
 
 		& > img {
 			width: 100%;
@@ -33,7 +44,7 @@ main#main {
 		& > div {
 			position: absolute;
 			bottom: -3px;
-    	color: lightgray;
+			color: lightgray;
 
 			& > span {
 				position: initial;

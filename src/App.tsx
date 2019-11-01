@@ -157,6 +157,13 @@ const Main = () => {
         <Settings onSetSettings={setSettings} />
       ) : (
         <main>
+          <span>
+            {duration && progress && progress.playedSeconds
+              ? lib.seconds2time(Math.floor(progress.playedSeconds))
+              : duration
+              ? lib.seconds2time(Math.floor(duration))
+              : ""}
+          </span>
           <img
             onClick={() => setShowMenu(!isShowMenu)}
             src={
@@ -169,7 +176,11 @@ const Main = () => {
         </main>
       )}
       <Footer
-        runString={currentSong ? `${currentSong.title || ""}` : ""}
+        runString={
+          currentSong
+            ? `${currentSong.title || ""} (${lib.seconds2time(Math.floor(duration))})`
+            : ""
+        }
         isShowFooter={isShowMenu && bodyFill !== "settings"}
         isShowProgress={bodyFill !== "list"}
         isPlaying={isPlaying}

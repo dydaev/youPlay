@@ -45,4 +45,11 @@ export default {
 			console.log("Can not playing in tray(.", e);
 		}
 	},
+	seconds2time: (seconds: any) => {
+		const time: any = new Date(seconds * 1000).toISOString();
+		console.log(time);
+		if (seconds > 3600) return time.substr(11, 8);
+
+		return time.substr(14, 5);
+	},
 };

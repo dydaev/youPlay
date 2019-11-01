@@ -2,9 +2,11 @@ import * as React from "react";
 
 // @ts-ignore: Unreachable code error
 import ReactPlayer from "react-player";
+import MainContext from "../../context";
 
 import { playItemType } from "../../types/playItemType";
 import { progressType } from "../../types/progressType";
+import { mainContextType } from "../../types/mainContextType";
 import { playStrategicType } from "../../types/playStrategicType";
 
 import "./style.scss";
@@ -45,6 +47,7 @@ const Footer = ({
 }: propsType) => {
   const [bikeProgress, setBikeProgress] = React.useState(0);
   const [songLength, setSongLength] = React.useState(0);
+  const mainContext: mainContextType = React.useContext<mainContextType>(MainContext);
 
   const handlePlay = () => {
     onSavePlay(true);
@@ -102,7 +105,13 @@ const Footer = ({
           <button style={{ marginLeft: `${bikeProgress}%` }} onMouseMove={handleBikePress}>
             <i className="fas fa-biking"></i>
           </button>
-          <div />
+          <div
+            style={
+              mainContext.progress && mainContext.progress.loaded
+                ? { width: `${mainContext.progress.loaded * 100}%` }
+                : { background: "lightgray" }
+            }
+          />
         </div>
       )}
       <div className="main-footer__control-buttons">
