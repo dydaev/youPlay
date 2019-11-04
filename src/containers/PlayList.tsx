@@ -9,6 +9,7 @@ import { youtubeContentType } from "../types/youtubeContentType";
 import { listOfPlaylistItemType } from "../types/listOfPlaylistItemType";
 
 type propsType = {
+	onShow: boolean;
 	urlOfList: string;
 	onClose(type: bodyType): void;
 	onPlay(trackNumber: number): void;
@@ -141,6 +142,7 @@ class PlayListContainer extends React.Component<propsType> {
 
 	render() {
 		const {
+			onShow,
 			onPlay,
 			onClose,
 			onSetCurrentTrack,
@@ -155,11 +157,12 @@ class PlayListContainer extends React.Component<propsType> {
 			flexDirection: "column",
 			justifyContent: "space-between",
 			overflow: "hidden",
-			position: "relative",
+			right: onShow ? 0 : "-100%",
+			// position: "relative",
 		};
 
 		return (
-			<div style={styles}>
+			<section style={styles}>
 				<div style={{ overflow: "hidden" }}>
 					<PlayList onClose={onClose} onPlay={onPlay} onSetCurrentTrack={onSetCurrentTrack} />
 				</div>
@@ -176,7 +179,7 @@ class PlayListContainer extends React.Component<propsType> {
 						onSetList={onSetList}
 					/>
 				)}
-			</div>
+			</section>
 		);
 	}
 }

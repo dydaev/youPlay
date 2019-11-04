@@ -8,11 +8,12 @@ import { mainContextType } from "../../types/mainContextType";
 import "./style.scss";
 
 type propsType = {
+  onShow: boolean;
   onSetSettings(newSettings: settingsType): void;
   onClose(type: bodyType): void;
 };
 
-const Settings = ({ onSetSettings, onClose }: propsType) => {
+const Settings = ({ onSetSettings, onClose, onShow }: propsType) => {
   const mainContext: mainContextType = React.useContext<mainContextType>(MainContext);
   const [settings, setSettings] = React.useState<settingsType>(mainContext.settings);
 
@@ -31,7 +32,7 @@ const Settings = ({ onSetSettings, onClose }: propsType) => {
   };
 
   return (
-    <section id="main-settings">
+    <section id="main-settings" style={{ left: onShow ? 0 : "-100%" }}>
       <div className="settings-playlist_header">
         <button onClick={() => onClose("player")}>{"<"}</button>
         <div />

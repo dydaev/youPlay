@@ -144,42 +144,43 @@ const Main = () => {
         onClickButton={setBodyFill}
         bodyType={bodyFill}
       />
-      {bodyFill === "list" ? (
-        <PlayListContainer
-          urlOfList={
-            Array.isArray(listOfPlaylist) && listOfPlaylist[currentPlaylistNumber]
-              ? listOfPlaylist[currentPlaylistNumber].url
-              : "https://www.youtube.com/watch?v=P6KwHkpN-W0&list=PLvdDCgNk3ugIwuujayLHNEOXuTtQeXphU"
+      <PlayListContainer
+        onShow={bodyFill === "list"}
+        urlOfList={
+          Array.isArray(listOfPlaylist) && listOfPlaylist[currentPlaylistNumber]
+            ? listOfPlaylist[currentPlaylistNumber].url
+            : "https://www.youtube.com/watch?v=P6KwHkpN-W0&list=PLvdDCgNk3ugIwuujayLHNEOXuTtQeXphU"
+        }
+        onPlay={handlePlay}
+        onSetPlayList={setPlayList}
+        onSetCurrentTrack={setCurrentTrackNumber}
+        onSetCurrentPlaylistNumber={setCurrentPlaylistNumber}
+        onSetList={setList}
+        onClose={setBodyFill}
+      />
+      <Settings
+        onShow={bodyFill === "settings"}
+        onSetSettings={setSettings}
+        onClose={setBodyFill}
+      />
+      <main>
+        <span>
+          {duration && progress && progress.playedSeconds
+            ? lib.seconds2time(Math.floor(progress.playedSeconds))
+            : duration
+            ? lib.seconds2time(Math.floor(duration))
+            : ""}
+        </span>
+        <img
+          onClick={() => setShowMenu(!isShowMenu)}
+          src={
+            currentSong
+              ? currentSong.image
+              : "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTCzlqv9WfntXDekHwsLkf5NXI9isMvdwoVLgrQveqgexa10bWp"
           }
-          onPlay={handlePlay}
-          onSetPlayList={setPlayList}
-          onSetCurrentTrack={setCurrentTrackNumber}
-          onSetCurrentPlaylistNumber={setCurrentPlaylistNumber}
-          onSetList={setList}
-          onClose={setBodyFill}
+          alt="song image"
         />
-      ) : bodyFill === "settings" ? (
-        <Settings onSetSettings={setSettings} onClose={setBodyFill} />
-      ) : (
-        <main>
-          <span>
-            {duration && progress && progress.playedSeconds
-              ? lib.seconds2time(Math.floor(progress.playedSeconds))
-              : duration
-              ? lib.seconds2time(Math.floor(duration))
-              : ""}
-          </span>
-          <img
-            onClick={() => setShowMenu(!isShowMenu)}
-            src={
-              currentSong
-                ? currentSong.image
-                : "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTCzlqv9WfntXDekHwsLkf5NXI9isMvdwoVLgrQveqgexa10bWp"
-            }
-            alt="song image"
-          />
-        </main>
-      )}
+      </main>
       <Footer
         runString={
           currentSong
