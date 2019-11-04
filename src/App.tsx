@@ -164,13 +164,15 @@ const Main = () => {
         onClose={setBodyFill}
       />
       <main>
-        <span>
-          {duration && progress && progress.playedSeconds
-            ? lib.seconds2time(Math.floor(progress.playedSeconds))
-            : duration
-            ? lib.seconds2time(Math.floor(duration))
-            : ""}
-        </span>
+        {isShowMenu && (
+          <span>
+            {duration && progress && progress.playedSeconds
+              ? lib.seconds2time(Math.floor(duration - progress.playedSeconds))
+              : duration
+              ? lib.seconds2time(Math.floor(duration))
+              : ""}
+          </span>
+        )}
         <img
           onClick={() => setShowMenu(!isShowMenu)}
           src={
