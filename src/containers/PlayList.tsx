@@ -163,9 +163,19 @@ class PlayListContainer extends React.Component<propsType> {
 
 		return (
 			<section style={styles}>
-				<div style={{ overflow: "hidden" }}>
-					<PlayList onClose={onClose} onPlay={onPlay} onSetCurrentTrack={onSetCurrentTrack} />
+				<div className="settings-playlist_header">
+					<p>Play list</p>
+					<div />
+					<button onClick={() => onClose("player")}>{">"}</button>
 				</div>
+				{managerIsVisible ? (
+					<PlayListManager
+						onSetCurrentPlaylistNumber={onSetCurrentPlaylistNumber}
+						onSetList={onSetList}
+					/>
+				) : (
+					<PlayList onClose={onClose} onPlay={onPlay} onSetCurrentTrack={onSetCurrentTrack} />
+				)}
 				<button
 					type="button"
 					className="play-list__main-manager-button"
@@ -173,12 +183,6 @@ class PlayListContainer extends React.Component<propsType> {
 				>
 					manager
 				</button>
-				{managerIsVisible && (
-					<PlayListManager
-						onSetCurrentPlaylistNumber={onSetCurrentPlaylistNumber}
-						onSetList={onSetList}
-					/>
-				)}
 			</section>
 		);
 	}

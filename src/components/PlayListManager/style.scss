@@ -1,6 +1,4 @@
 button.play-list__main-manager-button {
-  position: absolute;
-  z-index: 2;
   width: 100%;
   height: 50px;
   text-transform: capitalize;
@@ -12,7 +10,7 @@ div#component-listOfPlaylistItemType {
   height: 100%;
   width: 100%;
   background: aliceblue;
-  position: absolute;
+  flex-shrink: 10;
 
   & > button {
     width: 60px;
