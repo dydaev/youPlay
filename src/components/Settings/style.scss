@@ -1,23 +1,33 @@
 section#main-settings {
+	position: absolute;
 	height: 100%;
 	display: flex;
 	flex-direction: column;
-	justify-content: flex-end;
-	padding: 20px;
+	justify-content: space-between;
 
 	& > label {
 		padding: 5px 0;
 	}
-	& > div {
-		margin-top: 20px;
-		display: flex;
-		justify-content: space-between;
-		width: 100%;
 
-		& > button {
-			height: 40px;
-			width: 47%;
-			border-radius: 5px;
+	& > div:last-child {
+		height: 100%;
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		padding: 20px;
+		background: palegoldenrod;
+
+		& > div {
+			margin-top: 20px;
+			display: flex;
+			justify-content: space-between;
+			width: 100%;
+
+			& > button {
+				height: 40px;
+				width: 47%;
+				border-radius: 5px;
+			}
 		}
 	}
 }

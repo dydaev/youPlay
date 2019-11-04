@@ -8,6 +8,7 @@ import { playItemType } from "../../types/playItemType";
 import { progressType } from "../../types/progressType";
 import { mainContextType } from "../../types/mainContextType";
 import { playStrategicType } from "../../types/playStrategicType";
+import { bodyType } from "../../types/bodyType";
 
 import "./style.scss";
 import { log } from "util";

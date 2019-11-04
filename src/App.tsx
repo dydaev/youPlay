@@ -139,7 +139,11 @@ const Main = () => {
         playList,
       }}
     >
-      <Header isShow={isShowMenu} onClickButton={setBodyFill} bodyType={bodyFill} />
+      <Header
+        isShow={isShowMenu && bodyFill !== "settings" && bodyFill !== "list"}
+        onClickButton={setBodyFill}
+        bodyType={bodyFill}
+      />
       {bodyFill === "list" ? (
         <PlayListContainer
           urlOfList={
@@ -152,9 +156,10 @@ const Main = () => {
           onSetCurrentTrack={setCurrentTrackNumber}
           onSetCurrentPlaylistNumber={setCurrentPlaylistNumber}
           onSetList={setList}
+          onClose={setBodyFill}
         />
       ) : bodyFill === "settings" ? (
-        <Settings onSetSettings={setSettings} />
+        <Settings onSetSettings={setSettings} onClose={setBodyFill} />
       ) : (
         <main>
           <span>
@@ -181,7 +186,7 @@ const Main = () => {
             ? `${currentSong.title || ""} (${lib.seconds2time(Math.floor(duration))})`
             : ""
         }
-        isShowFooter={isShowMenu && bodyFill !== "settings"}
+        isShowFooter={isShowMenu && bodyFill !== "settings" && bodyFill !== "list"}
         isShowProgress={bodyFill !== "list"}
         isPlaying={isPlaying}
         playStrategic={playStrategic}

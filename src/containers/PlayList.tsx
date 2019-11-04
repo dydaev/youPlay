@@ -1,32 +1,33 @@
-import * as React from 'react';
+import * as React from "react";
 
-import PlayList from '../components/PlayList/index';
-import PlayListManager from '../components/PlayListManager/index';
+import PlayList from "../components/PlayList/index";
+import PlayListManager from "../components/PlayListManager/index";
 
-import { playItemType } from '../types/playItemType';
-import { youtubeContentType } from '../types/youtubeContentType';
-import { listOfPlaylistItemType } from '../types/listOfPlaylistItemType';
+import { bodyType } from "../types/bodyType";
+import { playItemType } from "../types/playItemType";
+import { youtubeContentType } from "../types/youtubeContentType";
+import { listOfPlaylistItemType } from "../types/listOfPlaylistItemType";
 
 type propsType = {
-	urlOfList: string,
-	onPlay(trackNumber: number):void,
-	onSetCurrentTrack(trackNumber: number):void,
-	onSetPlayList(playlist: playItemType[]):void,
-	onSetCurrentPlaylistNumber(number: number): void,
-  onSetList(playList: listOfPlaylistItemType[]): void
-}
+	urlOfList: string;
+	onClose(type: bodyType): void;
+	onPlay(trackNumber: number): void;
+	onSetCurrentTrack(trackNumber: number): void;
+	onSetPlayList(playlist: playItemType[]): void;
+	onSetCurrentPlaylistNumber(number: number): void;
+	onSetList(playList: listOfPlaylistItemType[]): void;
+};
 type stateType = {
-	playListUrl: string,
-	managerIsVisible: false
-}
+	playListUrl: string;
+	managerIsVisible: false;
+};
 
-class PlayListContainer extends React.Component <propsType>
-{
+class PlayListContainer extends React.Component<propsType> {
 	state: stateType = {
 		playListUrl: this.props.urlOfList,
-		managerIsVisible: false
+		managerIsVisible: false,
 		// playList: []
-	}
+	};
 
 	// shouldComponentUpdate(nextProps: propsType) {
 	// 	console.log(nextProps, this.props)
@@ -48,14 +49,13 @@ class PlayListContainer extends React.Component <propsType>
 	componentWillReceiveProps(newProps: propsType) {
 		if (newProps.urlOfList !== this.props.urlOfList) {
 			this.setState({
-				playListUrl: newProps.urlOfList
-			})
+				playListUrl: newProps.urlOfList,
+			});
 		}
 	}
 	componentDidUpdate(_: any, prewState: stateType) {
-
 		if (prewState.playListUrl !== this.state.playListUrl) {
-			console.log('up-up',prewState.playListUrl, this.state.playListUrl)
+			console.log("up-up", prewState.playListUrl, this.state.playListUrl);
 			this.handleUpdatePlaylist();
 		}
 	}
@@ -64,95 +64,104 @@ class PlayListContainer extends React.Component <propsType>
 	}
 
 	handleGetYouList = async (playListUrl: string): Promise<any> => {
-	  if (!('fetch' in window)) {
-	    console.log('Fetch API not found, try including the polyfill');
-	    return;
-	  }
-	  const proxyurl = "https://cors-anywhere.herokuapp.com/";
+		if (!("fetch" in window)) {
+			console.log("Fetch API not found, try including the polyfill");
+			return;
+		}
+		const proxyurl = "https://cors-anywhere.herokuapp.com/";
 
-    let playObj = await fetch(proxyurl + playListUrl)
-      .then(response => response.text())
-      .then(contents => {
-				const startString: string = '"playlist":{"playlist":{', endString: string = 'currentIndex';
+		let playObj = await fetch(proxyurl + playListUrl)
+			.then(response => response.text())
+			.then(contents => {
+				const startString: string = '"playlist":{"playlist":{',
+					endString: string = "currentIndex";
 				const startPlayList: number = contents.indexOf(startString) + 11;
 				const endPlayList: number = contents.indexOf(endString) - 2;
 
-				const stringOfPlaylist: string = contents.slice(startPlayList, endPlayList) + '}}'
+				const stringOfPlaylist: string = contents.slice(startPlayList, endPlayList) + "}}";
 
 				let playObj: youtubeContentType;
 				eval(`playObj = ${stringOfPlaylist}`);
 
 				return playObj;
 			})
-    	.catch((ee) => console.log("Cant access response. Blocked by browser?", ee))
+			.catch(ee => console.log("Cant access response. Blocked by browser?", ee));
 
-			if (playObj && playObj.playlist && Array.isArray(playObj.playlist.contents)) {
-				const playLists: any = playObj.playlist.contents.map(contentItem => {
-					const imagesArray = contentItem.playlistPanelVideoRenderer.thumbnail.thumbnails
-					const imageUrl = imagesArray && Array.isArray(imagesArray) && imagesArray.length
-						? imagesArray[imagesArray.length -1].url
-						: '';
-					const parsedImage: string = Array.isArray(imageUrl.match(/^http.+\.jpg\?/))
-						&& imageUrl.match(/^http.+\.jpg\?/).length
+		if (playObj && playObj.playlist && Array.isArray(playObj.playlist.contents)) {
+			const playLists: any = playObj.playlist.contents.map(contentItem => {
+				const imagesArray = contentItem.playlistPanelVideoRenderer.thumbnail.thumbnails;
+				const imageUrl =
+					imagesArray && Array.isArray(imagesArray) && imagesArray.length
+						? imagesArray[imagesArray.length - 1].url
+						: "";
+				const parsedImage: string =
+					Array.isArray(imageUrl.match(/^http.+\.jpg\?/)) && imageUrl.match(/^http.+\.jpg\?/).length
 						? imageUrl.match(/^http.+\.jpg\?/)[0]
-						: '';
+						: "";
 
-					const contextUrl = contentItem.playlistPanelVideoRenderer.navigationEndpoint.commandMetadata.webCommandMetadata.url;
-					const url = Array.isArray(contextUrl.match(/^\/watch\?v=.+&list=/)) && contextUrl.match(/^\/watch\?v=.+&list=/).length
+				const contextUrl =
+					contentItem.playlistPanelVideoRenderer.navigationEndpoint.commandMetadata
+						.webCommandMetadata.url;
+				const url =
+					Array.isArray(contextUrl.match(/^\/watch\?v=.+&list=/)) &&
+					contextUrl.match(/^\/watch\?v=.+&list=/).length
 						? contextUrl.match(/^\/watch\?v=.+&list=/)[0]
-						: '';
+						: "";
 
-					return {
-						image: parsedImage.slice(0, parsedImage.length - 1 ),
-						url: 'https://youtube.com' + url.slice(0, url.length - 6) || '',
-						title: Array.isArray(contentItem.playlistPanelVideoRenderer.title.runs)
-						?	contentItem.playlistPanelVideoRenderer.title.runs[0].text
-						: (contentItem.playlistPanelVideoRenderer.title.simpleText || ''),
-						album: '',
-						artist: '',
-						length: contentItem.playlistPanelVideoRenderer.lengthText.simpleText || ''
-					}
-				})
+				return {
+					image: parsedImage.slice(0, parsedImage.length - 1),
+					url: "https://youtube.com" + url.slice(0, url.length - 6) || "",
+					title: Array.isArray(contentItem.playlistPanelVideoRenderer.title.runs)
+						? contentItem.playlistPanelVideoRenderer.title.runs[0].text
+						: contentItem.playlistPanelVideoRenderer.title.simpleText || "",
+					album: "",
+					artist: "",
+					length: contentItem.playlistPanelVideoRenderer.lengthText.simpleText || "",
+				};
+			});
 
-				return playLists;
-			}
-			return null
-	}
+			return playLists;
+		}
+		return null;
+	};
 
 	handleUpdatePlaylist = async () => {
-		const newList: any  = await this.handleGetYouList(this.props.urlOfList);
-		if(newList) {
+		const newList: any = await this.handleGetYouList(this.props.urlOfList);
+		if (newList) {
 			// console.log('updateList->',newList)
 			this.props.onSetPlayList(newList);
 		}
-	}
+	};
 
 	handleShowManager = () => {
 		this.setState({
-			managerIsVisible: !this.state.managerIsVisible
-		})
-	}
+			managerIsVisible: !this.state.managerIsVisible,
+		});
+	};
 
-	render(){
-		const { onPlay, onSetCurrentTrack, onSetList, onSetCurrentPlaylistNumber } = this.props;
+	render() {
+		const {
+			onPlay,
+			onClose,
+			onSetCurrentTrack,
+			onSetList,
+			onSetCurrentPlaylistNumber,
+		} = this.props;
 		const { managerIsVisible } = this.state;
 
 		const styles = {
 			flexGrow: 1,
-	    display: 'flex',
-	    flexDirection: 'column',
-	    justifyContent: 'space-between',
-			overflow: 'hidden',
-			position: 'relative'
-		}
+			display: "flex",
+			flexDirection: "column",
+			justifyContent: "space-between",
+			overflow: "hidden",
+			position: "relative",
+		};
 
 		return (
 			<div style={styles}>
-				<div style={{ overflow: 'hidden'}}>
-					<PlayList
-							onPlay={onPlay}
-							onSetCurrentTrack={onSetCurrentTrack}
-					/>
+				<div style={{ overflow: "hidden" }}>
+					<PlayList onClose={onClose} onPlay={onPlay} onSetCurrentTrack={onSetCurrentTrack} />
 				</div>
 				<button
 					type="button"
@@ -161,14 +170,13 @@ class PlayListContainer extends React.Component <propsType>
 				>
 					manager
 				</button>
-				{
-					managerIsVisible
-					&& <PlayListManager
+				{managerIsVisible && (
+					<PlayListManager
 						onSetCurrentPlaylistNumber={onSetCurrentPlaylistNumber}
-					  onSetList={onSetList}
+						onSetList={onSetList}
 					/>
-				}
-		</div>
+				)}
+			</div>
 		);
 	}
 }
