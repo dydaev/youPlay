@@ -34,6 +34,7 @@ const PlayList = ({ onPlay, onSetCurrentTrack, onClose }: propsType) => {
 					mainContext.playList.map((playItem: playItemType, index: number): any => (
 						<li key={"listOfTracks" + index.toString()} onClick={() => handlePlay(index)}>
 							<img
+								style={{ width: 85 }}
 								src={
 									playItem.image ||
 									"http://dummyimage.com/800x600/4d494d/686a82.gif&text=placeholder+image"

@@ -9,12 +9,16 @@ div.base-component_player {
 			width: 100%;
 		}
 	}
-	& > div.base-component_player__buttons-block{
+	& > div.base-component_player__buttons-block {
+		display: -webkit-box;
+		display: -ms-flexbox;
 		display: flex;
+		-webkit-box-pack: justify;
+		-ms-flex-pack: justify;
 		justify-content: space-between;
 		margin-top: 5px;
 
-		&>button{
+		& > button {
 			padding: 10px 35px;
 			font-size: 20px;
 		}

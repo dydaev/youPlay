@@ -1,6 +1,8 @@
 .base-component_tab {
 	position: relative;
 	ul {
+		display: -webkit-box;
+		display: -ms-flexbox;
 		display: flex;
 		list-style-type: none;
 		position: absolute;
@@ -14,7 +16,6 @@
 			& > button {
 				padding: 2px 12px 0px;
 				border: 1px solid gray;
-				// border-bottom: 0;
 				background: white;
 				user-select: none; /* supported by Chrome and Opera */
 				-webkit-user-select: none; /* Safari */

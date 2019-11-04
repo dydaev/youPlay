@@ -1,21 +1,45 @@
 @import "../../conf.scss";
 
 footer#main-footer {
+	display: -webkit-box;
+	display: -ms-flexbox;
 	display: flex;
+	-webkit-box-orient: vertical;
+	-webkit-box-direction: normal;
+	-ms-flex-direction: column;
 	flex-direction: column;
+	-webkit-box-pack: justify;
+	-ms-flex-pack: justify;
 	justify-content: space-between;
-	// background: $footer-color;
 	padding: 3px 1px;
 	position: fixed;
 	width: 100%;
 	bottom: -108px;
 	background: rgb(0, 0, 0);
+	background: -webkit-gradient(
+		linear,
+		left bottom,
+		left top,
+		from(rgba(0, 0, 0, 0.4)),
+		color-stop(20%, rgba(0, 0, 0, 0.4)),
+		color-stop(95%, rgba(0, 0, 0, 0))
+	);
+	background: -o-linear-gradient(
+		bottom,
+		rgba(0, 0, 0, 0.4) 0%,
+		rgba(0, 0, 0, 0.4) 20%,
+		rgba(0, 0, 0, 0) 95%
+	);
 	background: linear-gradient(
 		0deg,
 		rgba(0, 0, 0, 0.4) 0%,
 		rgba(0, 0, 0, 0.4) 20%,
 		rgba(0, 0, 0, 0) 95%
 	);
+
+	-webkit-transition: 1s;
+
+	-o-transition: 1s;
 
 	transition: 1s;
 
@@ -31,10 +55,16 @@ footer#main-footer {
 			font-size: 27px;
 			white-space: nowrap;
 
+			-webkit-animation-duration: 20s;
+
 			animation-duration: 20s;
+			-webkit-animation-name: slidein;
 			animation-name: slidein;
+			-webkit-animation-timing-function: linear;
 			animation-timing-function: linear;
+			-webkit-animation-iteration-count: infinite;
 			animation-iteration-count: infinite;
+			-webkit-animation-delay: 2s;
 			animation-delay: 2s;
 		}
 
@@ -56,9 +86,12 @@ footer#main-footer {
 		}
 	}
 	& > div.main-footer__control-buttons {
+		display: -webkit-box;
+		display: -ms-flexbox;
 		display: flex;
+		-webkit-box-pack: justify;
+		-ms-flex-pack: justify;
 		justify-content: space-between;
-		// background: $footer-color;
 		padding: 5px 0;
 
 		& > button {

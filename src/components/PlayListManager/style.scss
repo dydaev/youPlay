@@ -25,6 +25,7 @@ div#component-listOfPlaylistItemType {
     color: black;
     font-weight: 500;
     border: 0;
+    -webkit-box-shadow: 5px 4px 11px -4px black;
     box-shadow: 5px 4px 11px -4px black;
   }
 
@@ -34,11 +35,15 @@ div#component-listOfPlaylistItemType {
     list-style-type: none;
 
     & > li {
+      display: -webkit-box;
+      display: -ms-flexbox;
       display: flex;
       border-bottom: 1px dotted lightgray;
       padding: 4px 0;
 
       & > a {
+        -webkit-box-flex: 1;
+        -ms-flex-positive: 1;
         flex-grow: 1;
         & > span {
           color: blue;
@@ -60,11 +65,20 @@ div#component-listOfPlaylistItemType {
   }
 
   & > div.component-listOfPlaylistItemType-editor {
+    display: -webkit-box;
+    display: -ms-flexbox;
     display: flex;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
     justify-content: center;
+    -webkit-box-align: stretch;
+    -ms-flex-align: stretch;
     align-items: stretch;
+
     & > div > input {
       width: 95%;
+      height: 30px;
+      padding: 3px 8px;
     }
   }
 }
