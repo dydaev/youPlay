@@ -163,7 +163,7 @@ const Main = () => {
         onSetSettings={setSettings}
         onClose={setBodyFill}
       />
-      <main>
+      <main onClick={() => setShowMenu(!isShowMenu)}>
         {isShowMenu && (
           <span>
             {duration && progress && progress.playedSeconds
@@ -174,7 +174,6 @@ const Main = () => {
           </span>
         )}
         <img
-          onClick={() => setShowMenu(!isShowMenu)}
           src={
             currentSong
               ? currentSong.image

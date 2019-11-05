@@ -1,11 +1,13 @@
 import * as React from "react";
 import MainContext from "../../context";
 
-import ProgressLine from "../ProgressLine";
+import ProgressLine from "../ProgressLine/index";
 
 import { bodyType } from "../../types/bodyType";
 import { playItemType } from "../../types/playItemType";
 import { mainContextType } from "../../types/mainContextType";
+
+import { playItem } from "../../models/playItem";
 
 import "./style.scss";
 
@@ -24,7 +26,7 @@ const PlayList = ({ onPlay, onSetCurrentTrack, onClose }: propsType) => {
 
 	return (
 		<>
-			<div style={{ overflow: "scroll", flexShrink: 10 }}>
+			<div style={{ overflow: "scroll", flexShrink: 10, height: "100%" }}>
 				<ul className="main-component_play-list">
 					{Array.isArray(mainContext.playList) &&
 						mainContext.playList.map((playItem: playItemType, index: number): any => (

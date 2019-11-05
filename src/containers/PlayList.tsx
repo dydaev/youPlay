@@ -54,9 +54,9 @@ class PlayListContainer extends React.Component<propsType> {
 			});
 		}
 	}
-	componentDidUpdate(_: any, prewState: stateType) {
-		if (prewState.playListUrl !== this.state.playListUrl) {
-			console.log("up-up", prewState.playListUrl, this.state.playListUrl);
+	componentDidUpdate(_: any, prevState: stateType) {
+		if (prevState.playListUrl !== this.state.playListUrl) {
+			console.log("up-up", prevState.playListUrl, this.state.playListUrl);
 			this.handleUpdatePlaylist();
 		}
 	}
@@ -86,7 +86,9 @@ class PlayListContainer extends React.Component<propsType> {
 
 				return playObj;
 			})
-			.catch(ee => console.log("Cant access response. Blocked by browser?", ee));
+			.catch(ee => {
+				console.log("Cant access response. Blocked by browser?", ee);
+			});
 
 		if (playObj && playObj.playlist && Array.isArray(playObj.playlist.contents)) {
 			const playLists: any = playObj.playlist.contents.map(contentItem => {
