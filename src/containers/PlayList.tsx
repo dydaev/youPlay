@@ -7,8 +7,12 @@ import { bodyType } from "../types/bodyType";
 import { playItemType } from "../types/playItemType";
 import { youtubeContentType } from "../types/youtubeContentType";
 import { listOfPlaylistItemType } from "../types/listOfPlaylistItemType";
+import { mainContextType } from "../types/mainContextType";
+
+import mainContext from "../context";
 
 type propsType = {
+	context?: mainContextType;
 	onShow: boolean;
 	urlOfList: string;
 	onClose(type: bodyType): void;
@@ -24,6 +28,8 @@ type stateType = {
 };
 
 class PlayListContainer extends React.Component<propsType> {
+	static contextType: any = mainContext;
+
 	state: stateType = {
 		playListUrl: this.props.urlOfList,
 		managerIsVisible: false,
@@ -56,7 +62,7 @@ class PlayListContainer extends React.Component<propsType> {
 	}
 	componentDidUpdate(_: any, prevState: stateType) {
 		if (prevState.playListUrl !== this.state.playListUrl) {
-			console.log("up-up", prevState.playListUrl, this.state.playListUrl);
+			// console.log("up-up", prevState.playListUrl, this.state.playListUrl);
 			this.handleUpdatePlaylist();
 		}
 	}
@@ -70,7 +76,6 @@ class PlayListContainer extends React.Component<propsType> {
 			return;
 		}
 		const proxyurl = "https://cors-anywhere.herokuapp.com/";
-
 		let playObj = await fetch(proxyurl + playListUrl)
 			.then(response => response.text())
 			.then(contents => {
@@ -87,7 +92,14 @@ class PlayListContainer extends React.Component<propsType> {
 				return playObj;
 			})
 			.catch(ee => {
-				console.log("Cant access response. Blocked by browser?", ee);
+				if (typeof this.context !== "undefined" && this.context.showMessage) {
+					this.context.showMessage({
+						type: "WARNING",
+						text: "It seems the server is busy. Try the server later(",
+					});
+				} else {
+					console.log("Cant access response. Blocked by browser?", ee);
+				}
 			});
 
 		if (playObj && playObj.playlist && Array.isArray(playObj.playlist.contents)) {
@@ -143,6 +155,8 @@ class PlayListContainer extends React.Component<propsType> {
 	};
 
 	render() {
+		const { managerIsVisible } = this.state;
+
 		const {
 			onShow,
 			onPlay,
@@ -151,7 +165,6 @@ class PlayListContainer extends React.Component<propsType> {
 			onSetList,
 			onSetCurrentPlaylistNumber,
 		} = this.props;
-		const { managerIsVisible } = this.state;
 
 		const styles = {
 			flexGrow: 1,

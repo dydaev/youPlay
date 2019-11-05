@@ -5,6 +5,7 @@ import ReactPlayer from "react-player";
 import MainContext from "./context";
 
 // import Roll from './components/PlayRoll';
+import Message from "./components/Massage/index";
 import Footer from "./components/Footer/index";
 import Header from "./components/Header/index";
 // import Player from './components/Player';
@@ -16,6 +17,7 @@ import db from "./db";
 import lib from "./lib";
 
 import { bodyType } from "./types/bodyType";
+import { messageType } from "./types/messageType";
 import { progressType } from "./types/progressType";
 import { playItemType } from "./types/playItemType";
 import { playStrategicType } from "./types/playStrategicType";
@@ -42,6 +44,7 @@ const Main = () => {
   const [progress, setProgress] = React.useState<progressType>(progressModel);
   const [settings, setSettings] = React.useState<settingsType>(settingsModel);
   const [isShowMenu, setShowMenu] = React.useState<boolean>(true);
+  const [showMessage, setMessage] = React.useState<messageType | null>(null);
   const [currentTrackNumber, setCurrentTrackNumber] = React.useState<number>(0);
   const [listOfPlaylist, setList] = React.useState<listOfPlaylistItemType[]>([]);
   const [currentPlaylistNumber, setCurrentPlaylistNumber] = React.useState<number>(0);
@@ -126,6 +129,10 @@ const Main = () => {
 
   const handleShowHeader = () => {};
 
+  const handleUpdateMessage = (message: messageType | void): void => {
+    setMessage(message ? message : null);
+  };
+
   return (
     <MainContext.Provider
       value={{
@@ -137,8 +144,10 @@ const Main = () => {
         currentPlaylistNumber,
         listOfPlaylist,
         playList,
+        showMessage: handleUpdateMessage,
       }}
     >
+      <Message message={showMessage} onHide={() => setMessage(null)} />
       <Header
         isShow={isShowMenu && bodyFill !== "settings" && bodyFill !== "list"}
         onClickButton={setBodyFill}
