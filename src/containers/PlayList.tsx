@@ -9,6 +9,8 @@ import { youtubeContentType } from "../types/youtubeContentType";
 import { listOfPlaylistItemType } from "../types/listOfPlaylistItemType";
 import { mainContextType } from "../types/mainContextType";
 
+import Strategy from "../lib/strategy";
+
 import mainContext from "../context";
 
 type propsType = {
@@ -76,21 +78,10 @@ class PlayListContainer extends React.Component<propsType> {
 			return;
 		}
 		const proxyurl = "https://cors-anywhere.herokuapp.com/";
-		let playObj = await fetch(proxyurl + playListUrl)
+
+		let content: string | void = await fetch(proxyurl + playListUrl)
 			.then(response => response.text())
-			.then(contents => {
-				const startString: string = '"playlist":{"playlist":{',
-					endString: string = "currentIndex";
-				const startPlayList: number = contents.indexOf(startString) + 11;
-				const endPlayList: number = contents.indexOf(endString) - 2;
-
-				const stringOfPlaylist: string = contents.slice(startPlayList, endPlayList) + "}}";
-
-				let playObj: youtubeContentType;
-				eval(`playObj = ${stringOfPlaylist}`);
-
-				return playObj;
-			})
+			// .then(contents => content)
 			.catch(ee => {
 				if (typeof this.context !== "undefined" && this.context.showMessage) {
 					this.context.showMessage({
@@ -102,41 +93,30 @@ class PlayListContainer extends React.Component<propsType> {
 				}
 			});
 
-		if (playObj && playObj.playlist && Array.isArray(playObj.playlist.contents)) {
-			const playLists: any = playObj.playlist.contents.map(contentItem => {
-				const imagesArray = contentItem.playlistPanelVideoRenderer.thumbnail.thumbnails;
-				const imageUrl =
-					imagesArray && Array.isArray(imagesArray) && imagesArray.length
-						? imagesArray[imagesArray.length - 1].url
-						: "";
-				const parsedImage: string =
-					Array.isArray(imageUrl.match(/^http.+\.jpg\?/)) && imageUrl.match(/^http.+\.jpg\?/).length
-						? imageUrl.match(/^http.+\.jpg\?/)[0]
-						: "";
+		if (content && content.length) {
+			switch (true) {
+				case /^\D*youtube.{5}watch\?.+$/.test(playListUrl):
+					return Strategy.playlistWith(content);
+					break;
 
-				const contextUrl =
-					contentItem.playlistPanelVideoRenderer.navigationEndpoint.commandMetadata
-						.webCommandMetadata.url;
-				const url =
-					Array.isArray(contextUrl.match(/^\/watch\?v=.+&list=/)) &&
-					contextUrl.match(/^\/watch\?v=.+&list=/).length
-						? contextUrl.match(/^\/watch\?v=.+&list=/)[0]
-						: "";
+				case /^\D*youtube.{5}playlist\?.+$/.test(playListUrl):
+					return Strategy.playlist(content);
+					break;
 
-				return {
-					image: parsedImage.slice(0, parsedImage.length - 1),
-					url: "https://youtube.com" + url.slice(0, url.length - 6) || "",
-					title: Array.isArray(contentItem.playlistPanelVideoRenderer.title.runs)
-						? contentItem.playlistPanelVideoRenderer.title.runs[0].text
-						: contentItem.playlistPanelVideoRenderer.title.simpleText || "",
-					album: "",
-					artist: "",
-					length: contentItem.playlistPanelVideoRenderer.lengthText.simpleText || "",
-				};
-			});
-
-			return playLists;
+				default:
+					this.context.showMessage({
+						type: "WARNING",
+						text: "Сan't recognize playlist",
+					});
+					return null;
+				// break;
+			}
 		}
+
+		this.context.showMessage({
+			type: "WARNING",
+			text: "Can`t get content from server",
+		});
 		return null;
 	};
 
