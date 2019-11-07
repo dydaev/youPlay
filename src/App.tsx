@@ -157,10 +157,8 @@ const Main = () => {
         onShow={bodyFill === "list"}
         urlOfList={
           Array.isArray(listOfPlaylist) && listOfPlaylist[currentPlaylistNumber]
-            ? // ? listOfPlaylist[currentPlaylistNumber].url
-              // : "https://www.youtube.com/watch?v=P6KwHkpN-W0&list=PLvdDCgNk3ugIwuujayLHNEOXuTtQeXphU"
-              "https://www.youtube.com/playlist?list=PLKPCHirL7ao90r-sR1xx0IL_-3ozpD3af"
-            : "https://www.youtube.com/playlist?list=PLKPCHirL7ao90r-sR1xx0IL_-3ozpD3af"
+            ? listOfPlaylist[currentPlaylistNumber].url
+            : "https://www.youtube.com/watch?v=P6KwHkpN-W0&list=PLvdDCgNk3ugIwuujayLHNEOXuTtQeXphU"
         }
         onPlay={handlePlay}
         onSetPlayList={setPlayList}
