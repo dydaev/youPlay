@@ -1,7 +1,12 @@
 type dbTableNamesType = "playLists" | "settings" | "currentPlayList";
 
 type txType = {
-	executeSql(query: string): Promise<void>;
+	executeSql(
+		query: string,
+		params?: any[],
+		callback?: (tx: txType, result: any) => Promise<any>,
+		other?: any,
+	): Promise<void>;
 };
 
 type tablesCreatorType = {
@@ -13,7 +18,7 @@ type tablesCreatorType = {
 type bdType = {
 	connect(): void;
 	db: any;
-	getData(tableName: dbTableNamesType, callback: (result: any) => Promise<void>): Promise<void>;
+	getData(tableName: dbTableNamesType, callback: (result: any) => Promise<any>): Promise<void>;
 	setData(tableName: dbTableNamesType, data: { [key: string]: string }): Promise<any>;
 	removeData(tableName: dbTableNamesType, selectors: { [key: string]: string }): Promise<void>;
 };

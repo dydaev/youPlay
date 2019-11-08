@@ -68,9 +68,14 @@ const dataB: bdType = {
       }
       dataB.db.readTransaction(
         async (tx: txType) => {
-          await tx.executeSql("SELECT * FROM " + tableName + ";", [], (tx: txType, result: any) => {
-            callback(result);
-          });
+          await tx.executeSql(
+            "SELECT * FROM " + tableName + ";",
+            [],
+            (tx: txType, result: any): Promise<any> => {
+              callback(result);
+              return result;
+            },
+          );
         },
         (err: string) => {
           console.log("what went wrong reading data from database", err);
