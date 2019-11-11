@@ -38,13 +38,19 @@ export default {
 						contextUrl.match(/^\/watch\?v=.+&list=/).length
 							? contextUrl.match(/^\/watch\?v=.+&list=/)[0]
 							: "";
+
+					const trackTime =
+						playlistVideoRenderer.lengthText && Array.isArray(playlistVideoRenderer.lengthText.runs)
+							? playlistVideoRenderer.lengthText.runs[0]
+							: { text: "" };
+
 					return {
 						image: parsedImage,
 						url: "https://youtube.com" + url.slice(0, url.length - 6) || "",
 						title: playlistVideoRenderer.title.runs[0].text || "",
 						album: "",
 						artist: "",
-						length: playlistVideoRenderer.lengthText.runs[0].text || "",
+						length: trackTime.text,
 					};
 				},
 			);

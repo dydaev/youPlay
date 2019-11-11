@@ -3,6 +3,7 @@ body {
 	padding: 0;
 	font-family: "Oswald", sans-serif;
 }
+
 main#main {
 	position: fixed;
 	height: 100%;
@@ -23,6 +24,10 @@ main#main {
 	justify-content: space-between;
 	height: 100vh;
 	font-family: "Oswald", sans-serif;
+
+	.main-component_play-list > li > img {
+		width: 85px;
+	}
 
 	& > section {
 		position: absolute;

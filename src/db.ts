@@ -1,10 +1,12 @@
 import { listOfPlaylistItemType } from "./types/listOfPlaylistItemType";
 import { dbTableNamesType, txType, tablesCreatorType, bdType } from "./types/dbTableNames";
 
+const dbName = "youPlayDB";
+
 const tablesCreators: tablesCreatorType = {
   playLists: (tx: txType) => {
     tx.executeSql(
-      "CREATE TABLE IF NOT EXISTS `playLists` (`id` INTEGER PRIMARY KEY , `name`, `url`);",
+      "CREATE TABLE IF NOT EXISTS `playLists` (`id` INTEGER PRIMARY KEY ,`name` ,`description` ,`url`);",
     );
   },
   currentPlayList: (tx: txType) => {
@@ -53,10 +55,7 @@ const dataB: bdType = {
       throw new Error("Can`t create database(");
     }
   },
-  getData: async (
-    tableName: dbTableNamesType,
-    callback: (result: any) => Promise<void>,
-  ): Promise<void> => {
+  getData: async (tableName: dbTableNamesType, callback: (result: any) => void): Promise<void> => {
     if (!tableName) {
       console.log("Table name is not specified!");
       return null;
@@ -111,7 +110,15 @@ const dataB: bdType = {
           const keys = Object.keys(data).join(",");
 
           await tx.executeSql(
-            "INSERT INTO " + tableName + " (" + keys + ") values(?, ?)",
+            "INSERT INTO " +
+              tableName +
+              " (" +
+              keys +
+              ") values(" +
+              Object.keys(data)
+                .map((_: any) => "?")
+                .join(" ,") +
+              ")",
             Object.values(data),
             null,
             null,
@@ -154,11 +161,16 @@ const dataB: bdType = {
         async (tx: txType) => {
           const selectorFromQuery = Object.keys(selectors).reduce(
             (res: string, keyOfSecector: string, index: number): string =>
-              res + index ? "" : " AND" + `${keyOfSecector}='${selectors[keyOfSecector]}'`,
+              res + (!index ? "`" : " AND `") + keyOfSecector + "`=?",
             "",
           );
-
-          tx.executeSql(`DELETE FROM ${tableName} WHERE ${selectorFromQuery};`, [], null, null);
+          console.log(selectorFromQuery);
+          tx.executeSql(
+            `DELETE FROM ${tableName} WHERE ${selectorFromQuery}`,
+            Object.values(selectors),
+            null,
+            null,
+          );
         },
         (err: string) => {
           console.log("what went wrong whith deleting playlist from database", err);

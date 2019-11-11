@@ -65,7 +65,7 @@ const Main = () => {
       }
     };
 
-    db.getPlaylists(setFunc);
+    db.getData("playLists", setFunc);
   };
 
   React.useEffect(() => {

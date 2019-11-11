@@ -18,7 +18,7 @@ type tablesCreatorType = {
 type bdType = {
 	connect(): void;
 	db: any;
-	getData(tableName: dbTableNamesType, callback: (result: any) => Promise<any>): Promise<void>;
+	getData(tableName: dbTableNamesType, callback: (result: any) => void): Promise<void>;
 	setData(tableName: dbTableNamesType, data: { [key: string]: string }): Promise<any>;
 	removeData(tableName: dbTableNamesType, selectors: { [key: string]: string }): Promise<void>;
 };
