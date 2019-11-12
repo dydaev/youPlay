@@ -1,6 +1,10 @@
 import * as React from "react";
 import MainContext from "../../context";
 
+import db from "../../db";
+
+import { settingsModel } from "../../models/settingsModel";
+
 import { bodyType } from "../../types/bodyType";
 import { settingsType } from "../../types/settingsType";
 import { mainContextType } from "../../types/mainContextType";
@@ -17,7 +21,53 @@ const Settings = ({ onSetSettings, onClose, onShow }: propsType) => {
   const mainContext: mainContextType = React.useContext<mainContextType>(MainContext);
   const [settings, setSettings] = React.useState<settingsType>(mainContext.settings);
 
-  const handleSaveSettings = () => {
+  const settingsInStorage = (anySettings: any) => {
+    console.log("any settings", anySettings);
+  };
+
+  const getAllSettingsFromStorage = async () => {
+    let settingsInStor = {};
+
+    function setSettingsFunc(params: any) {
+      let tempSetting = {};
+      if (params && params.rows && params.rows.length) {
+        for (let i = 0; i < params.rows.length; i++) {
+          const rowItem: { setting: string; value: any } = params.rows.item(i);
+          tempSetting = {
+            ...tempSetting,
+            [rowItem.setting]: rowItem.value,
+          };
+        }
+      }
+      settingsInStor = Object.assign({}, tempSetting);
+      return tempSetting;
+    }
+
+    const ee: any = await db.getData("settings", setSettingsFunc);
+
+    console.log("stor", ee);
+  };
+
+  const handleAddSettingToStorage = (name: string, value: any) => {
+    // db.setData("settings", {setting: name, value: value});
+    console.log("add setting item");
+  };
+  const handleRemoveSettingOnStorage = (name: string, value: any) => {
+    // db.removeData("settings", {setting: name, value: value});
+    console.log("remove setting item");
+  };
+  const handleUpdateSettingOnStorage = (name: string, value: any) => {
+    db.updateData("settings", { setting: name }, { setting: name, value: value });
+    console.log("update setting item");
+  };
+
+  const handleResetSettings = () => {
+    onSetSettings(settingsModel);
+  };
+
+  const handleSaveSettings = async () => {
+    let settingsTemp = await getAllSettingsFromStorage();
+    console.log("settings from storage", settingsTemp);
     onSetSettings(settings);
   };
 

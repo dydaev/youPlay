@@ -51,7 +51,7 @@ const Main = () => {
   const [playStrategic, setPlayStrategic] = React.useState<playStrategicType>("normal");
 
   const handleGetPlaylistFromStorage = () => {
-    const setFunc = (params: any) => {
+    const setPlaylistFunc = (params: any) => {
       if (params && params.rows && params.rows.length) {
         let playlist: listOfPlaylistItemType[] = [];
 
@@ -65,13 +65,40 @@ const Main = () => {
       }
     };
 
-    db.getData("playLists", setFunc);
+    db.getData("playLists", setPlaylistFunc);
+  };
+
+  const handleGetSettingsFromStorage = () => {
+    const setSettingsFunc = (params: any) => {
+      let tempSetting: settingsType = settingsModel;
+
+      if (params && params.rows && params.rows.length) {
+        for (let i = 0; i < params.rows.length; i++) {
+          const rowItem: { setting: string; value: any } = params.rows.item(i);
+
+          tempSetting = {
+            ...tempSetting,
+            [rowItem.setting]: rowItem.value,
+          };
+        }
+      } else {
+        Object.keys(settingsModel).map((settingName: string) => {
+          // @ts-ignore: Unreachable code error
+          db.setData("settings", { setting: settingName, value: settingsModel[settingName] });
+        });
+
+        setSettings(tempSetting);
+      }
+    };
+    db.getData("settings", setSettingsFunc);
   };
 
   React.useEffect(() => {
     if (Array.isArray(listOfPlaylist) && !listOfPlaylist.length) {
       handleGetPlaylistFromStorage();
     }
+
+    handleGetSettingsFromStorage();
 
     if (settings.playInTray && window && false) {
       lib.usePlaingInTry(isSavePlaying, setPlaying);
@@ -81,10 +108,6 @@ const Main = () => {
       lib.useFullScreenMode(settings.fullScreenMode);
     }
   });
-
-  // const handleSetBody = (newFill: bodyType): void => {
-  //   console.log(newFill)
-  // }
 
   const handlePlay = (trackNumber: number | undefined): void => {
     if (Array.isArray(playList) && playList.length && trackNumber !== undefined) {

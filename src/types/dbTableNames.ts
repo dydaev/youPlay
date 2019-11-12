@@ -19,8 +19,13 @@ type bdType = {
 	connect(): void;
 	db: any;
 	getData(tableName: dbTableNamesType, callback: (result: any) => void): Promise<void>;
-	setData(tableName: dbTableNamesType, data: { [key: string]: string }): Promise<any>;
-	removeData(tableName: dbTableNamesType, selectors: { [key: string]: string }): Promise<void>;
+	setData(tableName: dbTableNamesType, data: { [key: string]: any }): Promise<any>;
+	updateData(
+		tableName: dbTableNamesType,
+		selectors: { [key: string]: any },
+		data: { [key: string]: any },
+	): Promise<any>;
+	removeData(tableName: dbTableNamesType, selectors: { [key: string]: any }): Promise<void>;
 };
 
 export { txType, dbTableNamesType, tablesCreatorType, bdType };
