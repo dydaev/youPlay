@@ -126,7 +126,7 @@ const dataB: bdType = {
 
           console.log(query, params);
 
-          // await tx.executeSql();
+          await tx.executeSql(query, params);
         },
         (err: string) => {
           console.log("what went wrong reading playlist to database " + tableName, err);

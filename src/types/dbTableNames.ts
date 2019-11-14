@@ -16,8 +16,8 @@ type tablesCreatorType = {
 };
 
 type bdType = {
-	connect(): void;
 	db: any;
+	connect(): void;
 	getData(tableName: dbTableNamesType, callback: (result: any) => void): Promise<void>;
 	setData(tableName: dbTableNamesType, data: { [key: string]: any }): Promise<any>;
 	updateData(

@@ -29,28 +29,150 @@ import { settingsModel } from "./models/settingsModel";
 
 import "./main.scss";
 
-function randomInteger(min: number, max: number): number {
-  const rand = min + Math.random() * (max + 1 - min);
-  return Math.floor(rand);
-}
+export type PropsType = any;
+type StateType = {
+  bodyFill: bodyType;
+  progress: progressType;
+  settings: settingsType;
+  playList: playItemType[];
+  showMessage: messageType | null;
+  playStrategic: playStrategicType;
+  listOfPlaylist: listOfPlaylistItemType[];
+  playUrl: string;
+  duration: number;
+  isPlaying: boolean;
+  isShowMenu: boolean;
+  isSavePlaying: boolean;
+  currentTrackNumber: number;
+  currentPlaylistNumber: number;
+};
 
-const Main = () => {
-  const [playUrl, setPlayUrl] = React.useState<string>("");
-  const [duration, setDuration] = React.useState<number>(0);
-  const [isPlaying, setPlaying] = React.useState<boolean>(false);
-  const [isSavePlaying, setSavePlaying] = React.useState<boolean>(false);
-  const [bodyFill, setBodyFill] = React.useState<bodyType>("player");
-  const [playList, setPlayList] = React.useState<playItemType[]>([]);
-  const [progress, setProgress] = React.useState<progressType>(progressModel);
-  const [settings, setSettings] = React.useState<settingsType>(settingsModel);
-  const [isShowMenu, setShowMenu] = React.useState<boolean>(true);
-  const [showMessage, setMessage] = React.useState<messageType | null>(null);
-  const [currentTrackNumber, setCurrentTrackNumber] = React.useState<number>(0);
-  const [listOfPlaylist, setList] = React.useState<listOfPlaylistItemType[]>([]);
-  const [currentPlaylistNumber, setCurrentPlaylistNumber] = React.useState<number>(0);
-  const [playStrategic, setPlayStrategic] = React.useState<playStrategicType>("normal");
+class Main extends React.Component<PropsType, StateType> {
+  state: StateType = {
+    showMessage: null,
+    playUrl: "",
+    bodyFill: "player",
+    playStrategic: "normal",
+    isShowMenu: true,
+    isPlaying: false,
+    isSavePlaying: false,
+    playList: [],
+    listOfPlaylist: [],
+    duration: 0,
+    currentTrackNumber: 0,
+    currentPlaylistNumber: 0,
+    progress: progressModel,
+    settings: settingsModel,
+  };
 
-  const handleGetPlaylistFromStorage = () => {
+  componentWillMount() {
+    this.handleGetSettingsFromStorage();
+  }
+
+  shouldComponentUpdate(nextProps: PropsType, nextState: StateType) {
+    if (nextState.settings.fullScreenMode !== this.state.settings.fullScreenMode) {
+      if (window) {
+        lib.useFullScreenMode(this.state.settings.fullScreenMode);
+      }
+      return true;
+    }
+    if (nextState.bodyFill !== this.state.bodyFill) {
+      return true;
+    }
+    if (nextState.currentTrackNumber !== this.state.currentTrackNumber) {
+      return true;
+    }
+    if (nextState.playList !== this.state.playList) {
+      return true;
+    }
+    if (nextState.isPlaying !== this.state.isPlaying) {
+      return true;
+    }
+    return false;
+  }
+
+  componentDidMount() {
+    if (Array.isArray(this.state.listOfPlaylist) && !this.state.listOfPlaylist.length) {
+      this.handleGetPlaylistFromStorage();
+    }
+
+    if (this.state.settings.playInTray && window && false) {
+      lib.usePlaingInTry(this.state.isSavePlaying, this.handleSetPlaying);
+    }
+
+    if (window) {
+      lib.useFullScreenMode(this.state.settings.fullScreenMode);
+    }
+  }
+
+  // handleSetShowMenu = (newState: boolean) => {
+  //   this.setState({
+  //     isShowMenu: newState
+  //   });
+  // }
+  // handleSetPlayStrategic = (newState: playStrategicType) => {
+  //   this.setState({
+  //     playStrategic: newState
+  //   });
+  // }
+
+  handleSetSettings = (newState: settingsType) => {
+    this.setState({
+      settings: newState,
+    });
+  };
+  handleSetMessage = (newState: messageType | null) => {
+    this.setState({
+      showMessage: newState,
+    });
+  };
+  handleSetCurrentTrackNumber = (newState: number) => {
+    this.setState({
+      currentTrackNumber: newState,
+    });
+  };
+  handleSetList = (newState: listOfPlaylistItemType[]) => {
+    this.setState({
+      listOfPlaylist: newState,
+    });
+  };
+  handleSetCurrentPlaylistNumber = (newState: number) => {
+    this.setState({
+      currentPlaylistNumber: newState,
+    });
+  };
+
+  handleSetPlayList = (p: playItemType[]) => {
+    this.setState({
+      playList: p,
+    });
+  };
+
+  handleSetProgress = (p: progressType) => {
+    this.setState({
+      progress: p,
+    });
+  };
+
+  handleSetBodyFill = (newBodyFill: bodyType) => {
+    this.setState({
+      bodyFill: newBodyFill,
+    });
+  };
+
+  handleSavePlaying = (newState: boolean) => {
+    this.setState({
+      isSavePlaying: newState,
+    });
+  };
+
+  handleSetPlaying = (newStatePlaying: boolean) => {
+    this.setState({
+      isPlaying: newStatePlaying,
+    });
+  };
+
+  handleGetPlaylistFromStorage = () => {
     const setPlaylistFunc = (params: any) => {
       if (params && params.rows && params.rows.length) {
         let playlist: listOfPlaylistItemType[] = [];
@@ -59,7 +181,7 @@ const Main = () => {
           const rowItem: listOfPlaylistItemType = params.rows.item(i);
           playlist = [...playlist, rowItem];
         }
-        setList(playlist);
+        this.handleSetList(playlist);
       } else {
         // console.log('Storage data is empty, or:', params );
       }
@@ -68,7 +190,7 @@ const Main = () => {
     db.getData("playLists", setPlaylistFunc);
   };
 
-  const handleGetSettingsFromStorage = () => {
+  handleGetSettingsFromStorage = () => {
     const setSettingsFunc = (params: any) => {
       let tempSetting: settingsType = settingsModel;
 
@@ -78,7 +200,7 @@ const Main = () => {
 
           tempSetting = {
             ...tempSetting,
-            [rowItem.setting]: rowItem.value,
+            [rowItem.setting]: rowItem.value == "true",
           };
         }
       } else {
@@ -86,157 +208,177 @@ const Main = () => {
           // @ts-ignore: Unreachable code error
           db.setData("settings", { setting: settingName, value: settingsModel[settingName] });
         });
-
-        setSettings(tempSetting);
       }
+      console.log(tempSetting);
+      this.handleSetSettings(tempSetting);
     };
     db.getData("settings", setSettingsFunc);
   };
 
-  React.useEffect(() => {
-    if (Array.isArray(listOfPlaylist) && !listOfPlaylist.length) {
-      handleGetPlaylistFromStorage();
-    }
+  handlePlay = (trackNumber: number | undefined): void => {
+    if (
+      Array.isArray(this.state.playList) &&
+      this.state.playList.length &&
+      trackNumber !== undefined
+    ) {
+      this.setState({
+        playUrl: this.state.playList[trackNumber].url,
+      });
+      this.handleSetCurrentTrackNumber(trackNumber);
 
-    handleGetSettingsFromStorage();
-
-    if (settings.playInTray && window && false) {
-      lib.usePlaingInTry(isSavePlaying, setPlaying);
-    }
-
-    if (window) {
-      lib.useFullScreenMode(settings.fullScreenMode);
-    }
-  });
-
-  const handlePlay = (trackNumber: number | undefined): void => {
-    if (Array.isArray(playList) && playList.length && trackNumber !== undefined) {
-      setPlayUrl(playList[trackNumber].url);
-      setCurrentTrackNumber(trackNumber);
-
-      if (trackNumber !== currentTrackNumber) {
-        setProgress(progressModel);
-        setPlaying(true);
+      if (trackNumber !== this.state.currentTrackNumber) {
+        this.handleSetProgress(progressModel);
+        this.handleSetPlaying(true);
       } else {
-        setPlaying(!isPlaying);
+        this.handleSetPlaying(!this.state.isPlaying);
       }
-    } else if (Array.isArray(playList) && playList.length && trackNumber === undefined) {
-      setPlaying(!isPlaying);
+    } else if (
+      Array.isArray(this.state.playList) &&
+      this.state.playList.length &&
+      trackNumber === undefined
+    ) {
+      this.handleSetPlaying(!this.state.isPlaying);
     } else {
-      setPlaying(false);
+      this.handleSetPlaying(false);
     }
   };
-  const handleStop = (): void => {
-    setPlaying(false);
+  handleStop = (): void => {
+    this.setState({
+      isPlaying: false,
+    });
   };
-  const handlePrev = (): void => {
+  handlePrev = (): void => {
     const prevTrackNumber: number =
-      Array.isArray(playList) && playList.length
-        ? currentTrackNumber > 0
-          ? currentTrackNumber - 1
-          : playList.length - 1
+      Array.isArray(this.state.playList) && this.state.playList.length
+        ? this.state.currentTrackNumber > 0
+          ? this.state.currentTrackNumber - 1
+          : this.state.playList.length - 1
         : 0;
 
-    handlePlay(prevTrackNumber);
+    this.handlePlay(prevTrackNumber);
   };
-  const handleNext = (): void => {
+  handleNext = (): void => {
     const nextTrackNumber: number =
-      Array.isArray(playList) && playList.length && currentTrackNumber < playList.length - 1
-        ? currentTrackNumber + 1
+      Array.isArray(this.state.playList) &&
+      this.state.playList.length &&
+      this.state.currentTrackNumber < this.state.playList.length - 1
+        ? this.state.currentTrackNumber + 1
         : 0;
 
-    handlePlay(nextTrackNumber);
-  };
-  const currentSong: playItemType | undefined =
-    Array.isArray(playList) && playList.length ? playList[currentTrackNumber] : undefined;
-
-  const handleShowHeader = () => {};
-
-  const handleUpdateMessage = (message: messageType | void): void => {
-    setMessage(message ? message : null);
+    this.handlePlay(nextTrackNumber);
   };
 
-  return (
-    <MainContext.Provider
-      value={{
-        settings,
-        duration,
-        progress,
-        isPlaying,
-        currentTrackNumber,
-        currentPlaylistNumber,
-        listOfPlaylist,
-        playList,
-        showMessage: handleUpdateMessage,
-      }}
-    >
-      <Message message={showMessage} onHide={() => setMessage(null)} />
-      <Header
-        isShow={isShowMenu && bodyFill !== "settings" && bodyFill !== "list"}
-        onClickButton={setBodyFill}
-        bodyType={bodyFill}
-      />
-      <PlayListContainer
-        onShow={bodyFill === "list"}
-        urlOfList={
-          Array.isArray(listOfPlaylist) && listOfPlaylist[currentPlaylistNumber]
-            ? listOfPlaylist[currentPlaylistNumber].url
-            : "https://www.youtube.com/watch?v=P6KwHkpN-W0&list=PLvdDCgNk3ugIwuujayLHNEOXuTtQeXphU"
-        }
-        onPlay={handlePlay}
-        onSetPlayList={setPlayList}
-        onSetCurrentTrack={setCurrentTrackNumber}
-        onSetCurrentPlaylistNumber={setCurrentPlaylistNumber}
-        onSetList={setList}
-        onClose={setBodyFill}
-      />
-      <Settings
-        onShow={bodyFill === "settings"}
-        onSetSettings={setSettings}
-        onClose={setBodyFill}
-      />
-      <main onClick={() => setShowMenu(!isShowMenu)}>
-        {isShowMenu && (
-          <span>
-            {duration && progress && progress.playedSeconds
-              ? lib.seconds2time(Math.floor(duration - progress.playedSeconds))
-              : duration
-              ? lib.seconds2time(Math.floor(duration))
-              : ""}
-          </span>
-        )}
-        <img
-          src={
-            currentSong
-              ? currentSong.image
-              : "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTCzlqv9WfntXDekHwsLkf5NXI9isMvdwoVLgrQveqgexa10bWp"
-          }
-          alt="song image"
+  handleSetDuration = (newDuration: number) => {
+    this.setState({
+      duration: newDuration,
+    });
+  };
+
+  render() {
+    const {
+      bodyFill,
+      progress,
+      settings,
+      playList,
+      showMessage,
+      playStrategic,
+      listOfPlaylist,
+      playUrl,
+      duration,
+      isPlaying,
+      isShowMenu,
+      isSavePlaying,
+      currentTrackNumber,
+      currentPlaylistNumber,
+    } = this.state;
+
+    const currentSong: playItemType | undefined =
+      Array.isArray(playList) && playList.length ? playList[currentTrackNumber] : undefined;
+
+    return (
+      <MainContext.Provider
+        value={{
+          settings,
+          duration,
+          progress,
+          isPlaying,
+          currentTrackNumber,
+          currentPlaylistNumber,
+          listOfPlaylist,
+          playList,
+          showMessage: this.handleSetMessage,
+        }}
+      >
+        <Message message={showMessage} onHide={() => this.handleSetMessage(null)} />
+        <Header
+          isShow={isShowMenu && bodyFill !== "settings" && bodyFill !== "list"}
+          onClickButton={this.handleSetBodyFill}
+          bodyType={bodyFill}
         />
-      </main>
-      <Footer
-        runString={
-          currentSong
-            ? `${currentSong.title || ""} (${lib.seconds2time(Math.floor(duration))})`
-            : ""
-        }
-        isShowFooter={isShowMenu && bodyFill !== "settings" && bodyFill !== "list"}
-        isShowProgress={bodyFill !== "list"}
-        isPlaying={isPlaying}
-        playStrategic={playStrategic}
-        currentTrack={
-          Array.isArray(playList) && playList.length ? playList[currentTrackNumber] : null
-        }
-        setPlaying={setPlaying}
-        setDuration={setDuration}
-        setProgress={setProgress}
-        onSavePlay={setSavePlaying}
-        onPlay={handlePlay}
-        onStop={handleStop}
-        onPrev={handlePrev}
-        onNext={handleNext}
-      />
-    </MainContext.Provider>
-  );
-};
+        <PlayListContainer
+          onShow={bodyFill === "list"}
+          urlOfList={
+            Array.isArray(listOfPlaylist) && listOfPlaylist[currentPlaylistNumber]
+              ? listOfPlaylist[currentPlaylistNumber].url
+              : "https://www.youtube.com/watch?v=P6KwHkpN-W0&list=PLvdDCgNk3ugIwuujayLHNEOXuTtQeXphU"
+          }
+          onPlay={this.handlePlay}
+          onSetPlayList={this.handleSetPlayList}
+          onSetCurrentTrack={this.handleSetCurrentTrackNumber}
+          onSetCurrentPlaylistNumber={this.handleSetCurrentPlaylistNumber}
+          onSetList={this.handleSetList}
+          onClose={this.handleSetBodyFill}
+        />
+        <Settings
+          onShow={bodyFill === "settings"}
+          onSetSettings={this.handleSetSettings}
+          onClose={this.handleSetBodyFill}
+        />
+        <main onClick={() => this.setState({ isShowMenu: !isShowMenu })}>
+          {isShowMenu && (
+            <span>
+              {this.state.duration && this.state.progress && this.state.progress.playedSeconds
+                ? lib.seconds2time(
+                    Math.floor(this.state.duration - this.state.progress.playedSeconds),
+                  )
+                : this.state.duration
+                ? lib.seconds2time(Math.floor(this.state.duration))
+                : ""}
+            </span>
+          )}
+          <img
+            src={
+              currentSong
+                ? currentSong.image
+                : "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTCzlqv9WfntXDekHwsLkf5NXI9isMvdwoVLgrQveqgexa10bWp"
+            }
+            alt="song image"
+          />
+        </main>
+        <Footer
+          runString={
+            currentSong
+              ? `${currentSong.title || ""} (${lib.seconds2time(Math.floor(duration))})`
+              : ""
+          }
+          isShowFooter={isShowMenu && bodyFill !== "settings" && bodyFill !== "list"}
+          isShowProgress={bodyFill !== "list"}
+          isPlaying={isPlaying}
+          playStrategic={playStrategic}
+          currentTrack={
+            Array.isArray(playList) && playList.length ? playList[currentTrackNumber] : null
+          }
+          setPlaying={this.handleSetPlaying}
+          setDuration={this.handleSetDuration}
+          setProgress={this.handleSetProgress}
+          onSavePlay={this.handleSavePlaying}
+          onPlay={this.handlePlay}
+          onStop={this.handleStop}
+          onPrev={this.handlePrev}
+          onNext={this.handleNext}
+        />
+      </MainContext.Provider>
+    );
+  }
+}
 export default Main;

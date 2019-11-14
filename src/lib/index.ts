@@ -1,4 +1,8 @@
 export default {
+	randomInteger: (min: number, max: number): number => {
+		const rand = min + Math.random() * (max + 1 - min);
+		return Math.floor(rand);
+	},
 	useFullScreenMode: async (isActive: boolean) => {
 		try {
 			if (typeof window.orientation !== "undefined" && document.fullscreenEnabled) {

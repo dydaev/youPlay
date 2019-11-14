@@ -26,34 +26,28 @@ const Settings = ({ onSetSettings, onClose, onShow }: propsType) => {
   };
 
   const getAllSettingsFromStorage = async () => {
-    let settingsInStor = {};
-
-    function setSettingsFunc(params: any) {
-      let tempSetting = {};
+    const setSettingsFunc = (params: any): void => {
+      let tempSetting: settingsType;
       if (params && params.rows && params.rows.length) {
         for (let i = 0; i < params.rows.length; i++) {
           const rowItem: { setting: string; value: any } = params.rows.item(i);
           tempSetting = {
             ...tempSetting,
-            [rowItem.setting]: rowItem.value,
+            [rowItem.setting]: rowItem.value == "true",
           };
         }
       }
-      settingsInStor = Object.assign({}, tempSetting);
-      return tempSetting;
-    }
-
-    const ee: any = await db.getData("settings", setSettingsFunc);
-
-    console.log("stor", ee);
+      setSettings(tempSetting);
+    };
+    db.getData("settings", setSettingsFunc);
   };
 
   const handleAddSettingToStorage = (name: string, value: any) => {
-    // db.setData("settings", {setting: name, value: value});
+    db.setData("settings", { setting: name, value: value });
     console.log("add setting item");
   };
   const handleRemoveSettingOnStorage = (name: string, value: any) => {
-    // db.removeData("settings", {setting: name, value: value});
+    db.removeData("settings", { setting: name, value: value });
     console.log("remove setting item");
   };
   const handleUpdateSettingOnStorage = (name: string, value: any) => {
@@ -66,8 +60,11 @@ const Settings = ({ onSetSettings, onClose, onShow }: propsType) => {
   };
 
   const handleSaveSettings = async () => {
-    let settingsTemp = await getAllSettingsFromStorage();
-    console.log("settings from storage", settingsTemp);
+    Object.keys(settings).forEach((settingName: string) => {
+      // @ts-ignore
+      handleUpdateSettingOnStorage(settingName, settings[settingName]);
+    });
+    //let settingsTemp = await getAllSettingsFromStorage();
     onSetSettings(settings);
   };
 
