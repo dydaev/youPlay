@@ -5,11 +5,12 @@ import ReactPlayer from "react-player";
 import MainContext from "./context";
 
 // import Roll from './components/PlayRoll';
-import Message from "./components/Massage/index";
+// import Player from './components/Player';
 import Footer from "./components/Footer/index";
 import Header from "./components/Header/index";
-// import Player from './components/Player';
+import Message from "./components/Massage/index";
 import Settings from "./components/Settings/index";
+import MainTimer from "./components/MainTimer/index";
 // import Tabs from './components/Tabs';
 import PlayListContainer from "./containers/PlayList";
 import db from "./db";
@@ -335,17 +336,7 @@ class Main extends React.Component<PropsType, StateType> {
           onClose={this.handleSetBodyFill}
         />
         <main onClick={() => this.setState({ isShowMenu: !isShowMenu })}>
-          {isShowMenu && (
-            <span>
-              {this.state.duration && this.state.progress && this.state.progress.playedSeconds
-                ? lib.seconds2time(
-                    Math.floor(this.state.duration - this.state.progress.playedSeconds),
-                  )
-                : this.state.duration
-                ? lib.seconds2time(Math.floor(this.state.duration))
-                : ""}
-            </span>
-          )}
+          <MainTimer onShow={isShowMenu} duration={duration} progress={progress} />
           <img
             src={
               currentSong

@@ -1,0 +1,10 @@
+div#main-timer {
+  & > span {
+    position: absolute;
+    top: 85px;
+    font-size: 53px;
+    font-weight: bold;
+    color: lightpink;
+    font-family: "Raleway Dots", cursive;
+  }
+}
