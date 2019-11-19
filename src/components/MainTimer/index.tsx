@@ -1,14 +1,10 @@
 import * as React from "react";
 
+import lib from "../../lib";
+
 import { progressType } from "../../types/progressType";
-import { listOfPlaylistItemType } from "../../types/";
 
 import "./style.scss";
-
-const clearModel: listOfPlaylistItemType = {
-	name: "",
-	url: "",
-};
 
 export type propTypes = {
 	onShow: boolean;
@@ -18,17 +14,17 @@ export type propTypes = {
 
 const PlayListManager = ({ onShow, duration, progress }: propTypes) => {
 	return (
-		<div id="main-timer">
+		<>
 			{onShow && (
-				<span>
+				<span id="main-timer">
 					{duration && progress && progress.playedSeconds
 						? lib.seconds2time(Math.floor(duration - progress.playedSeconds))
-						: this.state.duration
+						: duration
 						? lib.seconds2time(Math.floor(duration))
 						: ""}
 				</span>
 			)}
-		</div>
+		</>
 	);
 };
 

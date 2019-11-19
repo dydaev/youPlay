@@ -1,5 +1,4 @@
 import * as React from "react";
-import MainContext from "../../context";
 
 import db from "../../db";
 
@@ -7,25 +6,50 @@ import { settingsModel } from "../../models/settingsModel";
 
 import { bodyType } from "../../types/bodyType";
 import { settingsType } from "../../types/settingsType";
-import { mainContextType } from "../../types/mainContextType";
 
 import "./style.scss";
 
-type propsType = {
+type PropsType = {
+  mainSettings: settingsType;
   onShow: boolean;
   onSetSettings(newSettings: settingsType): void;
   onClose(type: bodyType): void;
 };
+type StateType = {
+  settings: settingsType;
+};
 
-const Settings = ({ onSetSettings, onClose, onShow }: propsType) => {
-  const mainContext: mainContextType = React.useContext<mainContextType>(MainContext);
-  const [settings, setSettings] = React.useState<settingsType>(mainContext.settings);
+class Settings extends React.Component<PropsType, StateType> {
+  state = {
+    settings: { ...this.props.mainSettings },
+  };
 
-  const settingsInStorage = (anySettings: any) => {
+  shouldComponentUpdate(nextProps: PropsType, nextState: StateType) {
+    return (
+      JSON.stringify(nextState.settings) !== JSON.stringify(this.state.settings) ||
+      JSON.stringify(nextProps.onShow) !== JSON.stringify(this.props.onShow)
+    );
+  }
+
+  UNSAFE_componentWillReceiveProps(nextProps: PropsType) {
+    if (JSON.stringify(nextProps.mainSettings) !== JSON.stringify(this.props.mainSettings)) {
+      this.setState({
+        settings: nextProps.mainSettings,
+      });
+    }
+  }
+
+  setSettings = (newSettings: settingsType) => {
+    this.setState({
+      settings: { ...newSettings },
+    });
+  };
+
+  settingsInStorage = (anySettings: any) => {
     console.log("any settings", anySettings);
   };
 
-  const getAllSettingsFromStorage = async () => {
+  getAllSettingsFromStorage = async () => {
     const setSettingsFunc = (params: any): void => {
       let tempSetting: settingsType;
       if (params && params.rows && params.rows.length) {
@@ -37,89 +61,94 @@ const Settings = ({ onSetSettings, onClose, onShow }: propsType) => {
           };
         }
       }
-      setSettings(tempSetting);
+      this.setSettings(tempSetting);
     };
     db.getData("settings", setSettingsFunc);
   };
 
-  const handleAddSettingToStorage = (name: string, value: any) => {
+  handleAddSettingToStorage = (name: string, value: any) => {
     db.setData("settings", { setting: name, value: value });
     console.log("add setting item");
   };
-  const handleRemoveSettingOnStorage = (name: string, value: any) => {
+  handleRemoveSettingOnStorage = (name: string, value: any) => {
     db.removeData("settings", { setting: name, value: value });
     console.log("remove setting item");
   };
-  const handleUpdateSettingOnStorage = (name: string, value: any) => {
+  handleUpdateSettingOnStorage = (name: string, value: any) => {
     db.updateData("settings", { setting: name }, { setting: name, value: value });
     console.log("update setting item");
   };
 
-  const handleResetSettings = () => {
-    onSetSettings(settingsModel);
+  handleResetSettings = () => {
+    this.props.onSetSettings(settingsModel);
   };
 
-  const handleSaveSettings = async () => {
-    Object.keys(settings).forEach((settingName: string) => {
+  handleSaveSettings = async () => {
+    Object.keys(this.state.settings).forEach((settingName: string) => {
       // @ts-ignore
-      handleUpdateSettingOnStorage(settingName, settings[settingName]);
+      this.handleUpdateSettingOnStorage(settingName, this.state.settings[settingName]);
     });
     //let settingsTemp = await getAllSettingsFromStorage();
-    onSetSettings(settings);
+    this.props.onSetSettings(this.state.settings);
   };
 
-  const handleCancelSettings = () => {
-    setSettings(mainContext.settings);
+  handleCancelSettings = () => {
+    this.setSettings(this.props.mainSettings);
   };
-  const handleChangeSettings = ({ target }: any) => {
-    setSettings({
-      ...settings,
+  handleChangeSettings = ({ target }: any) => {
+    this.setSettings({
+      ...this.state.settings,
       [target.id]: target.type === "checkbox" ? target.checked : target.value,
     });
   };
 
-  return (
-    <section id="main-settings" style={{ left: onShow ? 0 : "-100%" }}>
-      <div className="settings-playlist_header">
-        <button onClick={() => onClose("player")}>{"<"}</button>
-        <div />
-        <p>Settings</p>
-      </div>
-      <div>
-        <label>
-          Play in tray
-          <input
-            id="playInTray"
-            type="checkbox"
-            checked={settings.playInTray}
-            onChange={handleChangeSettings}
-          />
-        </label>
-        <label>
-          Full Screen Mode
-          <input
-            id="fullScreenMode"
-            type="checkbox"
-            checked={settings.fullScreenMode}
-            onChange={handleChangeSettings}
-          />
-        </label>
-        <label>
-          Load from youtube
-          <input
-            id="directYoutubeLoad"
-            type="checkbox"
-            checked={settings.directYoutubeLoad}
-            onChange={handleChangeSettings}
-          />
-        </label>
-        <div>
-          <button onClick={handleSaveSettings}>Save</button>
-          <button onClick={handleCancelSettings}>Cancel</button>
+  render() {
+    const { settings } = this.state;
+    const { onShow, onClose } = this.props;
+
+    return (
+      <section id="main-settings" style={{ left: onShow ? 0 : "-100%" }}>
+        <div className="settings-playlist_header">
+          <button onClick={() => onClose("player")}>{"<"}</button>
+          <div />
+          <p>Settings</p>
         </div>
-      </div>
-    </section>
-  );
-};
+        <div>
+          <label>
+            Play in tray
+            <input
+              id="playInTray"
+              type="checkbox"
+              checked={settings.playInTray}
+              onChange={this.handleChangeSettings}
+            />
+          </label>
+          <label>
+            Full Screen Mode
+            <input
+              id="fullScreenMode"
+              type="checkbox"
+              checked={settings.fullScreenMode}
+              onChange={this.handleChangeSettings}
+            />
+          </label>
+          <label>
+            Load from youtube
+            <input
+              id="directYoutubeLoad"
+              type="checkbox"
+              checked={settings.directYoutubeLoad}
+              onChange={this.handleChangeSettings}
+            />
+          </label>
+          <div>
+            <button onClick={this.handleSaveSettings}>Save</button>
+            <button onClick={this.handleCancelSettings}>Cancel</button>
+          </div>
+        </div>
+      </section>
+    );
+  }
+}
 
 export default Settings;

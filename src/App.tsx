@@ -77,18 +77,18 @@ class Main extends React.Component<PropsType, StateType> {
       }
       return true;
     }
-    if (nextState.bodyFill !== this.state.bodyFill) {
-      return true;
-    }
-    if (nextState.currentTrackNumber !== this.state.currentTrackNumber) {
-      return true;
-    }
-    if (nextState.playList !== this.state.playList) {
-      return true;
-    }
-    if (nextState.isPlaying !== this.state.isPlaying) {
-      return true;
-    }
+    if (nextState.bodyFill !== this.state.bodyFill) return true;
+
+    if (nextState.progress !== this.state.progress) return true;
+
+    if (nextState.playList !== this.state.playList) return true;
+
+    if (nextState.isPlaying !== this.state.isPlaying) return true;
+
+    if (nextState.settings !== this.state.settings) return true;
+
+    if (nextState.currentTrackNumber !== this.state.currentTrackNumber) return true;
+
     return false;
   }
 
@@ -296,6 +296,8 @@ class Main extends React.Component<PropsType, StateType> {
     const currentSong: playItemType | undefined =
       Array.isArray(playList) && playList.length ? playList[currentTrackNumber] : undefined;
 
+    console.log(this);
+
     return (
       <MainContext.Provider
         value={{
@@ -331,6 +333,7 @@ class Main extends React.Component<PropsType, StateType> {
           onClose={this.handleSetBodyFill}
         />
         <Settings
+          mainSettings={settings}
           onShow={bodyFill === "settings"}
           onSetSettings={this.handleSetSettings}
           onClose={this.handleSetBodyFill}
