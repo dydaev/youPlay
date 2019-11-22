@@ -55,6 +55,12 @@ main#main {
 			width: 74px;
 			border-radius: 50%;
 			background: none;
+			font-size: 30px;
+			color: lightgreen;
+
+			&:last-child {
+				color: pink;
+			}
 		}
 		& > div {
 			-webkit-box-flex: 1;

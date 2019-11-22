@@ -1,4 +1,7 @@
 export default {
+	equal: (objA: any, objB: any): boolean => {
+		return JSON.stringify(objA) === JSON.stringify(objB);
+	},
 	randomInteger: (min: number, max: number): number => {
 		const rand = min + Math.random() * (max + 1 - min);
 		return Math.floor(rand);
@@ -14,7 +17,7 @@ export default {
 				//     ? el.requestFullscreen || el.webkitRequestFullScreen || el.mozRequestFullScreen || el.msRequestFullscreen
 				//     : el.exitFullscreen;
 				// const res: Promise<any> = await rfs.call(el);
-				if (isActive && !document.fullscreen) {
+				if (elem && isActive && !document.fullscreen) {
 					elem.requestFullscreen() ||
 						elem.webkitRequestFullScreen() ||
 						elem.mozRequestFullScreen() ||

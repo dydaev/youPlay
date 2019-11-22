@@ -109,7 +109,9 @@ class Settings extends React.Component<PropsType, StateType> {
     return (
       <section id="main-settings" style={{ left: onShow ? 0 : "-100%" }}>
         <div className="settings-playlist_header">
-          <button onClick={() => onClose("player")}>{"<"}</button>
+          <button onClick={() => onClose("player")}>
+            <i className="fas fa-chevron-left"></i>
+          </button>
           <div />
           <p>Settings</p>
         </div>

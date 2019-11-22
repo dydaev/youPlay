@@ -26,6 +26,7 @@ type bdType = {
 		data: { [key: string]: any },
 	): Promise<any>;
 	removeData(tableName: dbTableNamesType, selectors: { [key: string]: any }): Promise<void>;
+	removeTable(tableName: dbTableNamesType): Promise<void>;
 };
 
 export { txType, dbTableNamesType, tablesCreatorType, bdType };

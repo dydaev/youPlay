@@ -124,7 +124,7 @@ const dataB: bdType = {
 
           const params: any[] = Object.values(data).concat(Object.values(selectors));
 
-          console.log(query, params);
+          // console.log(query, params);
 
           await tx.executeSql(query, params);
         },
@@ -191,6 +191,21 @@ const dataB: bdType = {
 
     return null;
   },
+  removeTable: async (tableName: dbTableNamesType): Promise<void> => {
+    if (!dataB.db) {
+      await dataB.connect();
+    }
+    if (!tableName) {
+      console.log("Table name is not specified!");
+      return null;
+    }
+
+    dataB.db.transaction(async (tx: txType) => {
+      tx.executeSql("DROP TABLE " + tableName, [], null, function(tx: txType, error: any) {
+        console.log("Could not delete", error);
+      });
+    });
+  },
   removeData: async (
     tableName: dbTableNamesType,
     selectors: { [key: string]: any },
@@ -205,25 +220,26 @@ const dataB: bdType = {
         return null;
       }
 
-      if (!Object.keys(selectors).length) {
-        console.log("Not data for seving to database", tableName);
-        return null;
-      }
+      // if (!Object.keys(selectors).length) {
+      //   console.log("Not data for seving to database", tableName);
+      //   return null;
+      // }
 
       dataB.db.transaction(
         async (tx: txType) => {
-          const selectorFromQuery = Object.keys(selectors).reduce(
-            (res: string, keyOfSecector: string, index: number): string =>
-              res + (!index ? "`" : " AND `") + keyOfSecector + "`=?",
-            "",
-          );
+          let query: string = `DELETE FROM ${tableName}`;
 
-          tx.executeSql(
-            `DELETE FROM ${tableName} WHERE ${selectorFromQuery}`,
-            Object.values(selectors),
-            null,
-            null,
-          );
+          if (Object.keys(selectors).length) {
+            const selectorFromQuery = Object.keys(selectors).reduce(
+              (res: string, keyOfSecector: string, index: number): string =>
+                res + (!index ? "`" : " AND `") + keyOfSecector + "`=?",
+              "",
+            );
+
+            query = query + ` WHERE ${selectorFromQuery}`;
+          }
+
+          tx.executeSql(query, Object.values(selectors), null, null);
         },
         (err: string) => {
           console.log("what went wrong whith deleting playlist from database", err);

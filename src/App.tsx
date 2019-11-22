@@ -56,7 +56,7 @@ class Main extends React.Component<PropsType, StateType> {
     playStrategic: "normal",
     isShowMenu: true,
     isPlaying: false,
-    isSavePlaying: false,
+    isSavePlaying: true,
     playList: [],
     listOfPlaylist: [],
     duration: 0,
@@ -71,31 +71,60 @@ class Main extends React.Component<PropsType, StateType> {
   }
 
   shouldComponentUpdate(nextProps: PropsType, nextState: StateType) {
-    if (nextState.settings.fullScreenMode !== this.state.settings.fullScreenMode) {
+    const { equal } = lib;
+
+    const {
+      isShowMenu,
+      bodyFill,
+      progress,
+      playList,
+      isPlaying,
+      settings,
+      currentTrackNumber,
+    } = this.state;
+
+    const {
+      isShowMenu: NIsShowMenu,
+      bodyFill: NbodyFill,
+      progress: Nprogress,
+      playList: NplayList,
+      isPlaying: NisPlaying,
+      settings: Nsettings,
+      currentTrackNumber: NcurrentTrackNumber,
+    } = nextState;
+
+    if (!equal(settings.fullScreenMode, Nsettings.fullScreenMode)) {
       if (window) {
-        lib.useFullScreenMode(this.state.settings.fullScreenMode);
+        console.log("change fullscren");
+        lib.useFullScreenMode(Nsettings.fullScreenMode);
       }
-      return true;
     }
-    if (nextState.bodyFill !== this.state.bodyFill) return true;
+    if (!equal(settings.playInTray, Nsettings.playInTray)) {
+      if (window && isPlaying) {
+        console.log("play in tray");
+        lib.usePlaingInTry(this.state.isSavePlaying, this.handleSetPlaying);
+      }
+    }
 
-    if (nextState.progress !== this.state.progress) return true;
-
-    if (nextState.playList !== this.state.playList) return true;
-
-    if (nextState.isPlaying !== this.state.isPlaying) return true;
-
-    if (nextState.settings !== this.state.settings) return true;
-
-    if (nextState.currentTrackNumber !== this.state.currentTrackNumber) return true;
-
-    return false;
+    return (
+      isShowMenu !== NIsShowMenu ||
+      !equal(settings, Nsettings) ||
+      !equal(bodyFill, NbodyFill) ||
+      !equal(progress, Nprogress) ||
+      !equal(playList, NplayList) ||
+      !equal(isPlaying, NisPlaying) ||
+      !equal(currentTrackNumber, NcurrentTrackNumber)
+    );
   }
 
   componentDidMount() {
     if (Array.isArray(this.state.listOfPlaylist) && !this.state.listOfPlaylist.length) {
       this.handleGetPlaylistFromStorage();
     }
+
+    // if (Array.isArray(this.state.playList) && !this.state.playList.length) {
+    //   this.handleGetCurrentPlaylistFromStorage();
+    // }
 
     if (this.state.settings.playInTray && window && false) {
       lib.usePlaingInTry(this.state.isSavePlaying, this.handleSetPlaying);
@@ -115,6 +144,9 @@ class Main extends React.Component<PropsType, StateType> {
   //   this.setState({
   //     playStrategic: newState
   //   });
+  // }
+  // useSettings = (settings: settingsType) => {
+  //   lib.usePlaingInTry(this.state.isSavePlaying, this.handleSetPlaying);
   // }
 
   handleSetSettings = (newState: settingsType) => {
@@ -173,6 +205,25 @@ class Main extends React.Component<PropsType, StateType> {
     });
   };
 
+  // handleGetCurrentPlaylistFromStorage = () => {
+  //   const setPlaylistFunc = (params: any) => {
+  //     if (params && params.rows && params.rows.length) {
+  //       let playlist: listOfPlaylistItemType[] = [];
+
+  //       for (let i = 0; i < params.rows.length; i++) {
+  //         const rowItem: listOfPlaylistItemType = params.rows.item(i);
+  //         playlist = [...playlist, rowItem];
+  //       }
+  //       console.log("listOfPlayList", playlist);
+  //       // this.handleSetList(playlist);
+  //     } else {
+  //       console.log("Storage data is empty, or:", params);
+  //     }
+  //   };
+
+  //   db.getData("currentPlayList", setPlaylistFunc);
+  // };
+
   handleGetPlaylistFromStorage = () => {
     const setPlaylistFunc = (params: any) => {
       if (params && params.rows && params.rows.length) {
@@ -210,7 +261,7 @@ class Main extends React.Component<PropsType, StateType> {
           db.setData("settings", { setting: settingName, value: settingsModel[settingName] });
         });
       }
-      console.log(tempSetting);
+      // console.log("reader setting", tempSetting);
       this.handleSetSettings(tempSetting);
     };
     db.getData("settings", setSettingsFunc);

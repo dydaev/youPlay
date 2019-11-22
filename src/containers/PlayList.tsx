@@ -10,6 +10,7 @@ import { listOfPlaylistItemType } from "../types/listOfPlaylistItemType";
 import { mainContextType } from "../types/mainContextType";
 
 import Strategy from "../lib/strategy";
+import db from "../db";
 
 import mainContext from "../context";
 
@@ -27,6 +28,7 @@ type propsType = {
 type stateType = {
 	playListUrl: string;
 	managerIsVisible: false;
+	playListFromStor: playItemType[];
 };
 
 class PlayListContainer extends React.Component<propsType> {
@@ -35,26 +37,21 @@ class PlayListContainer extends React.Component<propsType> {
 	state: stateType = {
 		playListUrl: this.props.urlOfList,
 		managerIsVisible: false,
-		// playList: []
+		playListFromStor: [],
 	};
 
-	// shouldComponentUpdate(nextProps: propsType) {
-	// 	console.log(nextProps, this.props)
-	// 	// return JSON.stringify(nextProps) !== JSON.stringify(this.props)
-	// 	return nextProps.urlOfList !== this.props.urlOfList
-	// }
-	// componentDidMount(){
-	//
-	// }
+	shouldComponentUpdate(nextProps: propsType, nextState: stateType): boolean {
+		if (Array.isArray(nextState.playListFromStor) && nextState.playListFromStor.length) {
+			this.props.onSetPlayList(nextState.playListFromStor);
+		}
 
-	// setPlayList = (newPlaylist: playItemType[]): void => {
-	// 		if(JSON.stringify(newPlaylist) !== JSON.stringify(this.state.playList)) {
-	// 				this.setState({
-	// 					playList: newPlaylist
-	// 				})
-	//         this.props.onSetPlayList(newPlaylist);
-	//     }
-	// }
+		return (
+			JSON.stringify(nextState.playListFromStor) !== JSON.stringify(this.state.playListFromStor) ||
+			this.props.urlOfList !== nextProps.urlOfList ||
+			this.state.managerIsVisible !== nextState.managerIsVisible
+		);
+	}
+
 	componentWillReceiveProps(newProps: propsType) {
 		if (newProps.urlOfList !== this.props.urlOfList) {
 			this.setState({
@@ -62,15 +59,44 @@ class PlayListContainer extends React.Component<propsType> {
 			});
 		}
 	}
-	componentDidUpdate(_: any, prevState: stateType) {
-		if (prevState.playListUrl !== this.state.playListUrl) {
-			// console.log("up-up", prevState.playListUrl, this.state.playListUrl);
-			this.handleUpdatePlaylist();
-		}
-	}
+
 	componentDidMount() {
+		this.handleGetCurrentPlaylistFromStorage();
 		this.handleUpdatePlaylist();
 	}
+
+	handleClearCurrentPlayListOnStorage = () => {
+		db.removeData("currentPlayList", {});
+	};
+
+	handleSavePlayListToStorage = (newList: playItemType[]) => {
+		if (Array.isArray(newList) && newList.length) {
+			newList.forEach((playListItem: playItemType) => {
+				db.setData("currentPlayList", { ...playListItem });
+			});
+		}
+	};
+
+	handleGetCurrentPlaylistFromStorage = async () => {
+		const setPlaylistFunc = (params: any) => {
+			if (params && params.rows && params.rows.length) {
+				let playlist: listOfPlaylistItemType[] = [];
+
+				for (let i = 0; i < params.rows.length; i++) {
+					const rowItem: listOfPlaylistItemType = params.rows.item(i);
+					playlist = [...playlist, rowItem];
+				}
+				// console.log("sett playlist from stor", playlist.length, "items");
+				this.setState({
+					playListFromStor: playlist,
+				});
+			} else {
+				console.log("Storage data is empty, or:", params);
+			}
+		};
+
+		await db.getData("currentPlayList", setPlaylistFunc);
+	};
 
 	handleGetYouList = async (playListUrl: string): Promise<any> => {
 		if (!("fetch" in window)) {
@@ -120,12 +146,38 @@ class PlayListContainer extends React.Component<propsType> {
 		return null;
 	};
 
+	// handleUpdatePlaylist = async () => {
+	// 	const newList: any = await this.handleGetYouList(this.props.urlOfList);
+
+	// 	let { playListFromStor } = this.state;
+
+	// 	if (Array.isArray(newList) && newList.length) {
+	// 		console.log("Get", newList.length, "play items");
+	// 		newList.forEach((playitem: playItemType) => {
+	// 			const itemInState: playItemType | void = this.state.playListFromStor.find(
+	// 				(playitemInState: playItemType) => playitemInState.url === playitem.url,
+	// 			);
+
+	// 			if (typeof itemInState === "undefined") {
+	// 				playListFromStor = [...playListFromStor, { ...playitem }];
+	// 				db.setData("currentPlayList", { ...playitem });
+	// 			}
+	// 		});
+	// 	}
+
+	// 	if (Array.isArray(playListFromStor) && playListFromStor.length) {
+	// 		this.props.onSetPlayList(playListFromStor);
+	// 	}
+	// };
 	handleUpdatePlaylist = async () => {
 		const newList: any = await this.handleGetYouList(this.props.urlOfList);
-		if (newList) {
-			//save playlist to storage
 
-			//add playlist for playing
+		// TODO: check different between newList and this.state.playListFromStor
+
+		if (Array.isArray(newList) && newList.length) {
+			console.log("Get", newList.length, "play items");
+			this.handleClearCurrentPlayListOnStorage();
+			this.handleSavePlayListToStorage(newList);
 			this.props.onSetPlayList(newList);
 		}
 	};
@@ -161,9 +213,14 @@ class PlayListContainer extends React.Component<propsType> {
 		return (
 			<section style={styles}>
 				<div className="settings-playlist_header">
+					<button onClick={this.handleUpdatePlaylist}>
+						<i className="fas fa-sync"></i>
+					</button>
 					<p>Play list</p>
 					<div />
-					<button onClick={() => onClose("player")}>{">"}</button>
+					<button onClick={() => onClose("player")}>
+						<i className="fas fa-chevron-right"></i>
+					</button>
 				</div>
 				{managerIsVisible ? (
 					<PlayListManager
