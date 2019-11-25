@@ -170,15 +170,17 @@ class PlayListContainer extends React.Component<propsType> {
 	// 	}
 	// };
 	handleUpdatePlaylist = async () => {
-		const newList: any = await this.handleGetYouList(this.props.urlOfList);
+		if (this.props.urlOfList) {
+			const newList: any = await this.handleGetYouList(this.props.urlOfList);
 
-		// TODO: check different between newList and this.state.playListFromStor
+			// TODO: check different between newList and this.state.playListFromStor
 
-		if (Array.isArray(newList) && newList.length) {
-			console.log("Get", newList.length, "play items");
-			this.handleClearCurrentPlayListOnStorage();
-			this.handleSavePlayListToStorage(newList);
-			this.props.onSetPlayList(newList);
+			if (Array.isArray(newList) && newList.length) {
+				console.log("Get", newList.length, "play items");
+				this.handleClearCurrentPlayListOnStorage();
+				this.handleSavePlayListToStorage(newList);
+				this.props.onSetPlayList(newList);
+			}
 		}
 	};
 
@@ -186,6 +188,15 @@ class PlayListContainer extends React.Component<propsType> {
 		this.setState({
 			managerIsVisible: !this.state.managerIsVisible,
 		});
+	};
+
+	handleClosePlayList = () => {
+		if (this.state.managerIsVisible) {
+			setTimeout(() => {
+				this.handleShowManager();
+			}, 1000);
+		}
+		this.props.onClose("player");
 	};
 
 	render() {
@@ -218,7 +229,7 @@ class PlayListContainer extends React.Component<propsType> {
 					</button>
 					<p>Play list</p>
 					<div />
-					<button onClick={() => onClose("player")}>
+					<button onClick={this.handleClosePlayList}>
 						<i className="fas fa-chevron-right"></i>
 					</button>
 				</div>

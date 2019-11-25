@@ -74,20 +74,25 @@ class Main extends React.Component<PropsType, StateType> {
     const { equal } = lib;
 
     const {
+      showMessage,
       isShowMenu,
       bodyFill,
       progress,
       playList,
+      listOfPlaylist,
       isPlaying,
       settings,
       currentTrackNumber,
     } = this.state;
 
     const {
+      showMessage: NshowMessage,
+
       isShowMenu: NIsShowMenu,
       bodyFill: NbodyFill,
       progress: Nprogress,
       playList: NplayList,
+      listOfPlaylist: NListOfPlaylist,
       isPlaying: NisPlaying,
       settings: Nsettings,
       currentTrackNumber: NcurrentTrackNumber,
@@ -108,10 +113,12 @@ class Main extends React.Component<PropsType, StateType> {
 
     return (
       isShowMenu !== NIsShowMenu ||
+      !equal(showMessage, NshowMessage) ||
       !equal(settings, Nsettings) ||
       !equal(bodyFill, NbodyFill) ||
       !equal(progress, Nprogress) ||
       !equal(playList, NplayList) ||
+      !equal(listOfPlaylist, NListOfPlaylist) ||
       !equal(isPlaying, NisPlaying) ||
       !equal(currentTrackNumber, NcurrentTrackNumber)
     );
@@ -347,7 +354,7 @@ class Main extends React.Component<PropsType, StateType> {
     const currentSong: playItemType | undefined =
       Array.isArray(playList) && playList.length ? playList[currentTrackNumber] : undefined;
 
-    console.log(this);
+    console.log(this, listOfPlaylist);
 
     return (
       <MainContext.Provider
@@ -374,7 +381,7 @@ class Main extends React.Component<PropsType, StateType> {
           urlOfList={
             Array.isArray(listOfPlaylist) && listOfPlaylist[currentPlaylistNumber]
               ? listOfPlaylist[currentPlaylistNumber].url
-              : "https://www.youtube.com/watch?v=P6KwHkpN-W0&list=PLvdDCgNk3ugIwuujayLHNEOXuTtQeXphU"
+              : ""
           }
           onPlay={this.handlePlay}
           onSetPlayList={this.handleSetPlayList}
