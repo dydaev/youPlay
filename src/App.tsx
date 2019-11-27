@@ -244,6 +244,9 @@ class Main extends React.Component<PropsType, StateType> {
           const rowItem: listOfPlaylistItemType = params.rows.item(i);
           playlist = [...playlist, rowItem];
         }
+        if (Array.isArray(playlist) && playlist.length) {
+          console.log("playlist from stor", playlist);
+        }
         this.handleSetList(playlist);
       } else {
         // console.log('Storage data is empty, or:', params );
@@ -358,7 +361,7 @@ class Main extends React.Component<PropsType, StateType> {
     const currentSong: playItemType | undefined =
       Array.isArray(playList) && playList.length ? playList[currentTrackNumber] : undefined;
 
-    console.log(this, playList);
+    // console.log(this, playList);
 
     return (
       <MainContext.Provider
