@@ -10,6 +10,7 @@ import { listOfPlaylistItemType } from "../types/listOfPlaylistItemType";
 import { mainContextType } from "../types/mainContextType";
 
 import Strategy from "../lib/strategy";
+import lib from "../lib/index";
 import db from "../db";
 
 import mainContext from "../context";
@@ -26,6 +27,7 @@ type propsType = {
 	onSetList(playList: listOfPlaylistItemType[]): void;
 };
 type stateType = {
+	isLoading: boolean;
 	playListUrl: string;
 	managerIsVisible: false;
 	playListFromStor: playItemType[];
@@ -35,20 +37,26 @@ class PlayListContainer extends React.Component<propsType> {
 	static contextType: any = mainContext;
 
 	state: stateType = {
+		isLoading: false,
 		playListUrl: this.props.urlOfList,
 		managerIsVisible: false,
 		playListFromStor: [],
 	};
 
-	shouldComponentUpdate(nextProps: propsType, nextState: stateType): boolean {
-		if (Array.isArray(nextState.playListFromStor) && nextState.playListFromStor.length) {
-			this.props.onSetPlayList(nextState.playListFromStor);
-		}
+	shouldComponentUpdate(
+		nextProps: propsType,
+		nextState: stateType,
+		nextContext: mainContextType,
+	): boolean {
+		const { equal } = lib;
 
 		return (
+			!equal(nextState.playListFromStor, this.state.playListFromStor) ||
+			!equal(nextContext.playList, this.context.playList) ||
 			JSON.stringify(nextState.playListFromStor) !== JSON.stringify(this.state.playListFromStor) ||
 			this.props.urlOfList !== nextProps.urlOfList ||
-			this.state.managerIsVisible !== nextState.managerIsVisible
+			this.state.managerIsVisible !== nextState.managerIsVisible ||
+			this.state.isLoading !== nextState.isLoading
 		);
 	}
 
@@ -80,16 +88,14 @@ class PlayListContainer extends React.Component<propsType> {
 	handleGetCurrentPlaylistFromStorage = async () => {
 		const setPlaylistFunc = (params: any) => {
 			if (params && params.rows && params.rows.length) {
-				let playlist: listOfPlaylistItemType[] = [];
+				// let playlist: listOfPlaylistItemType[] = [];
+				let playlist: playItemType[] = [];
 
 				for (let i = 0; i < params.rows.length; i++) {
-					const rowItem: listOfPlaylistItemType = params.rows.item(i);
+					const rowItem: playItemType = params.rows.item(i);
 					playlist = [...playlist, rowItem];
 				}
-				// console.log("sett playlist from stor", playlist.length, "items");
-				this.setState({
-					playListFromStor: playlist,
-				});
+				this.props.onSetPlayList(playlist);
 			} else {
 				console.log("Storage data is empty, or:", params);
 			}
@@ -146,33 +152,17 @@ class PlayListContainer extends React.Component<propsType> {
 		return null;
 	};
 
-	// handleUpdatePlaylist = async () => {
-	// 	const newList: any = await this.handleGetYouList(this.props.urlOfList);
+	handleSetLoading = (is: boolean) => {
+		this.setState({
+			isLoading: is,
+		});
+	};
 
-	// 	let { playListFromStor } = this.state;
-
-	// 	if (Array.isArray(newList) && newList.length) {
-	// 		console.log("Get", newList.length, "play items");
-	// 		newList.forEach((playitem: playItemType) => {
-	// 			const itemInState: playItemType | void = this.state.playListFromStor.find(
-	// 				(playitemInState: playItemType) => playitemInState.url === playitem.url,
-	// 			);
-
-	// 			if (typeof itemInState === "undefined") {
-	// 				playListFromStor = [...playListFromStor, { ...playitem }];
-	// 				db.setData("currentPlayList", { ...playitem });
-	// 			}
-	// 		});
-	// 	}
-
-	// 	if (Array.isArray(playListFromStor) && playListFromStor.length) {
-	// 		this.props.onSetPlayList(playListFromStor);
-	// 	}
-	// };
-	handleUpdatePlaylist = async () => {
+	handleUpdatePlaylist = async (url: string = undefined) => {
 		if (this.props.urlOfList) {
-			const newList: any = await this.handleGetYouList(this.props.urlOfList);
-
+			this.handleSetLoading(true);
+			const newList: any = await this.handleGetYouList(url ? url : this.props.urlOfList);
+			this.handleSetLoading(false);
 			// TODO: check different between newList and this.state.playListFromStor
 
 			if (Array.isArray(newList) && newList.length) {
@@ -200,7 +190,7 @@ class PlayListContainer extends React.Component<propsType> {
 	};
 
 	render() {
-		const { managerIsVisible } = this.state;
+		const { managerIsVisible, isLoading } = this.state;
 
 		const {
 			onShow,
@@ -224,7 +214,7 @@ class PlayListContainer extends React.Component<propsType> {
 		return (
 			<section style={styles}>
 				<div className="settings-playlist_header">
-					<button onClick={this.handleUpdatePlaylist}>
+					<button onClick={() => this.handleUpdatePlaylist()} className={isLoading ? "rotate" : ""}>
 						<i className="fas fa-sync"></i>
 					</button>
 					<p>Play list</p>
@@ -235,6 +225,7 @@ class PlayListContainer extends React.Component<propsType> {
 				</div>
 				{managerIsVisible ? (
 					<PlayListManager
+						onUpdatePlaylist={this.handleUpdatePlaylist}
 						onSetCurrentPlaylistNumber={onSetCurrentPlaylistNumber}
 						onSetList={onSetList}
 					/>

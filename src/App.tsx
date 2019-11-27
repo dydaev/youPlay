@@ -83,6 +83,7 @@ class Main extends React.Component<PropsType, StateType> {
       isPlaying,
       settings,
       currentTrackNumber,
+      currentPlaylistNumber,
     } = this.state;
 
     const {
@@ -96,6 +97,7 @@ class Main extends React.Component<PropsType, StateType> {
       isPlaying: NisPlaying,
       settings: Nsettings,
       currentTrackNumber: NcurrentTrackNumber,
+      currentPlaylistNumber: NcurrentPlaylistNumber,
     } = nextState;
 
     if (!equal(settings.fullScreenMode, Nsettings.fullScreenMode)) {
@@ -120,7 +122,8 @@ class Main extends React.Component<PropsType, StateType> {
       !equal(playList, NplayList) ||
       !equal(listOfPlaylist, NListOfPlaylist) ||
       !equal(isPlaying, NisPlaying) ||
-      !equal(currentTrackNumber, NcurrentTrackNumber)
+      !equal(currentTrackNumber, NcurrentTrackNumber) ||
+      !equal(currentPlaylistNumber, NcurrentPlaylistNumber)
     );
   }
 
@@ -183,6 +186,7 @@ class Main extends React.Component<PropsType, StateType> {
   };
 
   handleSetPlayList = (p: playItemType[]) => {
+    // console.log("set playlist", p);
     this.setState({
       playList: p,
     });
@@ -354,7 +358,7 @@ class Main extends React.Component<PropsType, StateType> {
     const currentSong: playItemType | undefined =
       Array.isArray(playList) && playList.length ? playList[currentTrackNumber] : undefined;
 
-    console.log(this, listOfPlaylist);
+    console.log(this, playList);
 
     return (
       <MainContext.Provider

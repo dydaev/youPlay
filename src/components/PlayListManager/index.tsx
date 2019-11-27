@@ -15,11 +15,16 @@ const clearModel: listOfPlaylistItemType = {
 };
 
 export type propTypes = {
+	onUpdatePlaylist(url: string | undefined): void;
 	onSetCurrentPlaylistNumber(number: number): void;
 	onSetList(playList: listOfPlaylistItemType[]): void;
 };
 
-const PlayListManager = ({ onSetList, onSetCurrentPlaylistNumber }: propTypes) => {
+const PlayListManager = ({
+	onSetList,
+	onSetCurrentPlaylistNumber,
+	onUpdatePlaylist,
+}: propTypes) => {
 	// const [listOfPlaylist, props.onSetList] = React.useState<listOfPlaylistItemType[]>([]);
 	const [selectedItem, setSelectedItem] = React.useState<listOfPlaylistItemType>(clearModel);
 	const [indexForListEditor, setIndexForListEditor] = React.useState<number | undefined | null>(
@@ -75,6 +80,8 @@ const PlayListManager = ({ onSetList, onSetCurrentPlaylistNumber }: propTypes) =
 
 	const handleSelectPlaylist = (index: number) => {
 		onSetCurrentPlaylistNumber(index);
+		if (Array.isArray(mainContext.listOfPlaylist) && index < mainContext.listOfPlaylist.length)
+			onUpdatePlaylist(mainContext.listOfPlaylist[index].url);
 	};
 
 	const handleSelectItem = (index: number) => console.log(mainContext.listOfPlaylist[index]); // onSelectItem(listOfPlaylist[index]);
@@ -83,23 +90,12 @@ const PlayListManager = ({ onSetList, onSetCurrentPlaylistNumber }: propTypes) =
 		<div id="component-listOfPlaylistItemType">
 			<ul>
 				{mainContext.listOfPlaylist.map((playlistItem: listOfPlaylistItemType, index: number) => (
-					<li key={"playItemListIndex" + index.toString()}>
-						<button
-							onClick={() => handleSelectPlaylist(index)}
-							style={
-								mainContext.currentPlaylistNumber !== index
-									? {
-											background: "lightblue", //"#ee9090",
-											borderColor: "lightblue", //"#ee9090",
-									  }
-									: {}
-							}
-						>
-							{mainContext.currentPlaylistNumber !== index ? (
-								<i className="fas fa-play" />
-							) : (
-								<i className="fas fa-stop" />
-							)}
+					<li
+						key={"playItemListIndex" + index.toString()}
+						style={mainContext.currentPlaylistNumber === index ? { background: "gainsboro" } : {}}
+					>
+						<button onClick={() => handleSelectPlaylist(index)}>
+							<i className="fas fa-play" />
 						</button>
 						<a onClick={() => handleSelectItem(index)}>
 							<span style={{ textAlign: "center" }}>{playlistItem.name}</span>
