@@ -9,15 +9,17 @@ export default {
 	useFullScreenMode: async (isActive: boolean) => {
 		try {
 			if (typeof window.orientation !== "undefined" && document.fullscreenEnabled) {
-				// addEventListener('click', async () => {
-				// tslint:disable-next-line:one-variable-per-declaration
-
 				const elem: any = document.documentElement;
-				//   rfs = isActive
-				//     ? el.requestFullscreen || el.webkitRequestFullScreen || el.mozRequestFullScreen || el.msRequestFullscreen
-				//     : el.exitFullscreen;
-				// const res: Promise<any> = await rfs.call(el);
+
+				var listener = function() {
+					elem.requestFullscreen() ||
+						elem.webkitRequestFullScreen() ||
+						elem.mozRequestFullScreen() ||
+						elem.msRequestFullscreen();
+				};
 				if (elem && isActive && !document.fullscreen) {
+					document.addEventListener("click", listener, false);
+
 					elem.requestFullscreen() ||
 						elem.webkitRequestFullScreen() ||
 						elem.mozRequestFullScreen() ||
@@ -25,10 +27,11 @@ export default {
 				}
 
 				if (!isActive && document.fullscreen) {
+					document.removeEventListener("click", listener, false);
+					console.log("removeListner");
 					document.exitFullscreen();
+					window.location.reload();
 				}
-				// console.log(res);
-				// });
 			}
 		} catch (e) {
 			console.log("Can not use full screen mode(.");

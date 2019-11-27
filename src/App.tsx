@@ -245,7 +245,7 @@ class Main extends React.Component<PropsType, StateType> {
           playlist = [...playlist, rowItem];
         }
         if (Array.isArray(playlist) && playlist.length) {
-          console.log("playlist from stor", playlist);
+          // console.log("playlist from stor", playlist);
         }
         this.handleSetList(playlist);
       } else {
