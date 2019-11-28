@@ -56,7 +56,7 @@ class Main extends React.Component<PropsType, StateType> {
     playStrategic: "normal",
     isShowMenu: true,
     isPlaying: false,
-    isSavePlaying: true,
+    isSavePlaying: false,
     playList: [],
     listOfPlaylist: [],
     duration: 0,
@@ -106,11 +106,10 @@ class Main extends React.Component<PropsType, StateType> {
         lib.useFullScreenMode(Nsettings.fullScreenMode);
       }
     }
-    if (!equal(settings.playInTray, Nsettings.playInTray)) {
-      if (window && isPlaying) {
-        console.log("play in tray");
-        lib.usePlaingInTry(this.state.isSavePlaying, this.handleSetPlaying);
-      }
+
+    if (Nsettings.playInTray /* !== settings.playInTray*/) {
+      // console.log("play in tray");
+      lib.usePlaingInTry(this.handleSafeTrayPlaing);
     }
 
     return (
@@ -136,8 +135,8 @@ class Main extends React.Component<PropsType, StateType> {
     //   this.handleGetCurrentPlaylistFromStorage();
     // }
 
-    if (this.state.settings.playInTray && window && false) {
-      lib.usePlaingInTry(this.state.isSavePlaying, this.handleSetPlaying);
+    if (this.state.settings.playInTray) {
+      lib.usePlaingInTry(this.handleSafeTrayPlaing);
     }
 
     if (window) {
@@ -210,13 +209,29 @@ class Main extends React.Component<PropsType, StateType> {
     });
   };
 
+  handleSafeTrayPlaing = () => {
+    if (this.state.isSavePlaying && this.state.settings.playInTray) {
+      this.setState({
+        isPlaying: true,
+      });
+    }
+  };
+
+  handleSetSafePlaying = (newStatePlaying: boolean) => {
+    this.setState({
+      isPlaying: newStatePlaying,
+      isSavePlaying: newStatePlaying,
+    });
+  };
+
   handleSetPlaying = (newStatePlaying: boolean) => {
     this.setState({
       isPlaying: newStatePlaying,
     });
   };
 
-  // handleGetCurrentPlaylistFromStorage = () => {
+  // handleGetStateFromStorage = () => {
+  // currentTrackNumber, isPlaing, currentPlayPosition
   //   const setPlaylistFunc = (params: any) => {
   //     if (params && params.rows && params.rows.length) {
   //       let playlist: listOfPlaylistItemType[] = [];
@@ -281,7 +296,7 @@ class Main extends React.Component<PropsType, StateType> {
     db.getData("settings", setSettingsFunc);
   };
 
-  handlePlay = (trackNumber: number | undefined): void => {
+  handlePlay = (trackNumber: number | undefined) => {
     if (
       Array.isArray(this.state.playList) &&
       this.state.playList.length &&
@@ -294,26 +309,27 @@ class Main extends React.Component<PropsType, StateType> {
 
       if (trackNumber !== this.state.currentTrackNumber) {
         this.handleSetProgress(progressModel);
-        this.handleSetPlaying(true);
+        this.handleSetSafePlaying(true);
       } else {
-        this.handleSetPlaying(!this.state.isPlaying);
+        this.handleSetSafePlaying(!this.state.isPlaying);
       }
     } else if (
       Array.isArray(this.state.playList) &&
       this.state.playList.length &&
       trackNumber === undefined
     ) {
-      this.handleSetPlaying(!this.state.isPlaying);
+      this.handleSetSafePlaying(!this.state.isPlaying);
     } else {
-      this.handleSetPlaying(false);
+      this.handleSetSafePlaying(false);
     }
   };
-  handleStop = (): void => {
+  handleStop = () => {
     this.setState({
       isPlaying: false,
+      isSavePlaying: false,
     });
   };
-  handlePrev = (): void => {
+  handlePrev = () => {
     const prevTrackNumber: number =
       Array.isArray(this.state.playList) && this.state.playList.length
         ? this.state.currentTrackNumber > 0
@@ -321,9 +337,15 @@ class Main extends React.Component<PropsType, StateType> {
           : this.state.playList.length - 1
         : 0;
 
-    this.handlePlay(prevTrackNumber);
+    if (this.state.isPlaying) {
+      this.handlePlay(prevTrackNumber);
+    } else {
+      this.setState({
+        currentTrackNumber: prevTrackNumber,
+      });
+    }
   };
-  handleNext = (): void => {
+  handleNext = () => {
     const nextTrackNumber: number =
       Array.isArray(this.state.playList) &&
       this.state.playList.length &&
@@ -331,7 +353,13 @@ class Main extends React.Component<PropsType, StateType> {
         ? this.state.currentTrackNumber + 1
         : 0;
 
-    this.handlePlay(nextTrackNumber);
+    if (this.state.isPlaying) {
+      this.handlePlay(nextTrackNumber);
+    } else {
+      this.setState({
+        currentTrackNumber: nextTrackNumber,
+      });
+    }
   };
 
   handleSetDuration = (newDuration: number) => {
@@ -361,7 +389,7 @@ class Main extends React.Component<PropsType, StateType> {
     const currentSong: playItemType | undefined =
       Array.isArray(playList) && playList.length ? playList[currentTrackNumber] : undefined;
 
-    // console.log(this, playList);
+    console.log(this);
 
     return (
       <MainContext.Provider

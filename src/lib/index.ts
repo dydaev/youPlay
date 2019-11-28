@@ -37,22 +37,17 @@ export default {
 			console.log("Can not use full screen mode(.");
 		}
 	},
-	usePlaingInTry: (isSavePlaying: any, setPlaying: any) => {
-		try {
-			window.addEventListener(
-				"visibilitychange",
-				() => {
-					if (isSavePlaying) {
-						console.log("playing after lost the focus");
-						setPlaying(true);
-					} else {
-						setPlaying(false);
-					}
-				},
-				false,
-			);
-		} catch (e) {
-			console.log("Can not playing in tray(.", e);
+	usePlaingInTry: (setSafePlaying: any) => {
+		if (window) {
+			try {
+				var listener = function() {
+					// console.log("lost visibility");
+					setSafePlaying();
+				};
+				window.addEventListener("visibilitychange", listener, false);
+			} catch (e) {
+				console.log("Can not playing in tray(.", e);
+			}
 		}
 	},
 	seconds2time: (seconds: any) => {
