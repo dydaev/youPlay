@@ -66,7 +66,7 @@ class Main extends React.Component<PropsType, StateType> {
     settings: settingsModel,
   };
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     this.handleGetSettingsFromStorage();
   }
 

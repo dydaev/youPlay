@@ -61,7 +61,7 @@ class PlayListContainer extends React.Component<propsType> {
 		);
 	}
 
-	componentWillReceiveProps(newProps: propsType) {
+	UNSAFE_componentWillReceiveProps(newProps: propsType) {
 		if (newProps.urlOfList !== this.props.urlOfList) {
 			this.setState({
 				playListUrl: newProps.urlOfList,
