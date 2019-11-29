@@ -55,7 +55,6 @@ const Footer = ({
     onPlay(undefined);
   };
   const handleStop = () => {
-    onSavePlay(false);
     onStop();
   };
   const handlePrev = () => {
@@ -87,12 +86,31 @@ const Footer = ({
     bottom: 0,
   };
 
+  const handlePalyingEnd = () => {
+    // console.log("end play", playStrategic);
+    switch (playStrategic) {
+      case "once":
+        // code...
+        break;
+      case "randome":
+        // code...
+        break;
+      case "replay":
+        // code...
+        break;
+      default:
+        // is normal
+        onNext();
+        setPlaying(true);
+    }
+  };
+
   return (
     <footer id="main-footer" style={isShowFooter ? styleShowingFooter : {}}>
       <ReactPlayer
         url={currentTrack ? currentTrack.url : ""}
         onPlay={() => setPlaying(true)}
-        onEnded={() => playStrategic !== "once" && onNext()}
+        onEnded={handlePalyingEnd}
         onPause={() => setPlaying(false)}
         onProgress={handleProgress}
         onDuration={handleDuration}

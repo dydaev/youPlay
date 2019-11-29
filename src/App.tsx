@@ -337,13 +337,11 @@ class Main extends React.Component<PropsType, StateType> {
           : this.state.playList.length - 1
         : 0;
 
-    if (this.state.isPlaying) {
-      this.handlePlay(prevTrackNumber);
-    } else {
-      this.setState({
-        currentTrackNumber: prevTrackNumber,
-      });
-    }
+    this.setState({
+      currentTrackNumber: prevTrackNumber,
+    });
+
+    if (this.state.isSavePlaying) this.handlePlay(prevTrackNumber);
   };
   handleNext = () => {
     const nextTrackNumber: number =
@@ -353,13 +351,11 @@ class Main extends React.Component<PropsType, StateType> {
         ? this.state.currentTrackNumber + 1
         : 0;
 
-    if (this.state.isPlaying) {
-      this.handlePlay(nextTrackNumber);
-    } else {
-      this.setState({
-        currentTrackNumber: nextTrackNumber,
-      });
-    }
+    this.setState({
+      currentTrackNumber: nextTrackNumber,
+    });
+
+    if (this.state.isSavePlaying) this.handlePlay(nextTrackNumber);
   };
 
   handleSetDuration = (newDuration: number) => {
@@ -389,7 +385,7 @@ class Main extends React.Component<PropsType, StateType> {
     const currentSong: playItemType | undefined =
       Array.isArray(playList) && playList.length ? playList[currentTrackNumber] : undefined;
 
-    // console.log(this);
+    // console.log(this.state);
 
     return (
       <MainContext.Provider
