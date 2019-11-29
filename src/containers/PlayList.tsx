@@ -20,6 +20,7 @@ type propsType = {
 	onShow: boolean;
 	urlOfList: string;
 	onClose(type: bodyType): void;
+	onGetPleyListFromStorage(): void;
 	onPlay(trackNumber: number): void;
 	onSetCurrentTrack(trackNumber: number): void;
 	onSetPlayList(playlist: playItemType[]): void;
@@ -225,6 +226,7 @@ class PlayListContainer extends React.Component<propsType> {
 				</div>
 				{managerIsVisible ? (
 					<PlayListManager
+						onGetPleyListFromStorage={this.props.onGetPleyListFromStorage}
 						onUpdatePlaylist={this.handleUpdatePlaylist}
 						onSetCurrentPlaylistNumber={onSetCurrentPlaylistNumber}
 						onSetList={onSetList}

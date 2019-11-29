@@ -66,12 +66,19 @@ div#component-listOfPlaylistItemType {
         }
       }
 
+      .component-listOfPlaylistItemType__edit-button {
+        width: 35px;
+        background: bottom;
+        color: green;
+        border: 0;
+        font-size: 25px;
+      }
       .component-listOfPlaylistItemType__remove-button {
-        width: 70px;
+        width: 35px;
         background: bottom;
         color: red;
         border: 0;
-        font-size: 45px;
+        font-size: 25px;
       }
     }
   }

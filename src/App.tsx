@@ -389,7 +389,7 @@ class Main extends React.Component<PropsType, StateType> {
     const currentSong: playItemType | undefined =
       Array.isArray(playList) && playList.length ? playList[currentTrackNumber] : undefined;
 
-    console.log(this);
+    // console.log(this);
 
     return (
       <MainContext.Provider
@@ -421,6 +421,7 @@ class Main extends React.Component<PropsType, StateType> {
           onPlay={this.handlePlay}
           onSetPlayList={this.handleSetPlayList}
           onSetCurrentTrack={this.handleSetCurrentTrackNumber}
+          onGetPleyListFromStorage={this.handleGetPlaylistFromStorage}
           onSetCurrentPlaylistNumber={this.handleSetCurrentPlaylistNumber}
           onSetList={this.handleSetList}
           onClose={this.handleSetBodyFill}
