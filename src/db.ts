@@ -19,6 +19,9 @@ const tablesCreators: tablesCreatorType = {
       "CREATE TABLE IF NOT EXISTS `settings` (`id` INTEGER PRIMARY KEY ,`setting`, `value`);",
     );
   },
+  currentState: (tx: txType) => {
+    tx.executeSql("CREATE TABLE IF NOT EXISTS `currentState` (`stateItem`, `value`);");
+  },
 };
 
 const dataB: bdType = {

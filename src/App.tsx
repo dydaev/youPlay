@@ -30,6 +30,8 @@ import { settingsModel } from "./models/settingsModel";
 
 import "./main.scss";
 
+const stateSavingItems = ["currentTrackNumber", "currentPlaylistNumber"];
+
 export type PropsType = any;
 type StateType = {
   bodyFill: bodyType;
@@ -107,6 +109,14 @@ class Main extends React.Component<PropsType, StateType> {
       }
     }
 
+    //if changed state for saving, save in stor
+    if (
+      // @ts-ignore: Unreachable code error
+      stateSavingItems.some((stateName: string) => nextState[stateName] !== this.state[stateName])
+    ) {
+      this.handleSaveCurrentStateToStor(nextState);
+    }
+
     if (Nsettings.playInTray /* !== settings.playInTray*/) {
       // console.log("play in tray");
       lib.usePlaingInTry(this.handleSafeTrayPlaing);
@@ -130,7 +140,7 @@ class Main extends React.Component<PropsType, StateType> {
     if (Array.isArray(this.state.listOfPlaylist) && !this.state.listOfPlaylist.length) {
       this.handleGetPlaylistFromStorage();
     }
-
+    this.handleGetStateFromStorage();
     // if (Array.isArray(this.state.playList) && !this.state.playList.length) {
     //   this.handleGetCurrentPlaylistFromStorage();
     // }
@@ -181,6 +191,8 @@ class Main extends React.Component<PropsType, StateType> {
   handleSetCurrentPlaylistNumber = (newState: number) => {
     this.setState({
       currentPlaylistNumber: newState,
+      currentTrackNumber: 0,
+      isPlaying: false,
     });
   };
 
@@ -230,25 +242,42 @@ class Main extends React.Component<PropsType, StateType> {
     });
   };
 
-  // handleGetStateFromStorage = () => {
-  // currentTrackNumber, isPlaing, currentPlayPosition
-  //   const setPlaylistFunc = (params: any) => {
-  //     if (params && params.rows && params.rows.length) {
-  //       let playlist: listOfPlaylistItemType[] = [];
+  handleSaveCurrentStateToStor = (newState: StateType | void) => {
+    const state = newState ? newState : this.state;
 
-  //       for (let i = 0; i < params.rows.length; i++) {
-  //         const rowItem: listOfPlaylistItemType = params.rows.item(i);
-  //         playlist = [...playlist, rowItem];
-  //       }
-  //       console.log("listOfPlayList", playlist);
-  //       // this.handleSetList(playlist);
-  //     } else {
-  //       console.log("Storage data is empty, or:", params);
-  //     }
-  //   };
+    db.removeData("currentState", {});
+    if (
+      (Array.isArray(state.playList) && state.playList.length) ||
+      (Array.isArray(state.listOfPlaylist) && state.listOfPlaylist.length)
+    ) {
+      stateSavingItems.forEach((savingItemName: string) => {
+        // @ts-ignore: Unreachable code error
+        db.setData("currentState", { stateItem: savingItemName, value: state[savingItemName] });
+      });
+    }
+  };
 
-  //   db.getData("currentPlayList", setPlaylistFunc);
-  // };
+  handleGetStateFromStorage = () => {
+    // currentTrackNumber, isPlaing, currentPlayPosition;
+    const setStateFromStor = (params: any) => {
+      if (params && params.rows && params.rows.length) {
+        let currentState: any = {};
+
+        for (let i = 0; i < params.rows.length; i++) {
+          const rowItem: any = params.rows.item(i);
+
+          if (rowItem.stateItem && rowItem.value)
+            currentState = { ...currentState, [rowItem.stateItem]: rowItem.value };
+        }
+
+        if (Object.keys.length) this.setState(currentState);
+      } else {
+        console.log("Storage data is empty, or:", params);
+      }
+    };
+
+    db.getData("currentState", setStateFromStor);
+  };
 
   handleGetPlaylistFromStorage = () => {
     const setPlaylistFunc = (params: any) => {

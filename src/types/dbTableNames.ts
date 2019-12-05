@@ -1,4 +1,4 @@
-type dbTableNamesType = "playLists" | "settings" | "currentPlayList";
+type dbTableNamesType = "playLists" | "settings" | "currentPlayList" | "currentState";
 
 type txType = {
 	executeSql(
@@ -13,6 +13,7 @@ type tablesCreatorType = {
 	playLists(executor: txType): void;
 	settings(executor: txType): void;
 	currentPlayList(executor: txType): void;
+	currentState(executor: txType): void;
 };
 
 type bdType = {
