@@ -13,6 +13,29 @@ import { bodyType } from "../../types/bodyType";
 import "./style.scss";
 import { log } from "util";
 
+// type playerType = {
+//   activePlayerRef: ƒ (player)
+//   config: {soundcloud: {…}, youtube: {…}, facebook: {…}, dailymotion: {…}, vimeo: {…}, …}
+//   context: {}
+//   getCurrentTime: ƒ ()
+//   getDuration: ƒ ()
+//   getInternalPlayer: ƒ ()
+//   getSecondsLoaded: ƒ ()
+//   handleClickPreview: ƒ ()
+//   handleReady: ƒ ()
+//   player: Player {props: {…}, context: {…}, refs: {…}, updater: {…}, mounted: true, …}
+//   props: {url: "https://youtube.com/watch?v=WoLNa5S1hkU", onSeek: ƒ, onPlay: ƒ, onEnded: ƒ, onPause: ƒ, …}
+//   refs: {}
+//   seekTo: ƒ (fraction, type)
+//   showPreview: ƒ ()
+//   state: {showPreview: false}
+//   updater: {isMounted: ƒ, enqueueSetState: ƒ, enqueueReplaceState: ƒ, enqueueForceUpdate: ƒ}
+//   wrapper: div
+//   wrapperRef: ƒ (wrapper)
+//   _reactInternalFiber: FiberNode {tag: 1, key: null, stateNode: ReactPlayer, elementType: ƒ, type: ƒ, …}
+//   _reactInternalInstance: {_processChildContext: ƒ}
+// }
+
 type propsType = {
   runString: string;
   isShowFooter: boolean;
@@ -46,6 +69,12 @@ const Footer = ({
   onPrev,
   onNext,
 }: propsType) => {
+  const Player = React.useRef(null);
+  const Line = React.useRef(null);
+
+  const [isMouseDown, setIsMouseDown] = React.useState(false);
+  const [played, setPlayed] = React.useState(0);
+  const [seeking, setSeeking] = React.useState(false);
   const [bikeProgress, setBikeProgress] = React.useState(0);
   const [songLength, setSongLength] = React.useState(0);
   const mainContext: mainContextType = React.useContext<mainContextType>(MainContext);
@@ -77,9 +106,14 @@ const Footer = ({
   };
 
   const handleBikePress = (e: any) => {
-    console.log("====================================");
-    console.log(e.clientX, e.target.getBoundingClientRect());
-    console.log("====================================");
+    // console.log("====================================";
+    // console.log(e.clientX, e.target.getBoundingClientRect());
+    // console.log("====================================");
+  };
+
+  const handleSeek = (an: any) => {
+    // console.log("onSeek", an);
+    return;
   };
 
   const styleShowingFooter = {
@@ -105,9 +139,45 @@ const Footer = ({
     }
   };
 
+  const handleBikeMouseDown = (e: any) => {
+    // console.log("bike down");
+    // console.log(e.clientX);
+  };
+  const handleBikeMouseUp = (e: any) => {
+    // console.log("bike up");
+    // console.log(e.clientX, e.target.getBoundingClientRect());
+  };
+
+  const footerMouseDown = (e: any) => {
+    if (e.target.id === "progress_mover") {
+      setIsMouseDown(true);
+    }
+    // else if (e.target.className === "main-footer__progress-liner") {
+    //   const widthOfLine = Line.current.getBoundingClientRect().width;
+    //   const positionOnClick = e.clientX / widthOfLine;
+
+    //   Player.current.seekTo(positionOnClick);
+    // }
+  };
+
+  const footerMouseUp = (e: any) => {
+    const widthOfLine = Line.current.getBoundingClientRect().width;
+    const positionOnClick = e.clientX / widthOfLine;
+
+    Player.current.seekTo(positionOnClick);
+    setIsMouseDown(false);
+  };
+
   return (
-    <footer id="main-footer" style={isShowFooter ? styleShowingFooter : {}}>
+    <footer
+      id="main-footer"
+      style={isShowFooter ? styleShowingFooter : {}}
+      onMouseDown={footerMouseDown}
+      onMouseUp={footerMouseUp}
+    >
       <ReactPlayer
+        ref={Player}
+        onSeek={handleSeek}
         url={currentTrack ? currentTrack.url : ""}
         onPlay={() => setPlaying(true)}
         onEnded={handlePalyingEnd}
@@ -119,10 +189,18 @@ const Footer = ({
         height={0}
       />
       {isShowProgress && (
-        <div className="main-footer__progress-liner">
-          <span>{runString}</span>
-          <button style={{ marginLeft: `${bikeProgress}%` }} onMouseMove={handleBikePress}>
-            <i className="fas fa-biking"></i>
+        <div className="main-footer__progress-liner" ref={Line}>
+          <span className="noselect">{runString}</span>
+          <button
+            style={{
+              marginLeft: `${bikeProgress}%`,
+              color: isMouseDown ? "gray" : "blueviolet",
+              fontSize: isMouseDown ? 38 : 36,
+            }}
+            onMouseDown={handleBikeMouseDown}
+            onMouseUp={handleBikeMouseUp}
+          >
+            <i id="progress_mover" className="fas fa-biking"></i>
           </button>
           <div
             style={
