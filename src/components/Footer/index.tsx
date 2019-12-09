@@ -75,9 +75,12 @@ const Footer = ({
   const [isMouseDown, setIsMouseDown] = React.useState(false);
   const [played, setPlayed] = React.useState(0);
   const [seeking, setSeeking] = React.useState(false);
-  const [bikeProgress, setBikeProgress] = React.useState(0);
+  // const [bikeProgress, setBikeProgress] = React.useState(0);
+  const [bikePsition, setBikePosition] = React.useState(0);
   const [songLength, setSongLength] = React.useState(0);
   const mainContext: mainContextType = React.useContext<mainContextType>(MainContext);
+
+  const bikeSize = 36;
 
   const handlePlay = () => {
     onSavePlay(true);
@@ -93,6 +96,16 @@ const Footer = ({
     onNext();
   };
 
+  const handleBikePosition = (bikeShift: number = 0) => {
+    const widthOfLine = Line.current.getBoundingClientRect().width;
+
+    const bikeWidth = bikeSize * 1.25;
+
+    const lineWithoutBike = widthOfLine - bikeWidth;
+
+    return (bikeShift / 100) * lineWithoutBike;
+  };
+
   const handleDuration = (newDuration: number): void => {
     setSongLength(newDuration);
     setDuration(newDuration);
@@ -100,9 +113,9 @@ const Footer = ({
 
   const handleProgress = (newProgress: progressType): void => {
     setProgress(newProgress);
-    //       if (newProgress.played === 1) onNext();
 
-    setBikeProgress(~~(newProgress.played * 100) || 0);
+    // setBikeProgress(~~(newProgress.played * 100) || 0);
+    if (!isMouseDown) setBikePosition(handleBikePosition(~~(newProgress.played * 100) || 0));
   };
 
   const handleBikePress = (e: any) => {
@@ -148,7 +161,7 @@ const Footer = ({
     // console.log(e.clientX, e.target.getBoundingClientRect());
   };
 
-  const footerMouseDown = (e: any) => {
+  const handleLineMouseDown = (e: any) => {
     if (e.target.id === "progress_mover") {
       setIsMouseDown(true);
     }
@@ -160,7 +173,13 @@ const Footer = ({
     // }
   };
 
-  const footerMouseUp = (e: any) => {
+  const handleMouseMove = (e: any) => {
+    if (isMouseDown) {
+      setBikePosition(e.clientX - bikeSize / 2);
+    }
+  };
+
+  const handleLineMouseUp = (e: any) => {
     const widthOfLine = Line.current.getBoundingClientRect().width;
     const positionOnClick = e.clientX / widthOfLine;
 
@@ -171,9 +190,8 @@ const Footer = ({
   return (
     <footer
       id="main-footer"
+      onMouseMove={handleMouseMove}
       style={isShowFooter ? styleShowingFooter : {}}
-      onMouseDown={footerMouseDown}
-      onMouseUp={footerMouseUp}
     >
       <ReactPlayer
         ref={Player}
@@ -189,13 +207,28 @@ const Footer = ({
         height={0}
       />
       {isShowProgress && (
-        <div className="main-footer__progress-liner" ref={Line}>
+        <div
+          className="main-footer__progress-liner"
+          onMouseDown={handleLineMouseDown}
+          onMouseUp={handleLineMouseUp}
+          ref={Line}
+        >
           <span className="noselect">{runString}</span>
+          <div
+            style={{
+              zIndex: 0,
+              top: -40,
+              height: 40,
+              width: "100%",
+              position: "absolute",
+              background: "none",
+            }}
+          />
           <button
             style={{
-              marginLeft: `${bikeProgress}%`,
+              marginLeft: bikePsition, //`${bikeProgress}%`,
               color: isMouseDown ? "gray" : "blueviolet",
-              fontSize: isMouseDown ? 38 : 36,
+              fontSize: isMouseDown ? 38 : bikeSize,
             }}
             onMouseDown={handleBikeMouseDown}
             onMouseUp={handleBikeMouseUp}
