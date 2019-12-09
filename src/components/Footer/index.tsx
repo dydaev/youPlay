@@ -152,15 +152,6 @@ const Footer = ({
     }
   };
 
-  const handleBikeMouseDown = (e: any) => {
-    // console.log("bike down");
-    // console.log(e.clientX);
-  };
-  const handleBikeMouseUp = (e: any) => {
-    // console.log("bike up");
-    // console.log(e.clientX, e.target.getBoundingClientRect());
-  };
-
   const handleLineMouseDown = (e: any) => {
     if (e.target.id === "progress_mover") {
       setIsMouseDown(true);
@@ -175,13 +166,15 @@ const Footer = ({
 
   const handleMouseMove = (e: any) => {
     if (isMouseDown) {
-      setBikePosition(e.clientX - bikeSize / 2);
+      const x = typeof e.touches === "object" ? e.touches[0].clientX : e.clientX;
+      setBikePosition(x - bikeSize / 2);
     }
   };
 
   const handleLineMouseUp = (e: any) => {
     const widthOfLine = Line.current.getBoundingClientRect().width;
-    const positionOnClick = e.clientX / widthOfLine;
+    const x = typeof e.changedTouches === "object" ? e.changedTouches[0].clientX : e.clientX;
+    const positionOnClick = x / widthOfLine;
 
     Player.current.seekTo(positionOnClick);
     setIsMouseDown(false);
@@ -191,6 +184,7 @@ const Footer = ({
     <footer
       id="main-footer"
       onMouseMove={handleMouseMove}
+      onTouchMove={handleMouseMove}
       style={isShowFooter ? styleShowingFooter : {}}
     >
       <ReactPlayer
@@ -211,6 +205,8 @@ const Footer = ({
           className="main-footer__progress-liner"
           onMouseDown={handleLineMouseDown}
           onMouseUp={handleLineMouseUp}
+          onTouchStart={handleLineMouseDown}
+          onTouchEnd={handleLineMouseUp}
           ref={Line}
         >
           <span className="noselect">{runString}</span>
@@ -226,12 +222,10 @@ const Footer = ({
           />
           <button
             style={{
-              marginLeft: bikePsition, //`${bikeProgress}%`,
+              marginLeft: bikePsition || 0, //`${bikeProgress}%`,
               color: isMouseDown ? "gray" : "blueviolet",
               fontSize: isMouseDown ? 38 : bikeSize,
             }}
-            onMouseDown={handleBikeMouseDown}
-            onMouseUp={handleBikeMouseUp}
           >
             <i id="progress_mover" className="fas fa-biking"></i>
           </button>
