@@ -12,6 +12,13 @@ section#main-settings {
 	-ms-flex-pack: justify;
 	justify-content: space-between;
 
+	.version {
+		position: absolute;
+		bottom: 0;
+		color: gray;
+		font-size: 12px;
+	}
+
 	& > label {
 		padding: 5px 0;
 	}
@@ -27,7 +34,7 @@ section#main-settings {
 		flex-direction: column;
 		-webkit-box-pack: center;
 		-ms-flex-pack: center;
-		justify-content: center;
+		justify-content: space-between;
 		padding: 20px;
 		background: palegoldenrod;
 

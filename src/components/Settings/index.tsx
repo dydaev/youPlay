@@ -10,6 +10,7 @@ import { settingsType } from "../../types/settingsType";
 import "./style.scss";
 
 type PropsType = {
+  version: string;
   mainSettings: settingsType;
   onShow: boolean;
   onSetSettings(newSettings: settingsType): void;
@@ -117,6 +118,15 @@ class Settings extends React.Component<PropsType, StateType> {
         </div>
         <div>
           <label>
+            Waiting of downloading track
+            <input
+              id="timeoutOfReadingFile"
+              type="number"
+              value={settings.timeoutOfReadingFile}
+              onChange={this.handleChangeSettings}
+            />
+          </label>
+          <label>
             Play in tray
             <input
               id="playInTray"
@@ -143,6 +153,9 @@ class Settings extends React.Component<PropsType, StateType> {
               onChange={this.handleChangeSettings}
             />
           </label>
+          <div className="version">
+            <span>version:{this.props.version}</span>
+          </div>
           <div>
             <button onClick={this.handleSaveSettings}>Save</button>
             <button onClick={this.handleCancelSettings}>Cancel</button>

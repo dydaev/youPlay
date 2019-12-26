@@ -32,6 +32,7 @@ import "./main.scss";
 
 const stateSavingItems = ["currentTrackNumber", "currentPlaylistNumber"];
 
+const version = "1.0.1";
 export type PropsType = any;
 type StateType = {
   bodyFill: bodyType;
@@ -152,7 +153,34 @@ class Main extends React.Component<PropsType, StateType> {
     if (window) {
       lib.useFullScreenMode(this.state.settings.fullScreenMode);
     }
+    // this.handleUseMediaSession();
+    // if (window) {
+    //   window.addEventListener("keyup", function(e) {
+    //     console.log("pressed key play", e.keyCode);
+    //   });
+    // }
   }
+
+  handleUseMediaSession = () => {
+    const navigator = window.navigator;
+
+    try {
+      // @ts-ignore: Unreachable code error
+      navigator.mediaSession.setActionHandler("play", function(e: any) {
+        console.log("pressed key play", e);
+      });
+    } catch (e) {
+      console.log("error on set listner play in mediasession:", e);
+    }
+    try {
+      // @ts-ignore: Unreachable code error
+      navigator.mediaSession.setActionHandler("nexttrack", function(e: any) {
+        console.log("pressed key nexttrack", e);
+      });
+    } catch (e) {
+      console.log("error on set listner nexttrack in mediasession:", e);
+    }
+  };
 
   // handleSetShowMenu = (newState: boolean) => {
   //   this.setState({
@@ -414,7 +442,12 @@ class Main extends React.Component<PropsType, StateType> {
     const currentSong: playItemType | undefined =
       Array.isArray(playList) && playList.length ? playList[currentTrackNumber] : undefined;
 
-    // console.log(this.state);
+    // if (window) {
+    //   // @ts-ignore: Unreachable code error
+    //   console.log(window.navigator.mediaSession);
+    // } else {
+    //   console.log(this.state);
+    // }
 
     return (
       <MainContext.Provider
@@ -452,6 +485,7 @@ class Main extends React.Component<PropsType, StateType> {
           onClose={this.handleSetBodyFill}
         />
         <Settings
+          version={version}
           mainSettings={settings}
           onShow={bodyFill === "settings"}
           onSetSettings={this.handleSetSettings}

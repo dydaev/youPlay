@@ -1,6 +1,11 @@
 import * as React from "react";
 
 // @ts-ignore: Unreachable code error
+import MediaSession from "@mebtte/react-media-session";
+
+const axios = require("axios");
+
+// @ts-ignore: Unreachable code error
 import ReactPlayer from "react-player";
 import MainContext from "../../context";
 
@@ -72,6 +77,12 @@ const Footer = ({
   const Player = React.useRef(null);
   const Line = React.useRef(null);
 
+  React.useEffect(() => {
+    // console.log(Player.current);
+  });
+
+  const [url, setUrl] = React.useState("");
+  const [isPlayReady, setIsPlayReady] = React.useState(false);
   const [isMouseDown, setIsMouseDown] = React.useState(false);
   const [played, setPlayed] = React.useState(0);
   const [seeking, setSeeking] = React.useState(false);
@@ -156,12 +167,6 @@ const Footer = ({
     if (e.target.id === "progress_mover") {
       setIsMouseDown(true);
     }
-    // else if (e.target.className === "main-footer__progress-liner") {
-    //   const widthOfLine = Line.current.getBoundingClientRect().width;
-    //   const positionOnClick = e.clientX / widthOfLine;
-
-    //   Player.current.seekTo(positionOnClick);
-    // }
   };
 
   const handleMouseMove = (e: any) => {
@@ -180,6 +185,78 @@ const Footer = ({
     setIsMouseDown(false);
   };
 
+  const handleCheckStartPlay = () => {
+    // console.log("check playing", isPlaying, isPlayReady);
+    // setTimeout(() => {
+    //   if (isPlaying && !isPlayReady) {
+    //     console.log("time checkout, playing next", isPlaying, isPlayReady);
+    //     onNext();
+    //     setPlaying(true);
+    //   } else {
+    //     setIsPlayReady(false);
+    //     console.log("playing checkin");
+    //   }
+    // }, mainContext.settings.timeoutOfReadingFile);
+  };
+
+  const handlePlayerPlay = () => {
+    // console.log("player is playing");
+    if (!isPlaying) setPlaying(true);
+  };
+
+  const handleStartPlay = () => {
+    // console.log("strat plaing");
+    handleCheckStartPlay();
+  };
+
+  const handlePlayReady = () => {
+    // console.log("onReady");
+    setIsPlayReady(true);
+  };
+
+  const handleError = () => {
+    console.log("error of plaing");
+    onNext();
+  };
+
+  const changeUrl = (newUrl: string) => {
+    if (url !== newUrl) {
+      setUrl(newUrl);
+      console.log("changed url", url);
+    }
+  };
+
+  (() => {
+    const trackUrl = currentTrack && currentTrack.url ? currentTrack.url.replace(/&.*/, "") : "";
+    const trackID = trackUrl.replace(/^.*v=/, "");
+
+    // if (!trackUrl) setUrl("");
+
+    if (mainContext.settings.directYoutubeLoad && trackID) {
+      //  {
+      //   method: "GET", // *GET, POST, PUT, DELETE, etc.
+      //   mode: "no-cors", // no-cors, cors, *same-origin
+      //   cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
+      //   credentials: "same-origin", // include, *same-origin, omit
+      //   headers: {
+      //     "Content-Type": "application/text",
+      //     // 'Content-Type': 'application/x-www-form-urlencoded',
+      //   },
+      //   redirect: "follow", // manual, *follow, error
+      //   referrer: "no-referrer", // no-referrer, *client
+      // }
+      axios(`${mainContext.settings.downloadServer}/getTrackPath/${trackID}`)
+        .then((res: any) => {
+          if (res.statusText === "OK") {
+            changeUrl(`${mainContext.settings.downloadServer}/${res.data}`);
+          }
+        })
+        .catch((error: any) => console.error("Ошибка HTTP: " + error));
+    } else {
+      changeUrl(trackUrl);
+    }
+  })();
+
   return (
     <footer
       id="main-footer"
@@ -189,9 +266,12 @@ const Footer = ({
     >
       <ReactPlayer
         ref={Player}
+        onError={handleError}
+        onReady={handlePlayReady}
+        onStart={handleStartPlay}
         onSeek={handleSeek}
-        url={currentTrack ? currentTrack.url : ""}
-        onPlay={() => setPlaying(true)}
+        url={url}
+        onPlay={handlePlayerPlay}
         onEnded={handlePalyingEnd}
         onPause={() => setPlaying(false)}
         onProgress={handleProgress}
@@ -200,6 +280,18 @@ const Footer = ({
         width={0}
         height={0}
       />
+      <MediaSession
+        title={runString}
+        artist="Roma"
+        onPlay={() => {
+          console.log("use key play");
+          handlePlay();
+        }}
+        onPause={() => handleStop()}
+        onPreviousTrack={() => handlePrev()}
+        onNextTrack={() => handleNext()}
+      />
+      ;
       {isShowProgress && (
         <div
           className="main-footer__progress-liner"
