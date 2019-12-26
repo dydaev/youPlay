@@ -81,6 +81,7 @@ const Footer = ({
     // console.log(Player.current);
   });
 
+  const [playId, setPlayId] = React.useState("");
   const [url, setUrl] = React.useState("");
   const [isPlayReady, setIsPlayReady] = React.useState(false);
   const [isMouseDown, setIsMouseDown] = React.useState(false);
@@ -226,34 +227,55 @@ const Footer = ({
     }
   };
 
+  const changePlayId = (newPlayId: string) => {
+    if (playId !== newPlayId) {
+      setPlayId(newPlayId);
+    }
+  };
+
   (() => {
     const trackUrl = currentTrack && currentTrack.url ? currentTrack.url.replace(/&.*/, "") : "";
-    const trackID = trackUrl.replace(/^.*v=/, "");
+    const trackID = trackUrl.replace(/^.*v=/, ""); //deleting https://www.youtube.com/watch?v=
 
-    // if (!trackUrl) setUrl("");
-
-    if (mainContext.settings.directYoutubeLoad && trackID) {
-      //  {
-      //   method: "GET", // *GET, POST, PUT, DELETE, etc.
-      //   mode: "no-cors", // no-cors, cors, *same-origin
-      //   cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
-      //   credentials: "same-origin", // include, *same-origin, omit
-      //   headers: {
-      //     "Content-Type": "application/text",
-      //     // 'Content-Type': 'application/x-www-form-urlencoded',
-      //   },
-      //   redirect: "follow", // manual, *follow, error
-      //   referrer: "no-referrer", // no-referrer, *client
-      // }
-      axios(`${mainContext.settings.downloadServer}/getTrackPath/${trackID}`)
-        .then((res: any) => {
-          if (res.statusText === "OK") {
-            changeUrl(`${mainContext.settings.downloadServer}/${res.data}`);
-          }
-        })
-        .catch((error: any) => console.error("Ошибка HTTP: " + error));
-    } else {
-      changeUrl(trackUrl);
+    if (playId !== trackID) {
+      changePlayId(trackID);
+      if (mainContext.settings.directYoutubeLoad && trackID) {
+        //  {
+        //   method: "GET", // *GET, POST, PUT, DELETE, etc.
+        //   mode: "no-cors", // no-cors, cors, *same-origin
+        //   cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
+        //   credentials: "same-origin", // include, *same-origin, omit
+        //   headers: {
+        //     "Content-Type": "application/text",
+        //     // 'Content-Type': 'application/x-www-form-urlencoded',
+        //   },
+        //   redirect: "follow", // manual, *follow, error
+        //   referrer: "no-referrer", // no-referrer, *client
+        // }
+        axios(`${mainContext.settings.downloadServer}/getTrackPath/${trackID}`)
+          .then((res: any) => {
+            if (res.statusText === "OK") {
+              const answerArr = res.data.split(" "); // answer: downloaded track/path, or downloading track/path
+              if (answerArr[0] === "downloaded") {
+                changeUrl(`${mainContext.settings.downloadServer}/${answerArr[1]}`);
+              } else if (answerArr[0] === "downloading") {
+                setTimeout(() => {
+                  changeUrl(`${mainContext.settings.downloadServer}/${answerArr[1]}`);
+                }, 500);
+              }
+            }
+          })
+          .catch((error: any) => {
+            changeUrl(trackUrl);
+            mainContext.showMessage({
+              text: "Download server isn`t found. Use youtube!!!",
+              type: "WARNING",
+            });
+            console.error("Ошибка HTTP: " + error);
+          });
+      } else {
+        changeUrl(trackUrl);
+      }
     }
   })();
 
@@ -282,7 +304,7 @@ const Footer = ({
       />
       <MediaSession
         title={runString}
-        artist="Roma"
+        artist="Renat"
         onPlay={() => {
           console.log("use key play");
           handlePlay();

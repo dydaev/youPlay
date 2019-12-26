@@ -145,11 +145,20 @@ class Settings extends React.Component<PropsType, StateType> {
             />
           </label>
           <label>
-            Load from youtube
+            Use downloading server
             <input
               id="directYoutubeLoad"
               type="checkbox"
               checked={settings.directYoutubeLoad}
+              onChange={this.handleChangeSettings}
+            />
+          </label>
+          <label>
+            Server of downloading
+            <input
+              id="downloadServer"
+              type="text"
+              value={settings.downloadServer}
               onChange={this.handleChangeSettings}
             />
           </label>
