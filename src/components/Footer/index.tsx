@@ -223,7 +223,7 @@ const Footer = ({
   const changeUrl = (newUrl: string) => {
     if (url !== newUrl) {
       setUrl(newUrl);
-      console.log("changed url", url);
+      // console.log("changed url", url);
     }
   };
 

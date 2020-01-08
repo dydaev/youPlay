@@ -32,7 +32,7 @@ import "./main.scss";
 
 const stateSavingItems = ["currentTrackNumber", "currentPlaylistNumber"];
 
-const version = "1.0.1";
+const version = "1.0.2";
 export type PropsType = any;
 type StateType = {
   bodyFill: bodyType;
@@ -338,7 +338,7 @@ class Main extends React.Component<PropsType, StateType> {
 
           tempSetting = {
             ...tempSetting,
-            [rowItem.setting]: rowItem.value == "true",
+            [rowItem.setting]: JSON.parse(rowItem.value),
           };
         }
       } else {

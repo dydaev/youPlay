@@ -83,7 +83,9 @@ const dataB: bdType = {
     tableName: dbTableNamesType,
     selectors: { [key: string]: any },
     data: { [key: string]: any },
+    ifNotSet: boolean = true,
   ): Promise<any> => {
+    let transactionResult: number = 0;
     try {
       if (!dataB.db) {
         await dataB.connect();
@@ -127,9 +129,11 @@ const dataB: bdType = {
 
           const params: any[] = Object.values(data).concat(Object.values(selectors));
 
-          // console.log(query, params);
+          await tx.executeSql(query, params, (_: any, result: any): any => {
+            transactionResult = result.rowsAffected;
 
-          await tx.executeSql(query, params);
+            if (ifNotSet && !transactionResult) dataB.setData(tableName, data);
+          });
         },
         (err: string) => {
           console.log("what went wrong reading playlist to database " + tableName, err);
@@ -143,7 +147,7 @@ const dataB: bdType = {
       throw new Error("Can`t use database(");
     }
 
-    return null;
+    return transactionResult;
   },
   setData: async (tableName: dbTableNamesType, data: { [key: string]: any }): Promise<any> => {
     try {

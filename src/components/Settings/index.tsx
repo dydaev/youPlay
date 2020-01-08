@@ -50,34 +50,38 @@ class Settings extends React.Component<PropsType, StateType> {
     console.log("any settings", anySettings);
   };
 
-  getAllSettingsFromStorage = async () => {
-    const setSettingsFunc = (params: any): void => {
-      let tempSetting: settingsType;
-      if (params && params.rows && params.rows.length) {
-        for (let i = 0; i < params.rows.length; i++) {
-          const rowItem: { setting: string; value: any } = params.rows.item(i);
-          tempSetting = {
-            ...tempSetting,
-            [rowItem.setting]: rowItem.value == "true",
-          };
-        }
-      }
-      this.setSettings(tempSetting);
-    };
-    db.getData("settings", setSettingsFunc);
-  };
+  // getAllSettingsFromStorage = async () => {
+  //   const setSettingsFunc = (params: any): void => {
+  //     let tempSetting: settingsType;
+  //     if (params && params.rows && params.rows.length) {
+  //       for (let i = 0; i < params.rows.length; i++) {
+  //         const rowItem: { setting: string; value: any } = params.rows.item(i);
+  //         tempSetting = {
+  //           ...tempSetting,
+  //           [rowItem.setting]: rowItem.value == "true",
+  //         };
+  //       }
+  //     }
+  //     this.setSettings(tempSetting);
+  //   };
+  //   db.getData("settings", setSettingsFunc);
+  // };
 
   handleAddSettingToStorage = (name: string, value: any) => {
-    db.setData("settings", { setting: name, value: value });
-    console.log("add setting item");
+    db.setData("settings", { setting: name, value: JSON.stringify(value) });
+    // console.log("add setting item", name, value);
   };
   handleRemoveSettingOnStorage = (name: string, value: any) => {
     db.removeData("settings", { setting: name, value: value });
-    console.log("remove setting item");
+    // console.log("remove setting item");
   };
-  handleUpdateSettingOnStorage = (name: string, value: any) => {
-    db.updateData("settings", { setting: name }, { setting: name, value: value });
-    console.log("update setting item");
+  handleUpdateSettingOnStorage = async (name: string, value: any) => {
+    const res = await db.updateData(
+      "settings",
+      { setting: name },
+      { setting: name, value: JSON.stringify(value) },
+    );
+    // console.log("update setting item", res, name, JSON.stringify(value));
   };
 
   handleResetSettings = () => {
