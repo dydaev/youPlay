@@ -286,6 +286,18 @@ const Footer = ({
       onTouchMove={handleMouseMove}
       style={isShowFooter ? styleShowingFooter : {}}
     >
+      {/.+youtube\.com.*/.test(url) && (
+        <img
+          style={{
+            position: "absolute",
+            width: "17%",
+            right: 24,
+            top: -85,
+            opacity: 0.6,
+          }}
+          src="../../img/youtube_dark.png"
+        />
+      )}
       <ReactPlayer
         ref={Player}
         onError={handleError}
