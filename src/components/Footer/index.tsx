@@ -289,13 +289,18 @@ const Footer = ({
       {/.+youtube\.com.*/.test(url) && (
         <img
           style={{
-            position: "absolute",
-            width: "17%",
-            right: 24,
-            top: -85,
-            opacity: 0.6,
+            position: "fixed",
+            width: "20%",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            opacity: 0.3,
           }}
-          src="../../img/youtube_dark.png"
+          src={
+            process.env.NODE_ENV == "development"
+              ? "../../img/youtube_dark.png"
+              : "img/youtube_dark.png"
+          }
         />
       )}
       <ReactPlayer
