@@ -109,13 +109,16 @@ const Footer = ({
   };
 
   const handleBikePosition = (bikeShift: number = 0) => {
-    const widthOfLine = Line.current.getBoundingClientRect().width;
+    if (Line && Line.current) {
+      const widthOfLine = Line.current.getBoundingClientRect().width;
 
-    const bikeWidth = bikeSize * 1.25;
+      const bikeWidth = bikeSize * 1.25;
 
-    const lineWithoutBike = widthOfLine - bikeWidth;
+      const lineWithoutBike = widthOfLine - bikeWidth;
 
-    return (bikeShift / 100) * lineWithoutBike;
+      return (bikeShift / 100) * lineWithoutBike;
+    }
+    return 0;
   };
 
   const handleDuration = (newDuration: number): void => {

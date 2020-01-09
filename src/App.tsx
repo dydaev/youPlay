@@ -300,7 +300,7 @@ class Main extends React.Component<PropsType, StateType> {
 
         if (Object.keys.length) this.setState(currentState);
       } else {
-        console.log("Storage data is empty, or:", params);
+        // console.log("Storage data is empty, or:", params);
       }
     };
 

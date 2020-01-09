@@ -26,7 +26,9 @@ const PlayList = ({ onPlay, onSetCurrentTrack, onClose }: propsType) => {
 
 	return (
 		<>
-			<div style={{ overflow: "scroll", flexShrink: 10 /*, height: "100%" */ }}>
+			<div
+				style={{ overflow: "scroll", flexShrink: 10, overflowX: "hidden" /*, height: "100%" */ }}
+			>
 				<ul className="main-component_play-list">
 					{Array.isArray(mainContext.playList) &&
 						mainContext.playList.map((playItem: playItemType, index: number): any => (

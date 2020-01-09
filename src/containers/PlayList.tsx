@@ -97,8 +97,6 @@ class PlayListContainer extends React.Component<propsType> {
 					playlist = [...playlist, rowItem];
 				}
 				this.props.onSetPlayList(playlist);
-			} else {
-				console.log("Storage data is empty, or:", params);
 			}
 		};
 
