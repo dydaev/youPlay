@@ -185,8 +185,8 @@ const dataB: bdType = {
           );
         },
         (err: string) => {
-          console.log("what went wrong reading playlist to database " + tableName, err);
-          throw new Error("Can`t set data to database " + tableName + " because: " + err);
+          console.error("what went wrong reading playlist to database " + tableName, err);
+//          throw new Error("Can`t set data to database " + tableName + " because: " + err);
         },
       );
 

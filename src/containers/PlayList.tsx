@@ -127,11 +127,33 @@ class PlayListContainer extends React.Component<propsType> {
 		if (content && content.length) {
 			switch (true) {
 				case /^\D*youtube.{5}watch\?.+$/.test(playListUrl):
-					return Strategy.playlistWith(content);
+					try {
+						const parsedContent: any = await Strategy.playlistWith(content);
+						if (parsedContent) return parsedContent;
+
+						throw "Can`t get playlist!";
+					} catch (e) {
+						this.context.showMessage({
+							type: "WARNING",
+							text: e,
+						});
+						return null;
+					}
 					break;
 
 				case /^\D*youtube.{5}playlist\?.+$/.test(playListUrl):
-					return Strategy.playlist(content);
+					try {
+						const parsedContent: any = await Strategy.playlist(content);
+						if (parsedContent) return parsedContent;
+
+						throw "Can`t get playlist!";
+					} catch (e) {
+						this.context.showMessage({
+							type: "WARNING",
+							text: e,
+						});
+						return null;
+					}
 					break;
 
 				default:
@@ -142,6 +164,7 @@ class PlayListContainer extends React.Component<propsType> {
 					return null;
 				// break;
 			}
+			return null;
 		}
 
 		this.context.showMessage({
