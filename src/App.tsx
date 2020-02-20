@@ -32,7 +32,7 @@ import "./main.scss";
 
 const stateSavingItems = ["currentTrackNumber", "currentPlaylistNumber"];
 
-const version = "1.0.2";
+const version = "1.0.3";
 export type PropsType = any;
 type StateType = {
   bodyFill: bodyType;

@@ -158,6 +158,15 @@ class Settings extends React.Component<PropsType, StateType> {
             />
           </label>
           <label>
+            Use third party server for playlist(often busy!)
+            <input
+              id="thirdPartyServerForPlaylist"
+              type="checkbox"
+              checked={settings.thirdPartyServerForPlaylist}
+              onChange={this.handleChangeSettings}
+            />
+          </label>
+          <label>
             Server of downloading
             <input
               id="downloadServer"

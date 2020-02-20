@@ -180,10 +180,46 @@ class PlayListContainer extends React.Component<propsType> {
 		});
 	};
 
+	handleGetYouListFromYouServer = async (url: string) => {
+		if (url.includes("list")) {
+			const stringOfStartListId: string = "list=";
+			const stringOfEndListId: string = "&";
+
+			const startOfListId = url.indexOf(stringOfStartListId) + stringOfStartListId.length;
+			const endOfListId = url.indexOf(stringOfEndListId, startOfListId);
+
+			const listId =
+				endOfListId >= 0 ? url.slice(startOfListId, endOfListId) : url.slice(startOfListId);
+
+			const proxyurl = this.context.settings.downloadServer + "/getPlayList";
+
+			let content: string | void = await fetch(`${proxyurl}/${listId}`)
+				.then(async response => response.text())
+				.then(playlistFromServer => JSON.parse(playlistFromServer))
+				.catch(ee => {
+					if (typeof this.context !== "undefined" && this.context.showMessage) {
+						this.context.showMessage({
+							type: "WARNING",
+							text: "It seems the server is busy. Try the server later(",
+						});
+					} else {
+						console.log("Cant access response. Blocked by browser?", ee);
+					}
+				});
+
+			return content;
+		}
+		// const pleylistItem: playItemType;
+	};
+
 	handleUpdatePlaylist = async (url: string = undefined) => {
 		if (this.props.urlOfList) {
 			this.handleSetLoading(true);
-			const newList: any = await this.handleGetYouList(url ? url : this.props.urlOfList);
+
+			const newList: any = this.context.settings.thirdPartyServerForPlaylist
+				? await this.handleGetYouList(url ? url : this.props.urlOfList)
+				: await this.handleGetYouListFromYouServer(url ? url : this.props.urlOfList);
+
 			this.handleSetLoading(false);
 			// TODO: check different between newList and this.state.playListFromStor
 

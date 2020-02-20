@@ -6,4 +6,5 @@ export const settingsModel: settingsType = {
 	playInTray: true,
 	timeoutOfReadingFile: 2000,
 	downloadServer: "http://localhost:3000",
+    thirdPartyServerForPlaylist: false
 };
