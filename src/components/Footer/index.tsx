@@ -46,16 +46,19 @@ type propsType = {
   isShowFooter: boolean;
   isShowProgress: boolean;
   isPlaying: boolean;
+  isMinimize: boolean;
   currentTrack: playItemType;
   playStrategic: playStrategicType;
   setPlaying(arg: boolean): void;
   onSavePlay(arg: boolean): void;
   setDuration(newDuration: number): void;
   setProgress(newProgress: progressType): void;
+  onToogleMinimize(): void;
   onPlay(trackNumber: number): void;
   onStop(): void;
   onPrev(): void;
   onNext(): void;
+  onShowFooter(): void;
 };
 
 const Footer = ({
@@ -73,6 +76,9 @@ const Footer = ({
   onStop,
   onPrev,
   onNext,
+  onToogleMinimize,
+  isMinimize,
+  onShowFooter,
 }: propsType) => {
   const Player = React.useRef(null);
   const Line = React.useRef(null);
@@ -145,6 +151,7 @@ const Footer = ({
   };
 
   const styleShowingFooter = {
+    height: mainContext.settings.showVideo ? "100%" : undefined,
     bottom: 0,
   };
 
@@ -287,9 +294,9 @@ const Footer = ({
       id="main-footer"
       onMouseMove={handleMouseMove}
       onTouchMove={handleMouseMove}
-      style={isShowFooter ? styleShowingFooter : {}}
+      onClick={isMinimize ? onShowFooter : null}
     >
-      {/.+youtube\.com.*/.test(url) && (
+      {/.+youtube\.com.*/.test(url) && !mainContext.settings.showVideo && (
         <img
           style={{
             position: "fixed",
@@ -306,6 +313,7 @@ const Footer = ({
           }
         />
       )}
+      <div className="main-footer_yout-shield" onClick={onShowFooter} />
       <ReactPlayer
         ref={Player}
         onError={handleError}
@@ -319,8 +327,9 @@ const Footer = ({
         onProgress={handleProgress}
         onDuration={handleDuration}
         playing={isPlaying}
-        width={0}
-        height={0}
+        width={mainContext.settings.showVideo ? "100%" : 0}
+        height={mainContext.settings.showVideo ? "100%" : 0}
+        style={{ position: "fixed", top: 0 }}
       />
       <MediaSession
         title={runString}
@@ -333,58 +342,59 @@ const Footer = ({
         onPreviousTrack={() => handlePrev()}
         onNextTrack={() => handleNext()}
       />
-      ;
-      {isShowProgress && (
-        <div
-          className="main-footer__progress-liner"
-          onMouseDown={handleLineMouseDown}
-          onMouseUp={handleLineMouseUp}
-          onTouchStart={handleLineMouseDown}
-          onTouchEnd={handleLineMouseUp}
-          ref={Line}
-        >
-          <span className="noselect">{runString}</span>
+      <div className="main-footer_hider" style={isShowFooter ? { bottom: 0 } : {}}>
+        {isShowProgress && (
           <div
-            style={{
-              zIndex: 0,
-              top: -40,
-              height: 40,
-              width: "100%",
-              position: "absolute",
-              background: "none",
-            }}
-          />
-          <button
-            style={{
-              marginLeft: bikePsition || 0, //`${bikeProgress}%`,
-              color: isMouseDown ? "gray" : "blueviolet",
-              fontSize: isMouseDown ? 38 : bikeSize,
-            }}
+            className="main-footer__progress-liner"
+            onMouseDown={handleLineMouseDown}
+            onMouseUp={handleLineMouseUp}
+            onTouchStart={handleLineMouseDown}
+            onTouchEnd={handleLineMouseUp}
+            ref={Line}
           >
-            <i id="progress_mover" className="fas fa-biking"></i>
+            <span className="noselect">{runString}</span>
+            <div
+              style={{
+                zIndex: 0,
+                top: -40,
+                height: 40,
+                width: "100%",
+                position: "absolute",
+                background: "none",
+              }}
+            />
+            <button
+              style={{
+                marginLeft: bikePsition || 0, //`${bikeProgress}%`,
+                color: isMouseDown ? "gray" : "blueviolet",
+                fontSize: isMouseDown ? 38 : bikeSize,
+              }}
+            >
+              <i id="progress_mover" className="fas fa-biking"></i>
+            </button>
+            <div
+              style={
+                mainContext.progress && mainContext.progress.loaded
+                  ? { width: `${mainContext.progress.loaded * 100}%` }
+                  : { background: "lightgray" }
+              }
+            />
+          </div>
+        )}
+        <div className="main-footer__control-buttons">
+          <button style={{ fontSize: 30 }} onClick={handlePrev}>
+            <i className="fas fa-angle-double-left"></i>
           </button>
-          <div
-            style={
-              mainContext.progress && mainContext.progress.loaded
-                ? { width: `${mainContext.progress.loaded * 100}%` }
-                : { background: "lightgray" }
-            }
-          />
-        </div>
-      )}
-      <div className="main-footer__control-buttons">
-        <button style={{ fontSize: 30 }} onClick={handlePrev}>
-          <i className="fas fa-angle-double-left"></i>
-        </button>
-        <button onClick={handlePlay}>
-          <i className={isPlaying ? "fas fa-pause" : "fas fa-biking"}></i>
-        </button>
-        {/*// <button onClick={handleStop}>
+          <button onClick={handlePlay}>
+            <i className={isPlaying ? "fas fa-pause" : "fas fa-biking"}></i>
+          </button>
+          {/*// <button onClick={handleStop}>
         //   <i className="fas fa-stop"></i>
         // </button>*/}
-        <button style={{ fontSize: 30 }} onClick={handleNext}>
-          <i className="fas fa-angle-double-right"></i>
-        </button>
+          <button style={{ fontSize: 30 }} onClick={handleNext}>
+            <i className="fas fa-angle-double-right"></i>
+          </button>
+        </div>
       </div>
     </footer>
   );

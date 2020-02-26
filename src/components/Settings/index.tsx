@@ -149,6 +149,15 @@ class Settings extends React.Component<PropsType, StateType> {
             />
           </label>
           <label>
+            Show video
+            <input
+              id="showVideo"
+              type="checkbox"
+              checked={settings.showVideo}
+              onChange={this.handleChangeSettings}
+            />
+          </label>
+          <label>
             Use downloading server
             <input
               id="directYoutubeLoad"

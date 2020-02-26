@@ -14,28 +14,29 @@ footer#main-footer {
 	padding: 3px 1px;
 	position: fixed;
 	width: 100%;
-	bottom: -108px;
+	bottom: 0px; //-108
 	background: rgb(0, 0, 0);
-	background: -webkit-gradient(
-		linear,
-		left bottom,
-		left top,
-		from(rgba(0, 0, 0, 0.4)),
-		color-stop(20%, rgba(0, 0, 0, 0.4)),
-		color-stop(95%, rgba(0, 0, 0, 0))
-	);
-	background: -o-linear-gradient(
-		bottom,
-		rgba(0, 0, 0, 0.4) 0%,
-		rgba(0, 0, 0, 0.4) 20%,
-		rgba(0, 0, 0, 0) 95%
-	);
-	background: linear-gradient(
-		0deg,
-		rgba(0, 0, 0, 0.4) 0%,
-		rgba(0, 0, 0, 0.4) 20%,
-		rgba(0, 0, 0, 0) 95%
-	);
+	left: -1px;
+	// background: -webkit-gradient(
+	// 	linear,
+	// 	left bottom,
+	// 	left top,
+	// 	from(rgba(0, 0, 0, 0.4)),
+	// 	color-stop(20%, rgba(0, 0, 0, 0.4)),
+	// 	color-stop(95%, rgba(0, 0, 0, 0))
+	// );
+	// background: -o-linear-gradient(
+	// 	bottom,
+	// 	rgba(0, 0, 0, 0.4) 0%,
+	// 	rgba(0, 0, 0, 0.4) 20%,
+	// 	rgba(0, 0, 0, 0) 95%
+	// );
+	// background: linear-gradient(
+	// 	0deg,
+	// 	rgba(0, 0, 0, 0.4) 0%,
+	// 	rgba(0, 0, 0, 0.4) 20%,
+	// 	rgba(0, 0, 0, 0) 95%
+	// );
 
 	-webkit-transition: 1s;
 
@@ -43,64 +44,108 @@ footer#main-footer {
 
 	transition: 1s;
 
-	& > div.main-footer__progress-liner {
-		position: relative;
-		height: 5px;
+	div.main-footer_yout-shield {
+		position: fixed;
+		height: 100%;
+		top: 0;
 		width: 100%;
+		z-index: 2;
+	}
 
-		& > span {
+	& > div.main-footer_hider {
+		position: fixed;
+		z-index: 3;
+		bottom: -100px;
+		width: 100%;
+		-webkit-transition: 1s;
+
+		-o-transition: 1s;
+
+		transition: 1s;
+
+		& > div.main-footer__progress-liner {
 			position: absolute;
-			bottom: 2px;
-			color: gray;
-			font-size: 27px;
-			white-space: nowrap;
+			bottom: 58px;
+			height: 5px;
+			width: 100%;
 
-			-webkit-animation-duration: 20s;
+			& > span {
+				position: absolute;
+				bottom: 2px;
+				color: gray;
+				font-size: 23px;
+				white-space: nowrap;
 
-			animation-duration: 20s;
-			-webkit-animation-name: slidein;
-			animation-name: slidein;
-			-webkit-animation-timing-function: linear;
-			animation-timing-function: linear;
-			-webkit-animation-iteration-count: infinite;
-			animation-iteration-count: infinite;
-			-webkit-animation-delay: 2s;
-			animation-delay: 2s;
+				-webkit-animation-duration: 20s;
+
+				animation-duration: 20s;
+				-webkit-animation-name: slidein;
+				animation-name: slidein;
+				-webkit-animation-timing-function: linear;
+				animation-timing-function: linear;
+				-webkit-animation-iteration-count: infinite;
+				animation-iteration-count: infinite;
+				-webkit-animation-delay: 2s;
+				animation-delay: 2s;
+			}
+
+			& > button {
+				position: absolute;
+				bottom: 0;
+				padding: 0;
+				height: 45px;
+				border: 0;
+				border-radius: 50%;
+				font-size: 36px;
+				background: none;
+				color: blueviolet;
+			}
+
+			& > div {
+				height: 3px;
+				background: lightblue;
+			}
 		}
-
-		& > button {
+		& > div.main-footer__control-buttons {
+			display: -webkit-box;
+			display: -ms-flexbox;
+			display: flex;
+			-webkit-box-pack: justify;
+			-ms-flex-pack: justify;
+			justify-content: space-between;
+			padding: 5px 0;
 			position: absolute;
 			bottom: 0;
-			padding: 0;
-			height: 49px;
-			border: 0;
-			border-radius: 50%;
-			font-size: 36px;
-			background: none;
-			color: blueviolet;
-		}
-
-		& > div {
-			height: 3px;
-			background: lightblue;
-		}
-	}
-	& > div.main-footer__control-buttons {
-		display: -webkit-box;
-		display: -ms-flexbox;
-		display: flex;
-		-webkit-box-pack: justify;
-		-ms-flex-pack: justify;
-		justify-content: space-between;
-		padding: 5px 0;
-
-		& > button {
-			height: 50px;
 			width: 100%;
-			font-size: 25px;
-			border: 0;
-			background: none;
-			color: $buttons-color;
+			z-index: 3;
+			background: -webkit-gradient(
+				linear,
+				left bottom,
+				left top,
+				from(rgba(0, 0, 0, 0.4)),
+				color-stop(20%, rgba(0, 0, 0, 0.4)),
+				color-stop(95%, rgba(0, 0, 0, 0))
+			);
+			background: -o-linear-gradient(
+				bottom,
+				rgba(0, 0, 0, 0.4) 0%,
+				rgba(0, 0, 0, 0.4) 20%,
+				rgba(0, 0, 0, 0) 95%
+			);
+			background: linear-gradient(
+				0deg,
+				rgba(0, 0, 0, 0.4) 0%,
+				rgba(0, 0, 0, 0.4) 20%,
+				rgba(0, 0, 0, 0) 95%
+			);
+			& > button {
+				height: 46px;
+				width: 100%;
+				font-size: 25px;
+				border: 0;
+				background: none;
+				color: $buttons-color;
+			}
 		}
 	}
 }

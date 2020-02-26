@@ -32,7 +32,7 @@ import "./main.scss";
 
 const stateSavingItems = ["currentTrackNumber", "currentPlaylistNumber"];
 
-const version = "1.0.3";
+const version = "1.1.0";
 export type PropsType = any;
 type StateType = {
   bodyFill: bodyType;
@@ -42,6 +42,7 @@ type StateType = {
   showMessage: messageType | null;
   playStrategic: playStrategicType;
   listOfPlaylist: listOfPlaylistItemType[];
+  footerIsMinimize: boolean;
   playUrl: string;
   duration: number;
   isPlaying: boolean;
@@ -67,6 +68,7 @@ class Main extends React.Component<PropsType, StateType> {
     currentPlaylistNumber: 0,
     progress: progressModel,
     settings: settingsModel,
+    footerIsMinimize: false,
   };
 
   UNSAFE_componentWillMount() {
@@ -160,6 +162,12 @@ class Main extends React.Component<PropsType, StateType> {
     //   });
     // }
   }
+
+  handleToggleFooterMinimize = () => {
+    this.setState({
+      footerIsMinimize: !this.state.footerIsMinimize,
+    });
+  };
 
   handleUseMediaSession = () => {
     const navigator = window.navigator;
@@ -421,6 +429,13 @@ class Main extends React.Component<PropsType, StateType> {
     });
   };
 
+  handleShowMenu = () => {
+    this.setState({
+      isShowMenu: !this.state.isShowMenu,
+      footerIsMinimize: !this.state.footerIsMinimize,
+    });
+  };
+
   render() {
     const {
       bodyFill,
@@ -437,6 +452,7 @@ class Main extends React.Component<PropsType, StateType> {
       isSavePlaying,
       currentTrackNumber,
       currentPlaylistNumber,
+      footerIsMinimize,
     } = this.state;
 
     const currentSong: playItemType | undefined =
@@ -466,6 +482,7 @@ class Main extends React.Component<PropsType, StateType> {
         <Message message={showMessage} onHide={() => this.handleSetMessage(null)} />
         <Header
           isShow={isShowMenu && bodyFill !== "settings" && bodyFill !== "list"}
+          onShowMenu={this.handleShowMenu}
           onClickButton={this.handleSetBodyFill}
           bodyType={bodyFill}
         />
@@ -491,16 +508,18 @@ class Main extends React.Component<PropsType, StateType> {
           onSetSettings={this.handleSetSettings}
           onClose={this.handleSetBodyFill}
         />
-        <main onClick={() => this.setState({ isShowMenu: !isShowMenu })}>
+        <main onClick={this.handleShowMenu}>
           <MainTimer onShow={isShowMenu} duration={duration} progress={progress} />
-          <img
-            src={
-              currentSong
-                ? currentSong.image
-                : "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTCzlqv9WfntXDekHwsLkf5NXI9isMvdwoVLgrQveqgexa10bWp"
-            }
-            alt="song image"
-          />
+          {!this.state.settings.showVideo && (
+            <img
+              src={
+                currentSong
+                  ? currentSong.image
+                  : "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTCzlqv9WfntXDekHwsLkf5NXI9isMvdwoVLgrQveqgexa10bWp"
+              }
+              alt="song image"
+            />
+          )}
         </main>
         <Footer
           runString={
@@ -511,6 +530,8 @@ class Main extends React.Component<PropsType, StateType> {
           isShowFooter={isShowMenu && bodyFill !== "settings" && bodyFill !== "list"}
           isShowProgress={bodyFill !== "list"}
           isPlaying={isPlaying}
+          isMinimize={footerIsMinimize}
+          onToogleMinimize={this.handleToggleFooterMinimize}
           playStrategic={playStrategic}
           currentTrack={
             Array.isArray(playList) && playList.length ? playList[currentTrackNumber] : null
@@ -523,6 +544,7 @@ class Main extends React.Component<PropsType, StateType> {
           onStop={this.handleStop}
           onPrev={this.handlePrev}
           onNext={this.handleNext}
+          onShowFooter={this.handleShowMenu}
         />
       </MainContext.Provider>
     );

@@ -4,7 +4,8 @@ type settingsType = {
 	playInTray: boolean;
 	timeoutOfReadingFile: number;
 	downloadServer: string;
-    thirdPartyServerForPlaylist: boolean;
+	thirdPartyServerForPlaylist: boolean;
+	showVideo: boolean;
 };
 
 export { settingsType };

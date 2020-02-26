@@ -30,7 +30,7 @@ const PlayList = ({ onPlay, onSetCurrentTrack, onClose }: propsType) => {
 				style={{ overflow: "scroll", flexShrink: 10, overflowX: "hidden" /*, height: "100%" */ }}
 			>
 				<ul className="main-component_play-list">
-					{Array.isArray(mainContext.playList) &&
+					{Array.isArray(mainContext.playList) ? (
 						mainContext.playList.map((playItem: playItemType, index: number): any => (
 							<li key={"listOfTracks" + index.toString()} onClick={() => handlePlay(index)}>
 								<img
@@ -70,7 +70,10 @@ const PlayList = ({ onPlay, onSetCurrentTrack, onClose }: propsType) => {
 									</div>
 								)}
 							</li>
-						))}
+						))
+					) : (
+						<li>Play list is empty, pleas add or chose playlist in manager</li>
+					)}
 				</ul>
 			</div>
 		</>

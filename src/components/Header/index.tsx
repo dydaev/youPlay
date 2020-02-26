@@ -7,12 +7,13 @@ import { bodyType } from "../../types/bodyType";
 import "./style.scss";
 
 type props = {
+	onShowMenu(): void;
 	onClickButton(bodyType: bodyType): void;
 	bodyType: bodyType;
 	isShow: boolean;
 };
 
-const Header = ({ onClickButton, bodyType, isShow }: props) => {
+const Header = ({ onClickButton, bodyType, isShow, onShowMenu }: props) => {
 	const styleOfShowHeader = {
 		top: 0,
 		// position: "static",
@@ -28,7 +29,7 @@ const Header = ({ onClickButton, bodyType, isShow }: props) => {
 			>
 				<i className="fas fa-tools"></i>
 			</button>
-			<h5>-=plaYoi=-</h5>
+			<h5 onClick={onShowMenu}>-=plaYo=-</h5>
 			<button
 				onClick={() => (bodyType !== "list" ? onClickButton("list") : onClickButton("player"))}
 			>
