@@ -48,6 +48,8 @@ type propsType = {
   isPlaying: boolean;
   isMinimize: boolean;
   currentTrack: playItemType;
+  currentTrackNumber: number;
+  playList: playItemType[];
   playStrategic: playStrategicType;
   setPlaying(arg: boolean): void;
   onSavePlay(arg: boolean): void;
@@ -62,6 +64,8 @@ type propsType = {
 };
 
 const Footer = ({
+  playList,
+  currentTrackNumber,
   runString,
   isShowProgress = true,
   isShowFooter,
@@ -82,6 +86,7 @@ const Footer = ({
 }: propsType) => {
   const Player = React.useRef(null);
   const Line = React.useRef(null);
+  const Shield = React.useRef(null);
 
   React.useEffect(() => {
     // console.log(Player.current);
@@ -90,7 +95,12 @@ const Footer = ({
   const [playId, setPlayId] = React.useState("");
   const [url, setUrl] = React.useState("");
   const [isPlayReady, setIsPlayReady] = React.useState(false);
-  const [isMouseDown, setIsMouseDown] = React.useState(false);
+  const [sliderStyle, setSliderStyle] = React.useState({});
+  const [positionStartFlipMouseDown, setPositionStartFlipMouseDown] = React.useState({
+    x: 0,
+    y: 0,
+  });
+  const [isLineMouseDown, setIsLineMouseDown] = React.useState(false);
   const [played, setPlayed] = React.useState(0);
   const [seeking, setSeeking] = React.useState(false);
   // const [bikeProgress, setBikeProgress] = React.useState(0);
@@ -136,7 +146,7 @@ const Footer = ({
     setProgress(newProgress);
 
     // setBikeProgress(~~(newProgress.played * 100) || 0);
-    if (!isMouseDown) setBikePosition(handleBikePosition(~~(newProgress.played * 100) || 0));
+    if (!isLineMouseDown) setBikePosition(handleBikePosition(~~(newProgress.played * 100) || 0));
   };
 
   const handleBikePress = (e: any) => {
@@ -176,14 +186,58 @@ const Footer = ({
 
   const handleLineMouseDown = (e: any) => {
     if (e.target.id === "progress_mover") {
-      setIsMouseDown(true);
+      setIsLineMouseDown(true);
     }
   };
 
   const handleMouseMove = (e: any) => {
-    if (isMouseDown) {
+    // console.log("mouseMove");
+
+    if (isLineMouseDown) {
       const x = typeof e.touches === "object" ? e.touches[0].clientX : e.clientX;
       setBikePosition(x - bikeSize / 2);
+    }
+    if (positionStartFlipMouseDown.x || positionStartFlipMouseDown.y) {
+      const thresholdOfShift = 25;
+
+      const widthOfShield = Shield.current.getBoundingClientRect().width;
+      const heightOfShield = Shield.current.getBoundingClientRect().height;
+
+      const x = typeof e.changedTouches === "object" ? e.changedTouches[0].clientX : e.clientX;
+      const y = typeof e.changedTouches === "object" ? e.changedTouches[0].clientY : e.clientY;
+
+      const mousePosition = {
+        x: x,
+        y: y,
+      };
+      const mouseStartPosition = {
+        x: positionStartFlipMouseDown.x,
+        y: positionStartFlipMouseDown.y,
+      };
+
+      const mouseShiftPosition = {
+        x: mousePosition.x - mouseStartPosition.x,
+        y: mousePosition.y - mouseStartPosition.y,
+      };
+
+      if (
+        (mouseShiftPosition.x > 0 && mouseShiftPosition.x > mouseShiftPosition.y) ||
+        (mouseShiftPosition.x < 0 && mouseShiftPosition.x < mouseShiftPosition.y)
+      ) {
+        if (mouseShiftPosition.x > thresholdOfShift) {
+          setSliderStyle({
+            marginLeft: mouseShiftPosition.x,
+            background: "blue",
+            opacity: mouseShiftPosition.x / 500,
+          });
+        } else if (mouseShiftPosition.x < thresholdOfShift * -1) {
+          setSliderStyle({
+            marginRight: mouseShiftPosition.x * -1,
+            background: "red",
+            opacity: (mouseShiftPosition.x * -1) / 500,
+          });
+        }
+      }
     }
   };
 
@@ -193,7 +247,70 @@ const Footer = ({
     const positionOnClick = x / widthOfLine;
 
     Player.current.seekTo(positionOnClick);
-    setIsMouseDown(false);
+    setIsLineMouseDown(false);
+    setSliderStyle({});
+    setPositionStartFlipMouseDown({ x: 0, y: 0 });
+  };
+
+  const handleFlipMouseDown = (e: any) => {
+    if (e.target.id === "yout_shield") {
+      const widthOfShield = Shield.current.getBoundingClientRect().width;
+      const heightOfShield = Shield.current.getBoundingClientRect().height;
+      const x = typeof e.changedTouches === "object" ? e.changedTouches[0].clientX : e.clientX;
+      const y = typeof e.changedTouches === "object" ? e.changedTouches[0].clientY : e.clientY;
+      const positionOnClick = { x: x, y: y };
+      setPositionStartFlipMouseDown(positionOnClick);
+    }
+  };
+
+  const handleFlipMouseUp = (e: any) => {
+    if (e.target.id === "yout_shield") {
+      const thresholdOfShift = 50;
+
+      const widthOfShield = Shield.current.getBoundingClientRect().width;
+      const heightOfShield = Shield.current.getBoundingClientRect().height;
+
+      const x = typeof e.changedTouches === "object" ? e.changedTouches[0].clientX : e.clientX;
+      const y = typeof e.changedTouches === "object" ? e.changedTouches[0].clientY : e.clientY;
+
+      const mousePosition = {
+        x: x,
+        y: y,
+      };
+      const mouseStartPosition = {
+        x: positionStartFlipMouseDown.x,
+        y: positionStartFlipMouseDown.y,
+      };
+
+      const mouseShiftPosition = {
+        x: mousePosition.x - mouseStartPosition.x,
+        y: mousePosition.y - mouseStartPosition.y,
+      };
+
+      if (mouseShiftPosition.x < thresholdOfShift * -1) {
+        onNext();
+      } else if (mouseShiftPosition.x > thresholdOfShift) {
+        onPrev();
+      } else if (
+        mouseShiftPosition.y > thresholdOfShift ||
+        mouseShiftPosition.y < thresholdOfShift * -1
+      ) {
+        handleShowFooter();
+      } else if (
+        mouseShiftPosition.x <= thresholdOfShift &&
+        mouseShiftPosition.x >= thresholdOfShift * -1 &&
+        (mouseShiftPosition.y <= thresholdOfShift || mouseShiftPosition.y >= thresholdOfShift * -1)
+      ) {
+        handlePlay();
+      }
+
+      setPositionStartFlipMouseDown({ x: 0, y: 0 });
+    }
+    setSliderStyle({});
+  };
+
+  const handleShowFooter = () => {
+    onShowFooter();
   };
 
   const handleCheckStartPlay = () => {
@@ -225,8 +342,8 @@ const Footer = ({
     setIsPlayReady(true);
   };
 
-  const handleError = () => {
-    console.log("error of plaing");
+  const handleError = (e: any) => {
+    console.log("error of plaing", e);
     onNext();
   };
 
@@ -289,13 +406,16 @@ const Footer = ({
     }
   })();
 
+  let numberOfPrevTrack = NaN;
+  let numberOfNextTrack = NaN;
+
+  if (playList.length) {
+    numberOfPrevTrack = currentTrackNumber > 0 ? currentTrackNumber - 1 : playList.length;
+    numberOfNextTrack = currentTrackNumber < playList.length - 1 ? currentTrackNumber + 1 : 0;
+  }
+
   return (
-    <footer
-      id="main-footer"
-      onMouseMove={handleMouseMove}
-      onTouchMove={handleMouseMove}
-      onClick={isMinimize ? onShowFooter : null}
-    >
+    <footer id="main-footer" onMouseMove={handleMouseMove} onTouchMove={handleMouseMove}>
       {/.+youtube\.com.*/.test(url) && !mainContext.settings.showVideo && (
         <img
           style={{
@@ -313,7 +433,37 @@ const Footer = ({
           }
         />
       )}
-      <div className="main-footer_yout-shield" onClick={onShowFooter} />
+      <div
+        ref={Shield}
+        id="yout_shield"
+        className="main-footer_yout-shield"
+        onMouseDown={handleFlipMouseDown}
+        onMouseUp={handleFlipMouseUp}
+        onTouchStart={handleFlipMouseDown}
+        onTouchEnd={handleFlipMouseUp}
+      />
+      {playList.length && (
+        <img
+          className="main-footer_slider"
+          style={{ left: "-100%", ...sliderStyle }}
+          src={
+            typeof playList[numberOfPrevTrack] !== "undefined"
+              ? playList[numberOfPrevTrack].image
+              : null
+          }
+        />
+      )}
+      {playList.length && (
+        <img
+          className="main-footer_slider"
+          style={{ right: "-100%", ...sliderStyle }}
+          src={
+            typeof playList[numberOfNextTrack] !== "undefined"
+              ? playList[numberOfNextTrack].image
+              : null
+          }
+        />
+      )}
       <ReactPlayer
         ref={Player}
         onError={handleError}
@@ -366,8 +516,8 @@ const Footer = ({
             <button
               style={{
                 marginLeft: bikePsition || 0, //`${bikeProgress}%`,
-                color: isMouseDown ? "gray" : "blueviolet",
-                fontSize: isMouseDown ? 38 : bikeSize,
+                color: isLineMouseDown ? "gray" : "blueviolet",
+                fontSize: isLineMouseDown ? 38 : bikeSize,
               }}
             >
               <i id="progress_mover" className="fas fa-biking"></i>

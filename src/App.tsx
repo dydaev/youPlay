@@ -32,7 +32,7 @@ import "./main.scss";
 
 const stateSavingItems = ["currentTrackNumber", "currentPlaylistNumber"];
 
-const version = "1.1.0";
+const version = "1.2.2";
 export type PropsType = any;
 type StateType = {
   bodyFill: bodyType;
@@ -522,6 +522,8 @@ class Main extends React.Component<PropsType, StateType> {
           )}
         </main>
         <Footer
+          playList={playList}
+          currentTrackNumber={currentTrackNumber}
           runString={
             currentSong
               ? `${currentSong.title || ""} (${lib.seconds2time(Math.floor(duration))})`
