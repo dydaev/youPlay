@@ -443,26 +443,38 @@ const Footer = ({
         onTouchEnd={handleFlipMouseUp}
       />
       {playList.length && (
-        <img
-          className="main-footer_slider"
-          style={{ left: "-100%", ...sliderStyle }}
-          src={
-            typeof playList[numberOfPrevTrack] !== "undefined"
-              ? playList[numberOfPrevTrack].image
-              : null
-          }
-        />
+        <div className="main-footer_slider" style={{ left: "-100%", ...sliderStyle }}>
+          <img
+            className="main-footer_slider"
+            src={
+              typeof playList[numberOfPrevTrack] !== "undefined"
+                ? playList[numberOfPrevTrack].image
+                : null
+            }
+          />
+          <p>
+            {typeof playList[numberOfPrevTrack] !== "undefined"
+              ? playList[numberOfPrevTrack].title
+              : null}
+          </p>
+        </div>
       )}
       {playList.length && (
-        <img
-          className="main-footer_slider"
-          style={{ right: "-100%", ...sliderStyle }}
-          src={
-            typeof playList[numberOfNextTrack] !== "undefined"
-              ? playList[numberOfNextTrack].image
-              : null
-          }
-        />
+        <div className="main-footer_slider" style={{ right: "-100%", ...sliderStyle }}>
+          <img
+            className="main-footer_slider"
+            src={
+              typeof playList[numberOfNextTrack] !== "undefined"
+                ? playList[numberOfNextTrack].image
+                : null
+            }
+          />
+          <p>
+            {typeof playList[numberOfNextTrack] !== "undefined"
+              ? playList[numberOfNextTrack].title
+              : null}
+          </p>
+        </div>
       )}
       <ReactPlayer
         ref={Player}
