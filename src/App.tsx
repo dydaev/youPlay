@@ -1,39 +1,41 @@
-import * as React from "react";
-// @ts-ignore: Unreachable code error
-import ReactPlayer from "react-player";
+import * as React from 'react';
 
-import MainContext from "./context";
+import { IndexedDB, useIndexedDB, initDB } from 'react-indexed-db';
+import MainContext from './context';
 
 // import Roll from './components/PlayRoll';
 // import Player from './components/Player';
-import Footer from "./components/Footer/index";
-import Header from "./components/Header/index";
-import Message from "./components/Massage/index";
-import Settings from "./components/Settings/index";
-import MainTimer from "./components/MainTimer/index";
+import Footer from './components/Footer/index';
+import Header from './components/Header/index';
+import Message from './components/Massage/index';
+import Settings from './components/Settings/index';
+import MainTimer from './components/MainTimer/index';
 // import Tabs from './components/Tabs';
-import PlayListContainer from "./containers/PlayList";
-import db from "./db";
-// @ts-ignore: Unreachable code error
-import lib from "./lib";
+import PlayListContainer from './containers/PlayList';
+// import db from './db';
+// Compiler warns about unreachable code error
+import lib from './lib';
 
-import { bodyType } from "./types/bodyType";
-import { messageType } from "./types/messageType";
-import { progressType } from "./types/progressType";
-import { playItemType } from "./types/playItemType";
-import { playStrategicType } from "./types/playStrategicType";
-import { listOfPlaylistItemType } from "./types/listOfPlaylistItemType";
-import { settingsType } from "./types/settingsType";
+import { bodyType } from './types/bodyType';
+import { messageType } from './types/messageType';
+import { progressType } from './types/progressType';
+import { playItemType } from './types/playItemType';
+import { playStrategicType } from './types/playStrategicType';
+import { listOfPlaylistItemType } from './types/listOfPlaylistItemType';
+import { settingsType } from './types/settingsType';
 
-import { progressModel } from "./models/progressModel";
-import { settingsModel } from "./models/settingsModel";
+import { progressModel } from './models/progressModel';
+import { settingsModel } from './models/settingsModel';
 
-import "./main.scss";
+import { DBConfig } from './dbConfig';
 
-const stateSavingItems = ["currentTrackNumber", "currentPlaylistNumber"];
+import './main.scss';
 
-const version = "1.2.2";
-export type PropsType = any;
+const version = '1.2.3';
+
+const stateSavingItems = ['currentTrackNumber', 'currentPlaylistNumber'];
+
+export type PropsType = {};
 type StateType = {
   bodyFill: bodyType;
   progress: progressType;
@@ -55,9 +57,9 @@ type StateType = {
 class Main extends React.Component<PropsType, StateType> {
   state: StateType = {
     showMessage: null,
-    playUrl: "",
-    bodyFill: "player",
-    playStrategic: "normal",
+    playUrl: '',
+    bodyFill: 'player',
+    playStrategic: 'normal',
     isShowMenu: true,
     isPlaying: false,
     isSavePlaying: false,
@@ -71,11 +73,12 @@ class Main extends React.Component<PropsType, StateType> {
     footerIsMinimize: false,
   };
 
-  UNSAFE_componentWillMount() {
-    this.handleGetSettingsFromStorage();
+  UNSAFE_componentWillMount(): void {
+    initDB(DBConfig);
+    // this.handleGetSettingsFromStorage();
   }
 
-  shouldComponentUpdate(nextProps: PropsType, nextState: StateType) {
+  shouldComponentUpdate(nextProps: PropsType, nextState: StateType): boolean {
     const { equal } = lib;
 
     const {
@@ -107,7 +110,7 @@ class Main extends React.Component<PropsType, StateType> {
 
     if (!equal(settings.fullScreenMode, Nsettings.fullScreenMode)) {
       if (window) {
-        console.log("change fullscren");
+        console.log('change fullscren');
         lib.useFullScreenMode(Nsettings.fullScreenMode);
       }
     }
@@ -117,7 +120,8 @@ class Main extends React.Component<PropsType, StateType> {
       // @ts-ignore: Unreachable code error
       stateSavingItems.some((stateName: string) => nextState[stateName] !== this.state[stateName])
     ) {
-      this.handleSaveCurrentStateToStor(nextState);
+      this.handleClearStorage();
+      this.handleAddStateToStorage(nextState);
     }
 
     if (Nsettings.playInTray /* !== settings.playInTray*/) {
@@ -139,9 +143,9 @@ class Main extends React.Component<PropsType, StateType> {
     );
   }
 
-  componentDidMount() {
+  componentDidMount(): void {
     if (Array.isArray(this.state.listOfPlaylist) && !this.state.listOfPlaylist.length) {
-      this.handleGetPlaylistFromStorage();
+      // this.handleGetPlaylistFromStorage();
     }
     this.handleGetStateFromStorage();
     // if (Array.isArray(this.state.playList) && !this.state.playList.length) {
@@ -163,30 +167,73 @@ class Main extends React.Component<PropsType, StateType> {
     // }
   }
 
-  handleToggleFooterMinimize = () => {
+  handleGetStateFromStorage = (): void => {
+    const { getAll } = useIndexedDB('currentState');
+
+    getAll().then(
+      (stateFromDb: any[]): void => {
+        if (Array.isArray(stateFromDb) && stateFromDb.length) {
+          this.setState(
+            stateFromDb.reduce(
+              (acc: any, stateParam: any): any => ({
+                ...acc,
+                [stateParam.stateItem]: stateParam.value,
+              }),
+              {},
+            ),
+          );
+        }
+      },
+      (error: any): void => {
+        console.log('Cannt get state from storage.', error);
+      },
+    );
+  };
+
+  handleAddStateToStorage = (newState: StateType | void): void => {
+    const { add } = useIndexedDB('currentState');
+    const state = newState ? newState : this.state;
+
+    Object.keys(state).forEach((key: string): void => {
+      // @ts-ignore:
+      add({ stateItem: key, value: state[key] }).catch(err =>
+        console.log('Cannt add state to storage.', err),
+      );
+    });
+  };
+
+  handleClearStorage = (): void => {
+    // @ts-ignore:
+    const { clear } = useIndexedDB('currentState');
+
+    clear().catch((err: any): void => console.log('Cannt clear storage of currensState.', err));
+  };
+
+  handleToggleFooterMinimize = (): void => {
     this.setState({
       footerIsMinimize: !this.state.footerIsMinimize,
     });
   };
 
-  handleUseMediaSession = () => {
-    const navigator = window.navigator;
-
-    try {
-      // @ts-ignore: Unreachable code error
-      navigator.mediaSession.setActionHandler("play", function(e: any) {
-        console.log("pressed key play", e);
-      });
-    } catch (e) {
-      console.log("error on set listner play in mediasession:", e);
-    }
-    try {
-      // @ts-ignore: Unreachable code error
-      navigator.mediaSession.setActionHandler("nexttrack", function(e: any) {
-        console.log("pressed key nexttrack", e);
-      });
-    } catch (e) {
-      console.log("error on set listner nexttrack in mediasession:", e);
+  handleUseMediaSession = (): void => {
+    const navigator: any = window.navigator;
+    if (navigator.mediaSession) {
+      try {
+        // @ts-ignore: Unreachable code error
+        navigator.mediaSession.setActionHandler('play', function(e: string) {
+          console.log('pressed key play', e);
+        });
+      } catch (e) {
+        console.log('error on set listner play in mediasession:', e);
+      }
+      try {
+        // @ts-ignore: Unreachable code error
+        navigator.mediaSession.setActionHandler('nexttrack', function(e: string) {
+          console.log('pressed key nexttrack', e);
+        });
+      } catch (e) {
+        console.log('error on set listner nexttrack in mediasession:', e);
+      }
     }
   };
 
@@ -204,27 +251,29 @@ class Main extends React.Component<PropsType, StateType> {
   //   lib.usePlaingInTry(this.state.isSavePlaying, this.handleSetPlaying);
   // }
 
-  handleSetSettings = (newState: settingsType) => {
+  handleSetSettings = (newState: settingsType): void => {
     this.setState({
       settings: newState,
     });
   };
-  handleSetMessage = (newState: messageType | null) => {
+  handleSetMessage = (newState: messageType | null): void => {
     this.setState({
       showMessage: newState,
     });
   };
-  handleSetCurrentTrackNumber = (newState: number) => {
+  handleSetCurrentTrackNumber = (newState: number): void => {
     this.setState({
       currentTrackNumber: newState,
     });
   };
-  handleSetList = (newState: listOfPlaylistItemType[]) => {
+  handleSetList = (newState: listOfPlaylistItemType[]): void => {
+    console.log(newState);
+
     this.setState({
       listOfPlaylist: newState,
     });
   };
-  handleSetCurrentPlaylistNumber = (newState: number) => {
+  handleSetCurrentPlaylistNumber = (newState: number): void => {
     this.setState({
       currentPlaylistNumber: newState,
       currentTrackNumber: 0,
@@ -232,32 +281,32 @@ class Main extends React.Component<PropsType, StateType> {
     });
   };
 
-  handleSetPlayList = (p: playItemType[]) => {
+  handleSetPlayList = (p: playItemType[]): void => {
     // console.log("set playlist", p);
     this.setState({
       playList: p,
     });
   };
 
-  handleSetProgress = (p: progressType) => {
+  handleSetProgress = (p: progressType): void => {
     this.setState({
       progress: p,
     });
   };
 
-  handleSetBodyFill = (newBodyFill: bodyType) => {
+  handleSetBodyFill = (newBodyFill: bodyType): void => {
     this.setState({
       bodyFill: newBodyFill,
     });
   };
 
-  handleSavePlaying = (newState: boolean) => {
+  handleSavePlaying = (newState: boolean): void => {
     this.setState({
       isSavePlaying: newState,
     });
   };
 
-  handleSafeTrayPlaing = () => {
+  handleSafeTrayPlaing = (): void => {
     if (this.state.isSavePlaying && this.state.settings.playInTray) {
       this.setState({
         isPlaying: true,
@@ -265,103 +314,20 @@ class Main extends React.Component<PropsType, StateType> {
     }
   };
 
-  handleSetSafePlaying = (newStatePlaying: boolean) => {
+  handleSetSafePlaying = (newStatePlaying: boolean): void => {
     this.setState({
       isPlaying: newStatePlaying,
       isSavePlaying: newStatePlaying,
     });
   };
 
-  handleSetPlaying = (newStatePlaying: boolean) => {
+  handleSetPlaying = (newStatePlaying: boolean): void => {
     this.setState({
       isPlaying: newStatePlaying,
     });
   };
 
-  handleSaveCurrentStateToStor = (newState: StateType | void) => {
-    const state = newState ? newState : this.state;
-
-    db.removeData("currentState", {});
-    if (
-      (Array.isArray(state.playList) && state.playList.length) ||
-      (Array.isArray(state.listOfPlaylist) && state.listOfPlaylist.length)
-    ) {
-      stateSavingItems.forEach((savingItemName: string) => {
-        // @ts-ignore: Unreachable code error
-        db.setData("currentState", { stateItem: savingItemName, value: state[savingItemName] });
-      });
-    }
-  };
-
-  handleGetStateFromStorage = () => {
-    // currentTrackNumber, isPlaing, currentPlayPosition;
-    const setStateFromStor = (params: any) => {
-      if (params && params.rows && params.rows.length) {
-        let currentState: any = {};
-
-        for (let i = 0; i < params.rows.length; i++) {
-          const rowItem: any = params.rows.item(i);
-
-          if (rowItem.stateItem && rowItem.value)
-            currentState = { ...currentState, [rowItem.stateItem]: rowItem.value };
-        }
-
-        if (Object.keys.length) this.setState(currentState);
-      } else {
-        // console.log("Storage data is empty, or:", params);
-      }
-    };
-
-    db.getData("currentState", setStateFromStor);
-  };
-
-  handleGetPlaylistFromStorage = () => {
-    const setPlaylistFunc = (params: any) => {
-      if (params && params.rows && params.rows.length) {
-        let playlist: listOfPlaylistItemType[] = [];
-
-        for (let i = 0; i < params.rows.length; i++) {
-          const rowItem: listOfPlaylistItemType = params.rows.item(i);
-          playlist = [...playlist, rowItem];
-        }
-        if (Array.isArray(playlist) && playlist.length) {
-          // console.log("playlist from stor", playlist);
-        }
-        this.handleSetList(playlist);
-      } else {
-        // console.log('Storage data is empty, or:', params );
-      }
-    };
-
-    db.getData("playLists", setPlaylistFunc);
-  };
-
-  handleGetSettingsFromStorage = () => {
-    const setSettingsFunc = (params: any) => {
-      let tempSetting: settingsType = settingsModel;
-
-      if (params && params.rows && params.rows.length) {
-        for (let i = 0; i < params.rows.length; i++) {
-          const rowItem: { setting: string; value: any } = params.rows.item(i);
-
-          tempSetting = {
-            ...tempSetting,
-            [rowItem.setting]: JSON.parse(rowItem.value),
-          };
-        }
-      } else {
-        Object.keys(settingsModel).map((settingName: string) => {
-          // @ts-ignore: Unreachable code error
-          db.setData("settings", { setting: settingName, value: settingsModel[settingName] });
-        });
-      }
-      // console.log("reader setting", tempSetting);
-      this.handleSetSettings(tempSetting);
-    };
-    db.getData("settings", setSettingsFunc);
-  };
-
-  handlePlay = (trackNumber: number | undefined) => {
+  handlePlay = (trackNumber: number | undefined): void => {
     if (
       Array.isArray(this.state.playList) &&
       this.state.playList.length &&
@@ -388,13 +354,13 @@ class Main extends React.Component<PropsType, StateType> {
       this.handleSetSafePlaying(false);
     }
   };
-  handleStop = () => {
+  handleStop = (): void => {
     this.setState({
       isPlaying: false,
       isSavePlaying: false,
     });
   };
-  handlePrev = () => {
+  handlePrev = (): void => {
     const prevTrackNumber: number =
       Array.isArray(this.state.playList) && this.state.playList.length
         ? this.state.currentTrackNumber > 0
@@ -408,7 +374,7 @@ class Main extends React.Component<PropsType, StateType> {
 
     if (this.state.isSavePlaying) this.handlePlay(prevTrackNumber);
   };
-  handleNext = () => {
+  handleNext = (): void => {
     const nextTrackNumber: number =
       Array.isArray(this.state.playList) &&
       this.state.playList.length &&
@@ -423,20 +389,20 @@ class Main extends React.Component<PropsType, StateType> {
     if (this.state.isSavePlaying) this.handlePlay(nextTrackNumber);
   };
 
-  handleSetDuration = (newDuration: number) => {
+  handleSetDuration = (newDuration: number): void => {
     this.setState({
       duration: newDuration,
     });
   };
 
-  handleShowMenu = () => {
+  handleShowMenu = (): void => {
     this.setState({
       isShowMenu: !this.state.isShowMenu,
       footerIsMinimize: !this.state.footerIsMinimize,
     });
   };
 
-  render() {
+  render(): React.ReactNode {
     const {
       bodyFill,
       progress,
@@ -445,11 +411,9 @@ class Main extends React.Component<PropsType, StateType> {
       showMessage,
       playStrategic,
       listOfPlaylist,
-      playUrl,
       duration,
       isPlaying,
       isShowMenu,
-      isSavePlaying,
       currentTrackNumber,
       currentPlaylistNumber,
       footerIsMinimize,
@@ -479,75 +443,81 @@ class Main extends React.Component<PropsType, StateType> {
           showMessage: this.handleSetMessage,
         }}
       >
-        <Message message={showMessage} onHide={() => this.handleSetMessage(null)} />
-        <Header
-          isShow={isShowMenu && bodyFill !== "settings" && bodyFill !== "list"}
-          onShowMenu={this.handleShowMenu}
-          onClickButton={this.handleSetBodyFill}
-          bodyType={bodyFill}
-        />
-        <PlayListContainer
-          onShow={bodyFill === "list"}
-          urlOfList={
-            Array.isArray(listOfPlaylist) && listOfPlaylist[currentPlaylistNumber]
-              ? listOfPlaylist[currentPlaylistNumber].url
-              : ""
-          }
-          onPlay={this.handlePlay}
-          onSetPlayList={this.handleSetPlayList}
-          onSetCurrentTrack={this.handleSetCurrentTrackNumber}
-          onGetPleyListFromStorage={this.handleGetPlaylistFromStorage}
-          onSetCurrentPlaylistNumber={this.handleSetCurrentPlaylistNumber}
-          onSetList={this.handleSetList}
-          onClose={this.handleSetBodyFill}
-        />
-        <Settings
-          version={version}
-          mainSettings={settings}
-          onShow={bodyFill === "settings"}
-          onSetSettings={this.handleSetSettings}
-          onClose={this.handleSetBodyFill}
-        />
-        <main onClick={this.handleShowMenu}>
-          <MainTimer onShow={isShowMenu} duration={duration} progress={progress} />
-          {!this.state.settings.showVideo && (
-            <img
-              src={
-                currentSong
-                  ? currentSong.image
-                  : "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTCzlqv9WfntXDekHwsLkf5NXI9isMvdwoVLgrQveqgexa10bWp"
-              }
-              alt="song image"
-            />
-          )}
-        </main>
-        <Footer
-          playList={playList}
-          currentTrackNumber={currentTrackNumber}
-          runString={
-            currentSong
-              ? `${currentSong.title || ""} (${lib.seconds2time(Math.floor(duration))})`
-              : ""
-          }
-          isShowFooter={isShowMenu && bodyFill !== "settings" && bodyFill !== "list"}
-          isShowProgress={bodyFill !== "list"}
-          isPlaying={isPlaying}
-          isMinimize={footerIsMinimize}
-          onToogleMinimize={this.handleToggleFooterMinimize}
-          playStrategic={playStrategic}
-          currentTrack={
-            Array.isArray(playList) && playList.length ? playList[currentTrackNumber] : null
-          }
-          setPlaying={this.handleSetPlaying}
-          setDuration={this.handleSetDuration}
-          setProgress={this.handleSetProgress}
-          onSavePlay={this.handleSavePlaying}
-          onPlay={this.handlePlay}
-          onStop={this.handleStop}
-          onPrev={this.handlePrev}
-          onNext={this.handleNext}
-          onShowFooter={this.handleShowMenu}
-        />
+        <IndexedDB
+          name={DBConfig.name}
+          version={DBConfig.version}
+          objectStoresMeta={DBConfig.objectStoresMeta}
+        >
+          <Message message={showMessage} onHide={(): void => this.handleSetMessage(null)} />
+          <Header
+            isShow={isShowMenu && bodyFill !== 'settings' && bodyFill !== 'list'}
+            onShowMenu={this.handleShowMenu}
+            onClickButton={this.handleSetBodyFill}
+            bodyType={bodyFill}
+          />
+          <PlayListContainer
+            onShow={bodyFill === 'list'}
+            urlOfList={
+              Array.isArray(listOfPlaylist) && listOfPlaylist[currentPlaylistNumber]
+                ? listOfPlaylist[currentPlaylistNumber].url
+                : ''
+            }
+            onPlay={this.handlePlay}
+            onSetPlayList={this.handleSetPlayList}
+            onSetCurrentTrack={this.handleSetCurrentTrackNumber}
+            onGetPleyListFromStorage={(): void => {}} //this.handleGetPlaylistFromStorage
+            onSetCurrentPlaylistNumber={this.handleSetCurrentPlaylistNumber}
+            onSetList={this.handleSetList}
+            onClose={this.handleSetBodyFill}
+          />
+          <Settings
+            version={version}
+            mainSettings={settings}
+            onShow={bodyFill === 'settings'}
+            onSetSettings={this.handleSetSettings}
+            onClose={this.handleSetBodyFill}
+          />
+          <main onClick={this.handleShowMenu}>
+            <MainTimer onShow={isShowMenu} duration={duration} progress={progress} />
+            {!this.state.settings.showVideo && (
+              <img
+                src={
+                  currentSong
+                    ? currentSong.image
+                    : 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTCzlqv9WfntXDekHwsLkf5NXI9isMvdwoVLgrQveqgexa10bWp'
+                }
+                alt="song image"
+              />
+            )}
+          </main>
+          <Footer
+            playList={playList}
+            currentTrackNumber={currentTrackNumber}
+            runString={
+              currentSong
+                ? `${currentSong.title || ''} (${lib.seconds2time(Math.floor(duration))})`
+                : ''
+            }
+            isShowFooter={isShowMenu && bodyFill !== 'settings' && bodyFill !== 'list'}
+            isShowProgress={bodyFill !== 'list'}
+            isPlaying={isPlaying}
+            isMinimize={footerIsMinimize}
+            onToogleMinimize={this.handleToggleFooterMinimize}
+            playStrategic={playStrategic}
+            currentTrack={
+              Array.isArray(playList) && playList.length ? playList[currentTrackNumber] : null
+            }
+            setPlaying={this.handleSetPlaying}
+            setDuration={this.handleSetDuration}
+            setProgress={this.handleSetProgress}
+            onSavePlay={this.handleSavePlaying}
+            onPlay={this.handlePlay}
+            onStop={this.handleStop}
+            onPrev={this.handlePrev}
+            onNext={this.handleNext}
+            onShowFooter={this.handleShowMenu}
+          />
+        </IndexedDB>
       </MainContext.Provider>
     );
   }

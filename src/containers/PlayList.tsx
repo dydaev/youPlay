@@ -1,306 +1,306 @@
-import * as React from "react";
+import * as React from 'react';
 
-import PlayList from "../components/PlayList/index";
-import PlayListManager from "../components/PlayListManager/index";
+import { useIndexedDB } from 'react-indexed-db';
 
-import { bodyType } from "../types/bodyType";
-import { playItemType } from "../types/playItemType";
-import { youtubeContentType } from "../types/youtubeContentType";
-import { listOfPlaylistItemType } from "../types/listOfPlaylistItemType";
-import { mainContextType } from "../types/mainContextType";
+import PlayList from '../components/PlayList/index';
+import PlayListManager from '../components/PlayListManager/index';
 
-import Strategy from "../lib/strategy";
-import lib from "../lib/index";
-import db from "../db";
+import { bodyType } from '../types/bodyType';
+import { playItemType } from '../types/playItemType';
+import { listOfPlaylistItemType } from '../types/listOfPlaylistItemType';
+import { mainContextType } from '../types/mainContextType';
 
-import mainContext from "../context";
+import Strategy from '../lib/strategy';
+import lib from '../lib/index';
+
+import mainContext from '../context';
 
 type propsType = {
-	context?: mainContextType;
-	onShow: boolean;
-	urlOfList: string;
-	onClose(type: bodyType): void;
-	onGetPleyListFromStorage(): void;
-	onPlay(trackNumber: number): void;
-	onSetCurrentTrack(trackNumber: number): void;
-	onSetPlayList(playlist: playItemType[]): void;
-	onSetCurrentPlaylistNumber(number: number): void;
-	onSetList(playList: listOfPlaylistItemType[]): void;
+  context?: mainContextType;
+  onShow: boolean;
+  urlOfList: string;
+  onClose(type: bodyType): void;
+  onGetPleyListFromStorage(): void;
+  onPlay(trackNumber: number): void;
+  onSetCurrentTrack(trackNumber: number): void;
+  onSetPlayList(playlist: playItemType[]): void;
+  onSetCurrentPlaylistNumber(number: number): void;
+  onSetList(playList: listOfPlaylistItemType[]): void;
 };
 type stateType = {
-	isLoading: boolean;
-	playListUrl: string;
-	managerIsVisible: false;
-	playListFromStor: playItemType[];
+  isLoading: boolean;
+  playListUrl: string;
+  managerIsVisible: boolean;
+  playListFromStor: playItemType[];
 };
 
-class PlayListContainer extends React.Component<propsType> {
-	static contextType: any = mainContext;
+class PlayListContainer extends React.Component<propsType, stateType, mainContextType> {
+  static contextType: any = mainContext;
 
-	state: stateType = {
-		isLoading: false,
-		playListUrl: this.props.urlOfList,
-		managerIsVisible: false,
-		playListFromStor: [],
-	};
+  state: stateType = {
+    isLoading: false,
+    playListUrl: this.props.urlOfList,
+    managerIsVisible: false,
+    playListFromStor: [],
+  };
 
-	shouldComponentUpdate(
-		nextProps: propsType,
-		nextState: stateType,
-		nextContext: mainContextType,
-	): boolean {
-		const { equal } = lib;
+  shouldComponentUpdate(
+    nextProps: propsType,
+    nextState: stateType,
+    nextContext: mainContextType,
+  ): boolean {
+    const { equal } = lib;
 
-		return (
-			!equal(nextState.playListFromStor, this.state.playListFromStor) ||
-			!equal(nextContext.playList, this.context.playList) ||
-			JSON.stringify(nextState.playListFromStor) !== JSON.stringify(this.state.playListFromStor) ||
-			this.props.urlOfList !== nextProps.urlOfList ||
-			this.state.managerIsVisible !== nextState.managerIsVisible ||
-			this.state.isLoading !== nextState.isLoading
-		);
-	}
+    return (
+      !equal(nextState.playListFromStor, this.state.playListFromStor) ||
+      !equal(nextContext.playList, this.context.playList) ||
+      JSON.stringify(nextState.playListFromStor) !== JSON.stringify(this.state.playListFromStor) ||
+      this.props.urlOfList !== nextProps.urlOfList ||
+      this.state.managerIsVisible !== nextState.managerIsVisible ||
+      this.state.isLoading !== nextState.isLoading
+    );
+  }
 
-	UNSAFE_componentWillReceiveProps(newProps: propsType) {
-		if (newProps.urlOfList !== this.props.urlOfList) {
-			this.setState({
-				playListUrl: newProps.urlOfList,
-			});
-		}
-	}
+  UNSAFE_componentWillReceiveProps(newProps: propsType): void {
+    if (newProps.urlOfList !== this.props.urlOfList) {
+      this.setState({
+        playListUrl: newProps.urlOfList,
+      });
+    }
+  }
 
-	componentDidMount() {
-		this.handleGetCurrentPlaylistFromStorage();
-		this.handleUpdatePlaylist();
-	}
+  componentDidMount(): void {
+    this.handleGetPlaylistFromStroage();
+  }
 
-	handleClearCurrentPlayListOnStorage = () => {
-		db.removeData("currentPlayList", {});
-	};
+  handleGetPlaylistFromStroage = (): void => {
+    const { getAll } = useIndexedDB('currentPlayList');
+    getAll().then(
+      (playlist: playItemType[]): void => {
+        if (Array.isArray(playlist) && playlist.length) this.props.onSetPlayList(playlist);
+      },
+      err => console.log('Cannt get current playlist from storage', err),
+    );
+  };
 
-	handleSavePlayListToStorage = (newList: playItemType[]) => {
-		if (Array.isArray(newList) && newList.length) {
-			newList.forEach((playListItem: playItemType) => {
-				db.setData("currentPlayList", { ...playListItem });
-			});
-		}
-	};
+  handleAddPlaylistToStroage = (newList: playItemType[]): void => {
+    if (Array.isArray(newList) && newList.length) {
+      const { add } = useIndexedDB('currentPlayList');
 
-	handleGetCurrentPlaylistFromStorage = async () => {
-		const setPlaylistFunc = (params: any) => {
-			if (params && params.rows && params.rows.length) {
-				// let playlist: listOfPlaylistItemType[] = [];
-				let playlist: playItemType[] = [];
+      newList.forEach((playlistItem: playItemType): void => {
+        add(playlistItem).catch((err: any): void =>
+          console.log('Cannt add current playlist to storage', err),
+        );
+      });
+    }
+  };
 
-				for (let i = 0; i < params.rows.length; i++) {
-					const rowItem: playItemType = params.rows.item(i);
-					playlist = [...playlist, rowItem];
-				}
-				this.props.onSetPlayList(playlist);
-			}
-		};
+  handleClearStroage = (): void => {
+    // @ts-ignore:
+    const { clear } = useIndexedDB('currentPlayList');
+    clear().catch((err: any): void => console.log('Cannt clear storage of playlists', err));
+  };
 
-		await db.getData("currentPlayList", setPlaylistFunc);
-	};
+  handleGetYouList = async (playListUrl: string): Promise<any> => {
+    if (!('fetch' in window)) {
+      console.log('Fetch API not found, try including the polyfill');
+      return;
+    }
+    const proxyurl = 'https://cors-anywhere.herokuapp.com/';
 
-	handleGetYouList = async (playListUrl: string): Promise<any> => {
-		if (!("fetch" in window)) {
-			console.log("Fetch API not found, try including the polyfill");
-			return;
-		}
-		const proxyurl = "https://cors-anywhere.herokuapp.com/";
+    const content: string | void = await fetch(proxyurl + playListUrl)
+      .then(response => response.text())
+      // .then(contents => content)
+      .catch(ee => {
+        if (typeof this.context !== 'undefined' && this.context.showMessage) {
+          this.context.showMessage({
+            type: 'WARNING',
+            text: 'It seems the server is busy. Try the server later(',
+          });
+        } else {
+          console.log('Cant access response. Blocked by browser?', ee);
+        }
+      });
 
-		let content: string | void = await fetch(proxyurl + playListUrl)
-			.then(response => response.text())
-			// .then(contents => content)
-			.catch(ee => {
-				if (typeof this.context !== "undefined" && this.context.showMessage) {
-					this.context.showMessage({
-						type: "WARNING",
-						text: "It seems the server is busy. Try the server later(",
-					});
-				} else {
-					console.log("Cant access response. Blocked by browser?", ee);
-				}
-			});
+    if (content && content.length) {
+      switch (true) {
+        case /^\D*youtube.{5}watch\?.+$/.test(playListUrl):
+          try {
+            const parsedContent: any = await Strategy.playlistWith(content);
+            if (parsedContent) return parsedContent;
 
-		if (content && content.length) {
-			switch (true) {
-				case /^\D*youtube.{5}watch\?.+$/.test(playListUrl):
-					try {
-						const parsedContent: any = await Strategy.playlistWith(content);
-						if (parsedContent) return parsedContent;
+            throw 'Can`t get playlist!';
+          } catch (e) {
+            this.context.showMessage({
+              type: 'WARNING',
+              text: e,
+            });
+            return null;
+          }
+          break;
 
-						throw "Can`t get playlist!";
-					} catch (e) {
-						this.context.showMessage({
-							type: "WARNING",
-							text: e,
-						});
-						return null;
-					}
-					break;
+        case /^\D*youtube.{5}playlist\?.+$/.test(playListUrl):
+          try {
+            const parsedContent: any = await Strategy.playlist(content);
+            if (parsedContent) return parsedContent;
 
-				case /^\D*youtube.{5}playlist\?.+$/.test(playListUrl):
-					try {
-						const parsedContent: any = await Strategy.playlist(content);
-						if (parsedContent) return parsedContent;
+            throw 'Can`t get playlist!';
+          } catch (e) {
+            this.context.showMessage({
+              type: 'WARNING',
+              text: e,
+            });
+            return null;
+          }
+          break;
 
-						throw "Can`t get playlist!";
-					} catch (e) {
-						this.context.showMessage({
-							type: "WARNING",
-							text: e,
-						});
-						return null;
-					}
-					break;
+        default:
+          this.context.showMessage({
+            type: 'WARNING',
+            text: "Сan't recognize playlist",
+          });
+          return null;
+        // break;
+      }
+      return null;
+    }
 
-				default:
-					this.context.showMessage({
-						type: "WARNING",
-						text: "Сan't recognize playlist",
-					});
-					return null;
-				// break;
-			}
-			return null;
-		}
+    this.context.showMessage({
+      type: 'WARNING',
+      text: 'Can`t get content from server',
+    });
+    return null;
+  };
 
-		this.context.showMessage({
-			type: "WARNING",
-			text: "Can`t get content from server",
-		});
-		return null;
-	};
+  handleSetLoading = (is: boolean): void => {
+    this.setState({
+      isLoading: is,
+    });
+  };
 
-	handleSetLoading = (is: boolean) => {
-		this.setState({
-			isLoading: is,
-		});
-	};
+  handleGetYouListFromYouServer = async (url: string): Promise<string | void> => {
+    if (url.includes('list')) {
+      const stringOfStartListId = 'list=';
+      const stringOfEndListId = '&';
 
-	handleGetYouListFromYouServer = async (url: string) => {
-		if (url.includes("list")) {
-			const stringOfStartListId: string = "list=";
-			const stringOfEndListId: string = "&";
+      const startOfListId = url.indexOf(stringOfStartListId) + stringOfStartListId.length;
+      const endOfListId = url.indexOf(stringOfEndListId, startOfListId);
 
-			const startOfListId = url.indexOf(stringOfStartListId) + stringOfStartListId.length;
-			const endOfListId = url.indexOf(stringOfEndListId, startOfListId);
+      const listId =
+        endOfListId >= 0 ? url.slice(startOfListId, endOfListId) : url.slice(startOfListId);
 
-			const listId =
-				endOfListId >= 0 ? url.slice(startOfListId, endOfListId) : url.slice(startOfListId);
+      const proxyurl = this.context.settings.downloadServer + '/getPlayList';
 
-			const proxyurl = this.context.settings.downloadServer + "/getPlayList";
+      const content: string | void = await fetch(`${proxyurl}/${listId}`)
+        .then(async response => response.text())
+        .then(playlistFromServer => JSON.parse(playlistFromServer))
+        .catch(ee => {
+          if (typeof this.context !== 'undefined' && this.context.showMessage) {
+            this.context.showMessage({
+              type: 'WARNING',
+              text: 'It seems the server is busy. Try the server later(',
+            });
+          } else {
+            console.log('Cant access response. Blocked by browser?', ee);
+          }
+        });
 
-			let content: string | void = await fetch(`${proxyurl}/${listId}`)
-				.then(async response => response.text())
-				.then(playlistFromServer => JSON.parse(playlistFromServer))
-				.catch(ee => {
-					if (typeof this.context !== "undefined" && this.context.showMessage) {
-						this.context.showMessage({
-							type: "WARNING",
-							text: "It seems the server is busy. Try the server later(",
-						});
-					} else {
-						console.log("Cant access response. Blocked by browser?", ee);
-					}
-				});
+      return content;
+    }
+    // const pleylistItem: playItemType;
+  };
 
-			return content;
-		}
-		// const pleylistItem: playItemType;
-	};
+  handleUpdatePlaylist = async (url: string = undefined): Promise<void> => {
+    if (this.props.urlOfList) {
+      this.handleSetLoading(true);
 
-	handleUpdatePlaylist = async (url: string = undefined) => {
-		if (this.props.urlOfList) {
-			this.handleSetLoading(true);
+      const newList: any = this.context.settings.thirdPartyServerForPlaylist
+        ? await this.handleGetYouList(url ? url : this.props.urlOfList)
+        : await this.handleGetYouListFromYouServer(url ? url : this.props.urlOfList);
 
-			const newList: any = this.context.settings.thirdPartyServerForPlaylist
-				? await this.handleGetYouList(url ? url : this.props.urlOfList)
-				: await this.handleGetYouListFromYouServer(url ? url : this.props.urlOfList);
+      this.handleSetLoading(false);
+      // TODO: check different between newList and this.state.playListFromStor
 
-			this.handleSetLoading(false);
-			// TODO: check different between newList and this.state.playListFromStor
+      if (Array.isArray(newList) && newList.length) {
+        console.log('Get', newList.length, 'play items');
+        this.handleClearStroage();
+        this.handleAddPlaylistToStroage(newList);
+        this.props.onSetPlayList(newList);
+      }
+    }
+  };
 
-			if (Array.isArray(newList) && newList.length) {
-				console.log("Get", newList.length, "play items");
-				this.handleClearCurrentPlayListOnStorage();
-				this.handleSavePlayListToStorage(newList);
-				this.props.onSetPlayList(newList);
-			}
-		}
-	};
+  handleShowManager = (): void => {
+    this.setState({
+      managerIsVisible: !this.state.managerIsVisible,
+    });
+  };
 
-	handleShowManager = () => {
-		this.setState({
-			managerIsVisible: !this.state.managerIsVisible,
-		});
-	};
+  handleClosePlayList = (): void => {
+    if (this.state.managerIsVisible) {
+      setTimeout(() => {
+        this.handleShowManager();
+      }, 1000);
+    }
+    this.props.onClose('player');
+  };
 
-	handleClosePlayList = () => {
-		if (this.state.managerIsVisible) {
-			setTimeout(() => {
-				this.handleShowManager();
-			}, 1000);
-		}
-		this.props.onClose("player");
-	};
+  render(): React.ReactNode {
+    const { managerIsVisible, isLoading } = this.state;
 
-	render() {
-		const { managerIsVisible, isLoading } = this.state;
+    const {
+      onShow,
+      onPlay,
+      onClose,
+      onSetCurrentTrack,
+      onSetList,
+      onSetCurrentPlaylistNumber,
+    } = this.props;
 
-		const {
-			onShow,
-			onPlay,
-			onClose,
-			onSetCurrentTrack,
-			onSetList,
-			onSetCurrentPlaylistNumber,
-		} = this.props;
+    const styles = {
+      flexGrow: 1,
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'space-between',
+      overflow: 'hidden',
+      right: onShow ? 0 : '-100%',
+      // position: "relative",
+    } as React.CSSProperties;
 
-		const styles = {
-			flexGrow: 1,
-			display: "flex",
-			flexDirection: "column",
-			justifyContent: "space-between",
-			overflow: "hidden",
-			right: onShow ? 0 : "-100%",
-			// position: "relative",
-		};
-
-		return (
-			<section style={styles}>
-				<div className="settings-playlist_header">
-					<button onClick={() => this.handleUpdatePlaylist()} className={isLoading ? "rotate" : ""}>
-						<i className="fas fa-sync"></i>
-					</button>
-					<p>Play list</p>
-					<div />
-					<button onClick={this.handleClosePlayList}>
-						<i className="fas fa-chevron-right"></i>
-					</button>
-				</div>
-				{managerIsVisible ? (
-					<PlayListManager
-						onGetPleyListFromStorage={this.props.onGetPleyListFromStorage}
-						onUpdatePlaylist={this.handleUpdatePlaylist}
-						onSetCurrentPlaylistNumber={onSetCurrentPlaylistNumber}
-						onSetList={onSetList}
-					/>
-				) : (
-					<PlayList onClose={onClose} onPlay={onPlay} onSetCurrentTrack={onSetCurrentTrack} />
-				)}
-				<button
-					type="button"
-					className="play-list__main-manager-button"
-					onClick={this.handleShowManager}
-				>
-					manager
-				</button>
-			</section>
-		);
-	}
+    return (
+      <section style={styles}>
+        <div className="settings-playlist_header">
+          <button
+            onClick={(): Promise<void> => this.handleUpdatePlaylist()}
+            className={isLoading ? 'rotate' : ''}
+          >
+            <i className="fas fa-sync"></i>
+          </button>
+          <p>Play list</p>
+          <div />
+          <button onClick={this.handleClosePlayList}>
+            <i className="fas fa-chevron-right"></i>
+          </button>
+        </div>
+        {managerIsVisible ? (
+          <PlayListManager
+            onUpdatePlaylist={this.handleUpdatePlaylist}
+            onSetCurrentPlaylistNumber={onSetCurrentPlaylistNumber}
+            onSetList={onSetList}
+          />
+        ) : (
+          <PlayList onClose={onClose} onPlay={onPlay} onSetCurrentTrack={onSetCurrentTrack} />
+        )}
+        <button
+          type="button"
+          className="play-list__main-manager-button"
+          onClick={this.handleShowManager}
+        >
+          manager
+        </button>
+      </section>
+    );
+  }
 }
 
 export default PlayListContainer;

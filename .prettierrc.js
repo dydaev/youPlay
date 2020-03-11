@@ -1,8 +1,9 @@
 module.exports = {
   semi: true,
   autoformat: true,
+  "editor.formatOnSave": true,
   trailingComma: 'all',
-  singleQuote: false,
+  singleQuote: true,
   printWidth: 100,
   tabWidth: 2,
 };
