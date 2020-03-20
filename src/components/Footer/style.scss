@@ -1,172 +1,154 @@
-@import "../../conf.scss";
+@import '../../conf.scss';
 
 footer#main-footer {
-	display: -webkit-box;
-	display: -ms-flexbox;
-	display: flex;
-	-webkit-box-orient: vertical;
-	-webkit-box-direction: normal;
-	-ms-flex-direction: column;
-	flex-direction: column;
-	-webkit-box-pack: justify;
-	-ms-flex-pack: justify;
-	justify-content: space-between;
-	padding: 3px 1px;
-	position: fixed;
-	width: 100%;
-	bottom: 0px; //-108
-	background: rgb(0, 0, 0);
-	left: -1px;
-	// background: -webkit-gradient(
-	// 	linear,
-	// 	left bottom,
-	// 	left top,
-	// 	from(rgba(0, 0, 0, 0.4)),
-	// 	color-stop(20%, rgba(0, 0, 0, 0.4)),
-	// 	color-stop(95%, rgba(0, 0, 0, 0))
-	// );
-	// background: -o-linear-gradient(
-	// 	bottom,
-	// 	rgba(0, 0, 0, 0.4) 0%,
-	// 	rgba(0, 0, 0, 0.4) 20%,
-	// 	rgba(0, 0, 0, 0) 95%
-	// );
-	// background: linear-gradient(
-	// 	0deg,
-	// 	rgba(0, 0, 0, 0.4) 0%,
-	// 	rgba(0, 0, 0, 0.4) 20%,
-	// 	rgba(0, 0, 0, 0) 95%
-	// );
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -ms-flex-direction: column;
+  flex-direction: column;
+  -webkit-box-pack: justify;
+  -ms-flex-pack: justify;
+  justify-content: space-between;
+  padding: 3px 1px;
+  position: fixed;
+  z-index: 2;
+  width: 100%;
+  bottom: -117px;
+  background: rgb(0, 0, 0);
+  left: -1px;
+  // background: -webkit-gradient(
+  // 	linear,
+  // 	left bottom,
+  // 	left top,
+  // 	from(rgba(0, 0, 0, 0.4)),
+  // 	color-stop(20%, rgba(0, 0, 0, 0.4)),
+  // 	color-stop(95%, rgba(0, 0, 0, 0))
+  // );
+  // background: -o-linear-gradient(
+  // 	bottom,
+  // 	rgba(0, 0, 0, 0.4) 0%,
+  // 	rgba(0, 0, 0, 0.4) 20%,
+  // 	rgba(0, 0, 0, 0) 95%
+  // );
+  // background: linear-gradient(
+  // 	0deg,
+  // 	rgba(0, 0, 0, 0.4) 0%,
+  // 	rgba(0, 0, 0, 0.4) 20%,
+  // 	rgba(0, 0, 0, 0) 95%
+  // );
 
-	-webkit-transition: 1s;
+  -webkit-transition: 1s;
 
-	-o-transition: 1s;
+  -o-transition: 1s;
 
-	transition: 1s;
+  transition: 1s;
 
-	div.main-footer_yout-shield {
-		position: fixed;
-		height: 100%;
-		top: 0;
-		width: 100%;
-		z-index: 2;
-	}
-	div.main-footer_slider {
-		position: fixed;
-		z-index: 1;
-		top: 0;
-		height: 100%;
-		width: 100%;
-		opacity: 0;
+  div.main-footer_slider {
+    position: fixed;
+    z-index: 1;
+    top: 0;
+    height: 100%;
+    width: 100%;
+    opacity: 0;
 
-		img {
-			height: 100%;
-			width: 100%;
-		}
+    img {
+      height: 100%;
+      width: 100%;
+    }
 
-		p {
-			position: absolute;
-			bottom: 44px;
-			color: white;
-			font-size: 33px;
-			text-align: center;
-		}
-	}
+    p {
+      position: absolute;
+      bottom: 44px;
+      color: white;
+      font-size: 33px;
+      text-align: center;
+    }
+  }
 
-	& > div.main-footer_hider {
-		position: fixed;
-		z-index: 3;
-		bottom: -100px;
-		width: 100%;
-		-webkit-transition: 1s;
+  & > div.main-footer__progress-liner {
+    position: relative;
+    margin-bottom: 10px;
+    height: 5px;
+    width: 100%;
 
-		-o-transition: 1s;
+    & > span {
+      position: absolute;
+      bottom: 4px;
+      color: gray;
+      font-size: 23px;
+      white-space: nowrap;
 
-		transition: 1s;
+      -webkit-animation-duration: 20s;
 
-		& > div.main-footer__progress-liner {
-			position: absolute;
-			bottom: 58px;
-			height: 5px;
-			width: 100%;
+      animation-duration: 20s;
+      -webkit-animation-name: slidein;
+      animation-name: slidein;
+      -webkit-animation-timing-function: linear;
+      animation-timing-function: linear;
+      -webkit-animation-iteration-count: infinite;
+      animation-iteration-count: infinite;
+      -webkit-animation-delay: 2s;
+      animation-delay: 2s;
+    }
 
-			& > span {
-				position: absolute;
-				bottom: 2px;
-				color: gray;
-				font-size: 23px;
-				white-space: nowrap;
+    & > button {
+      position: absolute;
+      bottom: 0;
+      padding: 0;
+      height: 45px;
+      border: 0;
+      border-radius: 50%;
+      font-size: 36px;
+      background: none;
+      color: blueviolet;
+    }
 
-				-webkit-animation-duration: 20s;
-
-				animation-duration: 20s;
-				-webkit-animation-name: slidein;
-				animation-name: slidein;
-				-webkit-animation-timing-function: linear;
-				animation-timing-function: linear;
-				-webkit-animation-iteration-count: infinite;
-				animation-iteration-count: infinite;
-				-webkit-animation-delay: 2s;
-				animation-delay: 2s;
-			}
-
-			& > button {
-				position: absolute;
-				bottom: 0;
-				padding: 0;
-				height: 45px;
-				border: 0;
-				border-radius: 50%;
-				font-size: 36px;
-				background: none;
-				color: blueviolet;
-			}
-
-			& > div {
-				height: 3px;
-				background: lightblue;
-			}
-		}
-		& > div.main-footer__control-buttons {
-			display: -webkit-box;
-			display: -ms-flexbox;
-			display: flex;
-			-webkit-box-pack: justify;
-			-ms-flex-pack: justify;
-			justify-content: space-between;
-			padding: 5px 0;
-			position: absolute;
-			bottom: 0;
-			width: 100%;
-			z-index: 3;
-			background: -webkit-gradient(
-				linear,
-				left bottom,
-				left top,
-				from(rgba(0, 0, 0, 0.4)),
-				color-stop(20%, rgba(0, 0, 0, 0.4)),
-				color-stop(95%, rgba(0, 0, 0, 0))
-			);
-			background: -o-linear-gradient(
-				bottom,
-				rgba(0, 0, 0, 0.4) 0%,
-				rgba(0, 0, 0, 0.4) 20%,
-				rgba(0, 0, 0, 0) 95%
-			);
-			background: linear-gradient(
-				0deg,
-				rgba(0, 0, 0, 0.4) 0%,
-				rgba(0, 0, 0, 0.4) 20%,
-				rgba(0, 0, 0, 0) 95%
-			);
-			& > button {
-				height: 46px;
-				width: 100%;
-				font-size: 25px;
-				border: 0;
-				background: none;
-				color: $buttons-color;
-			}
-		}
-	}
+    & > div {
+      height: 3px;
+      background: lightblue;
+    }
+  }
+  & > div.main-footer__control-buttons {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: justify;
+    -ms-flex-pack: justify;
+    justify-content: space-between;
+    padding: 8px 0;
+    // position: absolute;
+    bottom: 0;
+    width: 100%;
+    z-index: 3;
+    background: -webkit-gradient(
+      linear,
+      left bottom,
+      left top,
+      from(rgba(0, 0, 0, 0.4)),
+      color-stop(20%, rgba(0, 0, 0, 0.4)),
+      color-stop(95%, rgba(0, 0, 0, 0))
+    );
+    background: -o-linear-gradient(
+      bottom,
+      rgba(0, 0, 0, 0.4) 0%,
+      rgba(0, 0, 0, 0.4) 20%,
+      rgba(0, 0, 0, 0) 95%
+    );
+    background: linear-gradient(
+      0deg,
+      rgba(0, 0, 0, 0.4) 0%,
+      rgba(0, 0, 0, 0.4) 20%,
+      rgba(0, 0, 0, 0) 95%
+    );
+    & > button {
+      height: 46px;
+      width: 100%;
+      font-size: 30px;
+      border: 0;
+      background: none;
+      color: $buttons-color;
+    }
+  }
 }

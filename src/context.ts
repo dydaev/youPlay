@@ -21,6 +21,8 @@ export default createContext<mainContextType>({
     downloadServer: '',
     thirdPartyServerForPlaylist: false,
     showVideo: false,
+    playStrategic: 'normal',
+    volume: 1,
   },
   playList: [],
   listOfPlaylist: [],

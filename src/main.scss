@@ -1,199 +1,234 @@
 body {
-	margin: 0;
-	padding: 0;
-	font-family: "Oswald", sans-serif;
+  margin: 0;
+  padding: 0;
+  font-family: 'Oswald', sans-serif;
 }
 
 button {
-	outline: none;
+  outline: none;
 }
 
 main#main {
-	background: black;
-	position: fixed;
-	height: 100%;
-	width: 100%;
-	top: 0;
-	left: 0;
-	padding: 0;
-	margin: 0;
-	display: -webkit-box;
-	display: -ms-flexbox;
-	display: flex;
-	-webkit-box-orient: vertical;
-	-webkit-box-direction: normal;
-	-ms-flex-direction: column;
-	flex-direction: column;
-	-webkit-box-pack: justify;
-	-ms-flex-pack: justify;
-	justify-content: space-between;
-	// height: 100vh;
-	font-family: "Oswald", sans-serif;
+  background: black;
+  position: fixed;
+  height: 100%;
+  width: 100%;
+  top: 0;
+  left: 0;
+  padding: 0;
+  margin: 0;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -ms-flex-direction: column;
+  flex-direction: column;
+  -webkit-box-pack: justify;
+  -ms-flex-pack: justify;
+  justify-content: space-between;
+  // height: 100vh;
+  font-family: 'Oswald', sans-serif;
 
-	.main-component_play-list > li > img {
-		width: 85px;
-	}
+  .main-component_play-list > li > img {
+    width: 85px;
+  }
 
-	& > section {
-		position: absolute;
-		z-index: 10;
-		height: 100%;
-		width: 100%;
-		background: white;
-		-webkit-transition: 1s;
-		-o-transition: 1s;
-		transition: 1s;
-	}
+  & > section {
+    position: absolute;
+    z-index: 10;
+    height: 100%;
+    width: 100%;
+    background: white;
+    -webkit-transition: 1s;
+    -o-transition: 1s;
+    transition: 1s;
+  }
 
-	.settings-playlist_header {
-		height: 74px;
-		display: -webkit-box;
-		display: -ms-flexbox;
-		display: flex;
-		-webkit-box-align: center;
-		-ms-flex-align: center;
-		align-items: center;
+  .settings-playlist_header {
+    height: 74px;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
 
-		& > button {
-			height: 100%;
-			border: 0;
-			width: 74px;
-			border-radius: 50%;
-			background: none;
-			font-size: 30px;
-			color: lightgreen;
+    & > button {
+      height: 100%;
+      border: 0;
+      width: 74px;
+      border-radius: 50%;
+      background: none;
+      font-size: 30px;
+      color: lightgreen;
 
-			&:last-child {
-				color: pink;
-			}
-		}
-		& > div {
-			-webkit-box-flex: 1;
-			-ms-flex-positive: 1;
-			flex-grow: 1;
-		}
-		& > p {
-			color: black;
-			font-size: 20px;
-			width: 100%;
-			text-align: center;
-			margin: 0;
-			z-index: -1;
-			position: absolute;
-		}
-	}
+      &:last-child {
+        color: pink;
+      }
+    }
+    & > div {
+      -webkit-box-flex: 1;
+      -ms-flex-positive: 1;
+      flex-grow: 1;
+    }
+    & > p {
+      color: black;
+      font-size: 20px;
+      width: 100%;
+      text-align: center;
+      margin: 0;
+      z-index: -1;
+      position: absolute;
+    }
+  }
 
-	& > main {
-		height: 100%;
-		display: -webkit-box;
-		display: -ms-flexbox;
-		display: flex;
-		-webkit-box-orient: vertical;
-		-webkit-box-direction: normal;
-		-ms-flex-direction: column;
-		flex-direction: column;
-		-webkit-box-pack: center;
-		-ms-flex-pack: center;
-		justify-content: center;
-		-webkit-box-align: center;
-		-ms-flex-align: center;
-		align-items: center;
-		width: 100%;
-		overflow: hidden;
-		position: relative;
+  & > main {
+    height: 100%;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    width: 100%;
+    overflow: hidden;
+    position: relative;
 
-		& > span {
-			position: absolute;
-			top: 85px;
-			font-size: 53px;
-			font-weight: bold;
-			color: lightpink;
-			font-family: "Raleway Dots", cursive;
-		}
+    & > span {
+      position: absolute;
+      top: 85px;
+      font-size: 53px;
+      font-weight: bold;
+      color: lightpink;
+      font-family: 'Raleway Dots', cursive;
+    }
 
-		& > img {
-			width: 100%;
-			max-height: 100%;
-		}
-		& > div {
-			position: absolute;
-			bottom: -3px;
-			color: lightgray;
+    & > img {
+      width: 100%;
+      max-height: 100%;
+    }
+    & > div {
+      position: absolute;
+      bottom: -3px;
+      color: lightgray;
 
-			& > span {
-				position: initial;
-				bottom: 0;
-				font-size: 27px;
-				white-space: nowrap;
+      & > span {
+        position: initial;
+        bottom: 0;
+        font-size: 27px;
+        white-space: nowrap;
 
-				-webkit-animation-duration: 20s;
+        -webkit-animation-duration: 20s;
 
-				animation-duration: 20s;
-				-webkit-animation-name: slidein;
-				animation-name: slidein;
-				-webkit-animation-timing-function: linear;
-				animation-timing-function: linear;
-				-webkit-animation-iteration-count: infinite;
-				animation-iteration-count: infinite;
-				-webkit-animation-delay: 2s;
-				animation-delay: 2s;
-			}
-		}
-	}
+        animation-duration: 20s;
+        -webkit-animation-name: slidein;
+        animation-name: slidein;
+        -webkit-animation-timing-function: linear;
+        animation-timing-function: linear;
+        -webkit-animation-iteration-count: infinite;
+        animation-iteration-count: infinite;
+        -webkit-animation-delay: 2s;
+        animation-delay: 2s;
+      }
+    }
+  }
+}
+
+.is_blur {
+  -webkit-filter: blur(5px);
+  -moz-filter: blur(5px);
+  -ms-filter: blur(5px);
+  -o-filter: blur(5px);
+  filter: blur(5px);
 }
 
 .noselect {
-	-webkit-touch-callout: none; /* iOS Safari */
-	-webkit-user-select: none; /* Safari */
-	-khtml-user-select: none; /* Konqueror HTML */
-	-moz-user-select: none; /* Old versions of Firefox */
-	-ms-user-select: none; /* Internet Explorer/Edge */
-	user-select: none; /* Non-prefixed version, currently
+  -webkit-touch-callout: none; /* iOS Safari */
+  -webkit-user-select: none; /* Safari */
+  -khtml-user-select: none; /* Konqueror HTML */
+  -moz-user-select: none; /* Old versions of Firefox */
+  -ms-user-select: none; /* Internet Explorer/Edge */
+  user-select: none; /* Non-prefixed version, currently
                                   supported by Chrome, Opera and Firefox */
 }
 .rotate {
-	-webkit-animation: spin 3s linear infinite;
-	-moz-animation: spin 3s linear infinite;
-	animation: spin 3s linear infinite;
+  -webkit-animation: spin 3s linear infinite;
+  -moz-animation: spin 3s linear infinite;
+  animation: spin 3s linear infinite;
 }
 
 @-moz-keyframes spin {
-	100% {
-		-moz-transform: rotate(360deg);
-	}
+  100% {
+    -moz-transform: rotate(360deg);
+  }
 }
 @-webkit-keyframes spin {
-	100% {
-		-webkit-transform: rotate(360deg);
-	}
+  100% {
+    -webkit-transform: rotate(360deg);
+  }
 }
 @keyframes spin {
-	100% {
-		-webkit-transform: rotate(360deg);
-		transform: rotate(360deg);
-	}
+  100% {
+    -webkit-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
 }
 
 @-webkit-keyframes slidein {
-	from {
-		margin-left: 100%;
-	}
+  from {
+    margin-left: 100%;
+  }
 
-	to {
-		margin-left: -100%;
-	}
+  to {
+    margin-left: -100%;
+  }
 }
 
 @keyframes slidein {
-	from {
-		margin-left: 100%;
-	}
+  from {
+    margin-left: 100%;
+  }
 
-	to {
-		margin-left: -100%;
-	}
+  to {
+    margin-left: -100%;
+  }
+}
+@keyframes slideTop {
+  from {
+    height: 0%;
+  }
+
+  to {
+    height: 100%;
+  }
+}
+
+@keyframes slideBlur {
+  from {
+    -webkit-filter: blur(0px);
+    -moz-filter: blur(0px);
+    -ms-filter: blur(0px);
+    -o-filter: blur(0px);
+    filter: blur(0px);
+  }
+
+  to {
+    -webkit-filter: blur(5px);
+    -moz-filter: blur(5px);
+    -ms-filter: blur(5px);
+    -o-filter: blur(5px);
+    filter: blur(5px);
+  }
 }
 
 .bla {
-	color: green;
+  color: green;
 }

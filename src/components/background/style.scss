@@ -1,0 +1,15 @@
+div.backgrounde-blob {
+  position: fixed;
+  height: 100%;
+  width: 100%;
+  opacity: 0.4;
+  background-color: #112244;
+  z-index: 2;
+  filter: blur(8px);
+
+  & div {
+    position: absolute;
+    border-radius: 50%;
+    background: radial-gradient(circle at 100px 100px, #5cabff, #000);
+  }
+}

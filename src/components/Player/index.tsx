@@ -1,43 +1,71 @@
 import * as React from 'react';
 
+import ReactPlayer from 'react-player';
+
 import './style.scss';
 
 export type propsType = {
-	title: string;
+  isBlur: boolean;
+  isPlay: boolean;
+  url: string;
+  ref: any;
+  onSetReady(stateOfReady: boolean): void;
 };
 
-const Playes = ({ title }: propsType) => {
-	const [isPlaying, setPlaying] = React.useState(false);
+// eslint-disable-next-line react/display-name
+const Player: React.ComponentType<propsType> = React.forwardRef(
+  ({ isPlay, url, onSetReady, isBlur }: propsType, ref: any) => {
+    const PlayerBack = React.useRef(null);
+    // const PlayerSelf = React.useRef(null);
+    // const [, setPlaying] = React.useState(false);
 
-	const handlePlay = () => {
-		setPlaying(!isPlaying)
-	}
+    const handleErr = (err: any): void => {
+      console.log('Cannt play track.', err);
+    };
 
-	return (
-		<div className="base-component_player">
-			<h2>{title}</h2>
-			<div className="base-component_player__album-image">
-				<img
-					src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/ec/Record-Album-02.jpg/220px-Record-Album-02.jpg"
-					alt="album image"
-				/>
-			</div>
-			<div className="base-component_player__buttons-block">
-				<button style={{fontSize: 30}}>
-					<i className="fas fa-angle-double-left"></i>
-				</button>
-				<button onClick={handlePlay}>
-					<i className={isPlaying ? 'fas fa-pause' : 'fas fa-play'}></i>
-				</button>
-				<button>
-					<i className="fas fa-stop"></i>
-				</button>
-				<button style={{fontSize: 30}}>
-					<i className="fas fa-angle-double-right"></i>
-				</button>
-			</div>
-		</div>
-	);
-};
+    const handleReady = (): void => {
+      onSetReady(true);
+    };
+    const handlePlayingEnded = (): void => {
+      onSetReady(false);
+    };
 
-export default Playes;
+    return (
+      <div
+        className={isBlur ? 'base-component_player is_blur' : 'base-component_player'}
+        ref={PlayerBack}
+      >
+        <ReactPlayer
+          config={{
+            youtube: {
+              playerVars: { showinfo: 0 },
+            },
+          }}
+          ref={ref}
+          onError={handleErr}
+          url={url}
+          playing={isPlay}
+          onReady={handleReady}
+          onEnded={handlePlayingEnded}
+          // onStart={handleStartPlay}
+          // onSeek={handleSeek}
+          // onPlay={handlePlayerPlay}
+          // onPause={() => setPlaying(false)}
+          // onProgress={handleProgress}
+          // onDuration={handleDuration}
+          width={'100%'}
+          height={'100%'}
+          style={{ position: 'fixed', top: 0 }}
+        />
+        <div className="base-component_player__album-image">
+          <img
+            src="https://i.pinimg.com/236x/bd/37/e8/bd37e8d4447f60ef28f949cbc73fe3da.jpg"
+            alt="album image"
+          />
+        </div>
+      </div>
+    );
+  },
+);
+
+export default Player;

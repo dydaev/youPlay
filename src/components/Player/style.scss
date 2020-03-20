@@ -1,26 +1,29 @@
 div.base-component_player {
-	& > h2 {
-		text-align: center;
-	}
-	& > div.base-component_player__album-image {
-		width: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  z-index: 1;
+  animation-duration: 4s;
+  animation-name: slideBlur;
 
-		& > img {
-			width: 100%;
-		}
-	}
-	& > div.base-component_player__buttons-block {
-		display: -webkit-box;
-		display: -ms-flexbox;
-		display: flex;
-		-webkit-box-pack: justify;
-		-ms-flex-pack: justify;
-		justify-content: space-between;
-		margin-top: 5px;
+  div.main-footer_yout-shield {
+    position: fixed;
+    height: 100%;
+    top: 0;
+    width: 100%;
+    z-index: 2;
+  }
 
-		& > button {
-			padding: 10px 35px;
-			font-size: 20px;
-		}
-	}
+  & > h2 {
+    text-align: center;
+  }
+  & > div.base-component_player__album-image {
+    width: 100%;
+
+    & > img {
+      width: 100%;
+    }
+  }
 }

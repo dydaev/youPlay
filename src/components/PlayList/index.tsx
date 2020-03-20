@@ -1,6 +1,7 @@
 import * as React from 'react';
 import MainContext from '../../context';
 
+import Background from '../background/index';
 import ProgressLine from '../ProgressLine/index';
 
 import { bodyType } from '../../types/bodyType';
@@ -16,16 +17,6 @@ type propsType = {
   onSetCurrentTrack(trackNumber: number): void;
   onClose(type: bodyType): void;
 };
-
-function downloadURI(uri: string, name: string): void {
-  const link = document.createElement('a');
-  link.download = name;
-  link.href = uri;
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-  //   delete link;
-}
 
 const PlayList = ({
   onPlay,
@@ -58,13 +49,14 @@ propsType): any => {
 
   return (
     <>
+      {/* <Background count={0} /> */}
       <div
         style={{ overflow: 'scroll', flexShrink: 10, overflowX: 'hidden' /*, height: "100%" */ }}
       >
         <ul className="main-component_play-list">
           {Array.isArray(mainContext.playList) ? (
             mainContext.playList.map((playItem: playItemType, index: number): any => (
-              <li key={'listOfTracks' + index.toString()} onClick={() => handlePlay(index)}>
+              <li key={'listOfTracks' + index.toString()} onClick={(): void => handlePlay(index)}>
                 <img
                   style={{ width: 85 }}
                   src={
