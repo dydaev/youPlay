@@ -8,11 +8,37 @@
   height: 100%;
   display: flex;
   flex-direction: column;
-  -webkit-transition: 1s;
 
-  -o-transition: 1s;
+  -webkit-transition: height 1s;
+  -o-transition: height 1s;
+  transition: height 1s;
 
-  transition: 1s;
+  button.header-wrapper_open-ist {
+    width: 27%;
+    height: 30px;
+    padding: 6px 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: stretch;
+    margin: 0 auto;
+    margin-top: -30px;
+    border: 0;
+    background: none;
+    opacity: 0.4;
+
+    & > div {
+      height: 2px;
+      width: 100%;
+      background-color: gray;
+      margin: 0px auto;
+
+      &:last-child {
+        width: 50%;
+        margin-top: -5px;
+      }
+    }
+  }
 }
 
 header#main-header {

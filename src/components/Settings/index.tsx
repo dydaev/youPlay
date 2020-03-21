@@ -1,18 +1,18 @@
-import * as React from "react";
+import * as React from 'react';
 
-import db from "../../db";
+import db from '../../db';
 
-import { settingsModel } from "../../models/settingsModel";
+import { settingsModel } from '../../models/settingsModel';
 
-import { bodyType } from "../../types/bodyType";
-import { settingsType } from "../../types/settingsType";
+import { bodyType } from '../../types/bodyType';
+import { settingsType } from '../../types/settingsType';
 
-import "./style.scss";
+import './style.scss';
 
 type PropsType = {
   version: string;
   mainSettings: settingsType;
-  onShow: boolean;
+  isShow: boolean;
   onSetSettings(newSettings: settingsType): void;
   onClose(type: bodyType): void;
 };
@@ -28,7 +28,7 @@ class Settings extends React.Component<PropsType, StateType> {
   shouldComponentUpdate(nextProps: PropsType, nextState: StateType) {
     return (
       JSON.stringify(nextState.settings) !== JSON.stringify(this.state.settings) ||
-      JSON.stringify(nextProps.onShow) !== JSON.stringify(this.props.onShow)
+      JSON.stringify(nextProps.isShow) !== JSON.stringify(this.props.isShow)
     );
   }
 
@@ -47,7 +47,7 @@ class Settings extends React.Component<PropsType, StateType> {
   };
 
   settingsInStorage = (anySettings: any) => {
-    console.log("any settings", anySettings);
+    console.log('any settings', anySettings);
   };
 
   // getAllSettingsFromStorage = async () => {
@@ -68,16 +68,16 @@ class Settings extends React.Component<PropsType, StateType> {
   // };
 
   handleAddSettingToStorage = (name: string, value: any) => {
-    db.setData("settings", { setting: name, value: JSON.stringify(value) });
+    db.setData('settings', { setting: name, value: JSON.stringify(value) });
     // console.log("add setting item", name, value);
   };
   handleRemoveSettingOnStorage = (name: string, value: any) => {
-    db.removeData("settings", { setting: name, value: value });
+    db.removeData('settings', { setting: name, value: value });
     // console.log("remove setting item");
   };
   handleUpdateSettingOnStorage = async (name: string, value: any) => {
     const res = await db.updateData(
-      "settings",
+      'settings',
       { setting: name },
       { setting: name, value: JSON.stringify(value) },
     );
@@ -103,18 +103,18 @@ class Settings extends React.Component<PropsType, StateType> {
   handleChangeSettings = ({ target }: any) => {
     this.setSettings({
       ...this.state.settings,
-      [target.id]: target.type === "checkbox" ? target.checked : target.value,
+      [target.id]: target.type === 'checkbox' ? target.checked : target.value,
     });
   };
 
   render() {
     const { settings } = this.state;
-    const { onShow, onClose } = this.props;
+    const { isShow, onClose } = this.props;
 
     return (
-      <section id="main-settings" style={{ left: onShow ? 0 : "-100%" }}>
+      <section id="main-settings" style={{ left: isShow ? 0 : '-100%' }}>
         <div className="settings-playlist_header">
-          <button onClick={() => onClose("player")}>
+          <button onClick={() => onClose('player')}>
             <i className="fas fa-chevron-left"></i>
           </button>
           <div />

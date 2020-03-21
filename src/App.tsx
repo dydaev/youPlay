@@ -44,6 +44,7 @@ type StateType = {
   isReady: boolean;
   isShowFooter: boolean;
   isShowHeader: boolean;
+  isShowSettings: boolean;
   currentTrackNumber: number;
   currentPlaylistNumber: number;
   listOfPlaylist: listOfPlaylistItemType[];
@@ -61,6 +62,7 @@ class Main extends React.Component<{}, StateType> {
     isReady: false,
     isShowFooter: true,
     isShowHeader: true,
+    isShowSettings: false,
     settings: settingsModel,
     progress: progressModel,
     listOfPlaylist: [],
@@ -78,12 +80,19 @@ class Main extends React.Component<{}, StateType> {
     if (
       !lib.equal(this.state.playList, nextState.playList) ||
       this.state.isBlurBg !== nextState.isBlurBg ||
+      this.state.isShowSettings !== nextState.isShowSettings ||
       (!Number.isNaN(nextState.currentTrackNumber) &&
         this.state.currentTrackNumber !== nextState.currentTrackNumber)
     )
       return true;
     else return false;
   }
+
+  handleSetSettings = (newState: settingsType): void => {
+    this.setState({
+      settings: newState,
+    });
+  };
 
   handleSetState = <K extends keyof StateType>(key: K, value: StateType[K]): void => {
     // @ts-ignore
@@ -224,6 +233,11 @@ class Main extends React.Component<{}, StateType> {
       isBlurBg: newState,
     });
   };
+  handleShowSettings = (): void => {
+    this.setState({
+      isShowSettings: !this.state.isShowSettings,
+    });
+  };
 
   render(): React.ReactNode {
     const {
@@ -241,6 +255,7 @@ class Main extends React.Component<{}, StateType> {
       playList,
       message,
       PlayerRef,
+      isShowSettings,
     } = this.state;
     console.log(this);
 
@@ -270,6 +285,7 @@ class Main extends React.Component<{}, StateType> {
             isShow={isShowHeader}
             onSetPlaylist={this.handleSetState}
             onShowMenu={() => {}}
+            onShowSettings={this.handleShowSettings}
             bodyType={'player'}
             onSetVolume={this.handleSetVolume}
             onSetBlurBg={this.handleSetBlurBg}
@@ -280,6 +296,15 @@ class Main extends React.Component<{}, StateType> {
             onSetReady={this.handleSetIsReady}
             url={''}
             isBlur={isBlurBg}
+          />
+          <Settings
+            version={version}
+            mainSettings={settings}
+            isShow={isShowSettings}
+            onSetSettings={this.handleSetSettings}
+            onClose={(): void => {
+              this.setState({ isShowSettings: !isShowSettings });
+            }}
           />
           <Footer
             runString={

@@ -14,6 +14,7 @@ import { playItemType } from '../../types/playItemType';
 type propsType = {
   onSetVolume(newVolume: number): void;
   onShowMenu(): void;
+  onShowSettings(): void;
   onSetBlurBg(newSatte: boolean): void;
   onSetPlaylist(key: string, value: any): void;
   bodyType: bodyType;
@@ -23,6 +24,7 @@ type propsType = {
 const Header = ({
   onSetPlaylist,
   isShow,
+  onShowSettings,
   onShowMenu,
   onSetVolume,
   onSetBlurBg,
@@ -38,7 +40,7 @@ const Header = ({
     onSetPlaylist('currentTrackNumber', newNumber);
   };
 
-  const HandleShowTopList = (): void => {
+  const handleShowTopList = (): void => {
     setShowPlaylist(!isShowPlaylist);
     onSetBlurBg(!isShowPlaylist);
   };
@@ -47,24 +49,29 @@ const Header = ({
     <>
       <div className="header-wrapper">
         <header id="main-header" style={isShow ? { top: 0 } : {}}>
-          <button id="settings" onClick={HandleShowTopList}>
+          <button id="settings" onClick={onShowSettings}>
             <i className="fas fa-tools"></i>
           </button>
           <h5 onClick={onShowMenu}>-=plaYo=-</h5>
           <button>
-            <i className="fas fa-bars"></i>
+            <i className="fas fa-volume-up"></i>
+            {/* <i className="fas fa-bars"></i> */}
           </button>
         </header>
-        {isShowPlaylist && (
-          <>
-            <TopList
-              isVisible={isShowPlaylist}
-              onSetPlaylist={handleSetPlaylist}
-              onSetCurrentTrackNumber={handleSetCurrentTreckNumber}
-            />
-            <div style={{ height: 83 }} />
-          </>
-        )}
+        <TopList
+          isVisible={isShowPlaylist}
+          onSetPlaylist={handleSetPlaylist}
+          onSetCurrentTrackNumber={handleSetCurrentTreckNumber}
+        />
+        <button
+          className="header-wrapper_open-ist"
+          onClick={handleShowTopList}
+          style={isShowPlaylist ? { background: 'black' } : {}}
+        >
+          <div style={isShowPlaylist ? { width: '50%' } : {}} />
+          <div style={isShowPlaylist ? { width: '100%' } : {}} />
+        </button>
+        {true && <div style={{ height: 145 }} />}
       </div>
     </>
   );

@@ -43,33 +43,35 @@ const App: React.FunctionComponent<AppProps> = ({
   });
   return (
     <div className="top-list_container" style={{ height: isVisible ? '100%' : 0 }}>
-      <table className="top-list">
-        <tbody>
-          {mainContext.playList.map(
-            (playItem: playItemType, index: number): React.ReactNode => (
-              <tr
-                key={'playlistItem-' + index}
-                onClick={(): void => onSetCurrentTrackNumber(index)}
-                className={
-                  index === mainContext.currentTrackNumber
-                    ? 'top-list_row select-row'
-                    : 'top-list_row'
-                }
-              >
-                <td>
-                  <span>{index + 1}</span>
-                </td>
-                <td>
-                  <img src={playItem.image} alt="track Image" />
-                </td>
-                <td>
-                  <p>{playItem.title}</p>
-                </td>
-              </tr>
-            ),
-          )}
-        </tbody>
-      </table>
+      {true && (
+        <table className="top-list">
+          <tbody>
+            {mainContext.playList.map(
+              (playItem: playItemType, index: number): React.ReactNode => (
+                <tr
+                  key={'playlistItem-' + index}
+                  onClick={(): void => onSetCurrentTrackNumber(index)}
+                  className={
+                    index === mainContext.currentTrackNumber
+                      ? 'top-list_row select-row'
+                      : 'top-list_row'
+                  }
+                >
+                  <td>
+                    <span>{index + 1}</span>
+                  </td>
+                  <td>
+                    <img src={playItem.image} alt="track Image" />
+                  </td>
+                  <td>
+                    <p>{playItem.title}</p>
+                  </td>
+                </tr>
+              ),
+            )}
+          </tbody>
+        </table>
+      )}
     </div>
   );
 };

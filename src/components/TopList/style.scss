@@ -2,9 +2,11 @@ div.top-list_container {
   width: 100%;
   height: 0%;
   overflow-y: scroll;
+  //   margin-bottom: 108px;
 
   animation-duration: 1s;
   animation-name: slideTop;
+  transition: height 1s;
 
   table.top-list {
     &,
