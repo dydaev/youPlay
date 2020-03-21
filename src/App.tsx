@@ -321,6 +321,7 @@ class Main extends React.Component<{}, StateType> {
             isShowing={isShowFooter}
             progress={progress}
             isBlur={false}
+            isBlurTitle={isBlurBg}
           />
         </IndexedDB>
       </MainContext.Provider>

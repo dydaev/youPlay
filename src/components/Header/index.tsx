@@ -46,34 +46,38 @@ const Header = ({
   };
 
   return (
-    <>
-      <div className="header-wrapper">
-        <header id="main-header" style={isShow ? { top: 0 } : {}}>
-          <button id="settings" onClick={onShowSettings}>
-            <i className="fas fa-tools"></i>
-          </button>
-          <h5 onClick={onShowMenu}>-=plaYo=-</h5>
-          <button>
-            <i className="fas fa-volume-up"></i>
-            {/* <i className="fas fa-bars"></i> */}
-          </button>
-        </header>
-        <TopList
-          isVisible={isShowPlaylist}
-          onSetPlaylist={handleSetPlaylist}
-          onSetCurrentTrackNumber={handleSetCurrentTreckNumber}
-        />
-        <button
-          className="header-wrapper_open-ist"
-          onClick={handleShowTopList}
-          style={isShowPlaylist ? { background: 'black' } : {}}
-        >
-          <div style={isShowPlaylist ? { width: '50%' } : {}} />
-          <div style={isShowPlaylist ? { width: '100%' } : {}} />
+    <div className="header-wrapper" style={isShowPlaylist ? {} : { height: 0 }}>
+      <header id="main-header" style={isShow ? { marginTop: 85 } : {}}>
+        <button id="settings" onClick={onShowSettings}>
+          <i className="fas fa-tools"></i>
         </button>
-        {true && <div style={{ height: 145 }} />}
-      </div>
-    </>
+        <h5 onClick={isShowPlaylist ? handleShowTopList : onShowMenu}>
+          {isShowPlaylist ? 'Playlist' : '-=plaYo=-'}
+        </h5>
+        {isShowPlaylist && (
+          <button>
+            <i className="fas fa-tasks"></i>
+          </button>
+        )}
+        <button>
+          <i className="fas fa-volume-up"></i>
+          {/* <i className="fas fa-bars"></i> */}
+        </button>
+      </header>
+      <TopList
+        isVisible={isShowPlaylist}
+        onSetPlaylist={handleSetPlaylist}
+        onSetCurrentTrackNumber={handleSetCurrentTreckNumber}
+      />
+      <button
+        className="header-wrapper_open-ist"
+        onClick={handleShowTopList}
+        style={isShowPlaylist ? { background: 'black' } : {}}
+      >
+        <div style={isShowPlaylist ? { width: '50%' } : {}} />
+        <div style={isShowPlaylist ? { width: '100%' } : {}} />
+      </button>
+    </div>
   );
 };
 

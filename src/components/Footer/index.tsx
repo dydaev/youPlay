@@ -15,6 +15,7 @@ type propsType = {
   onSetSeekPosition(position: number): void;
   runString: string;
   isBlur: boolean;
+  isBlurTitle: boolean;
   isShowing: boolean;
   isPlaying: boolean;
   isReady: boolean;
@@ -24,6 +25,7 @@ type propsType = {
 const Footer = ({
   // onShowFooter,
   isBlur,
+  isBlurTitle,
   isReady,
   isPlaying,
   onPlay,
@@ -119,7 +121,7 @@ const Footer = ({
           onTouchEnd={handleLineMouseUp}
           ref={Line}
         >
-          <span className="noselect">{runString}</span>
+          <span className={isBlurTitle ? 'noselect is_blur2' : 'noselect'}>{runString}</span>
           <div
             style={{
               zIndex: 0,
