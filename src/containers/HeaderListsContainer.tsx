@@ -25,8 +25,6 @@ interface AppProps {
   ): void;
   onSetCurrentTrackNumber(newTrackNumber: number): void;
   onSetCurrentPlaylistNumber(newPlaylistNumber: number): void;
-  // onSetPlaylist(newPlaylist: playItemType[]): void;
-  // onSetListOfPlaylists(newPlaylist: listOfPlaylistItemType[]): void;
 }
 
 const App: React.FunctionComponent<AppProps> = ({
@@ -37,13 +35,18 @@ const App: React.FunctionComponent<AppProps> = ({
   onSetCurrentPlaylistNumber,
 }: AppProps) => {
   const mainContext: mainContextType = React.useContext<mainContextType>(MainContext);
-  // const [listOfPlaylist, setListOfPlaylists] = React.useState<listOfPlaylistItemType[]>([]);
-  const [selectdPlaylist, setSelectdPlaylist] = React.useState<number>(0);
 
   const { getAll: getPlaylist } = useIndexedDB('currentPlayList');
-  const { getAll: getListOfPlaylists } = useIndexedDB('playLists');
 
-  const updateMainState = async (): Promise<void> => {
+  const {
+    getAll: getListOfPlaylists,
+    add: addPlaylistToList,
+    // @ts-ignore
+    clear: clearListOfPlaylists,
+    update: updateListOfPlaylists,
+  } = useIndexedDB('playLists');
+
+  const getListsFromStorage = async (): Promise<void> => {
     try {
       const playList: playItemType[] = await getPlaylist();
       const listOfPlayLists: listOfPlaylistItemType[] = await getListOfPlaylists();
@@ -59,32 +62,29 @@ const App: React.FunctionComponent<AppProps> = ({
     }
   };
 
-  React.useEffect((): void => {
-    updateMainState();
-    //getPlaylist()
-    // .then((playlistFromStor: playItemType[]) => {
-    //   if (!lib.equal(mainContext.playList, playlistFromStor)) {
-    //     onSetPlaylist(playlistFromStor);
-    //   }
-    // })
-    // .catch((err: any): void => {
-    //   console.log('Cannt read playlist from storage', err);
-    // });
-
-    //getListOfPlaylists()
-    // .then((listOfPlaylistFromStorage: listOfPlaylistItemType[]) => {
-    //   if (!lib.equal(listOfPlaylist, listOfPlaylistFromStorage)) {
-    //     onSetListOfPlaylists(listOfPlaylistFromStorage);
-    //   }
-    // })
-    // .catch((err: any): void => {
-    //   console.log('Cannt read list of playlists from storage', err);
-    // });
-  });
-
-  const handleSelectPlaylist = (numberOfPlaylist: number): void => {
-    setSelectdPlaylist(numberOfPlaylist);
+  const handleAddNewPlaylistToListOfPlaylist = (newPlaylist: listOfPlaylistItemType): void => {
+    clearListOfPlaylists()
+      .then((): void => {
+        mainContext.listOfPlaylist
+          .concat(newPlaylist)
+          .forEach((playlist: listOfPlaylistItemType): void => {
+            addPlaylistToList(playlist);
+          });
+      })
+      .then((): void => {
+        getListsFromStorage();
+      });
   };
+
+  const handleUpdatePlaylistInListOfPlaylist = (playlist: listOfPlaylistItemType): void => {
+    updateListOfPlaylists(playlist).then((): void => {
+      getListsFromStorage();
+    });
+  };
+
+  React.useEffect((): void => {
+    getListsFromStorage();
+  });
 
   return (
     <div className="top-list_container" style={{ height: isVisible ? '100%' : 0 }}>
@@ -95,10 +95,12 @@ const App: React.FunctionComponent<AppProps> = ({
         isShow={showingList === 'playlist'}
       />
       <Manager
+        isShow={showingList === 'manager'}
         selectedPlaylist={mainContext.currentPlaylistNumber}
         playlists={mainContext.listOfPlaylist}
         onSetCurrentPlaylistNumber={onSetCurrentPlaylistNumber}
-        isShow={showingList === 'manager'}
+        onAddPlaylist={handleAddNewPlaylistToListOfPlaylist}
+        onUpdatePlaylist={handleUpdatePlaylistInListOfPlaylist}
       />
     </div>
   );

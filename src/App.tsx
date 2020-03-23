@@ -12,7 +12,7 @@ import Settings from './components/Settings/index';
 import MainTimer from './components/MainTimer/index';
 // import Tabs from './components/Tabs';
 // import db from './db';
-// Compiler warns about unreachable code error
+
 import lib from './lib';
 
 import { bodyType } from './types/bodyType';
@@ -98,13 +98,6 @@ class Main extends React.Component<{}, MainStateType> {
     newState: MainStateType | Pick<MainStateType, K>,
     // @ts-ignore
   ): void => this.setState({ ...newState });
-
-  // handleSetState = <K extends keyof MainStateType>(key: K, value: MainStateType[K]): void => {
-  //   // @ts-ignore
-  //   this.setState({
-  //     [key]: value,
-  //   });
-  // };
 
   handleSetIsReady = (stateOfReady: boolean): void =>
     this.setState({

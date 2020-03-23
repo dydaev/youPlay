@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { listOfPlaylistItemType } from '../../types/listOfPlaylistItemType';
 
 import './style.scss';
 import { playItemType } from '../../types/playItemType';
