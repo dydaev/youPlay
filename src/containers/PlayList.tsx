@@ -2,7 +2,7 @@ import * as React from 'react';
 
 import { useIndexedDB } from 'react-indexed-db';
 
-import PlayList from '../components/PlayList/index';
+import PlayList from '../components/PlayListo/index';
 import PlayListManager from '../components/PlayListManager/index';
 
 import { bodyType } from '../types/bodyType';

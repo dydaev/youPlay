@@ -14,7 +14,7 @@
   -o-transition: height 1s;
   transition: height 1s;
 
-  button.header-wrapper_open-ist {
+  button.header-wrapper_open-list {
     width: 27%;
     height: 30px;
     padding: 6px 10px;
@@ -27,12 +27,19 @@
     border: 0;
     background: none;
     opacity: 0.4;
+    transition: opacity 400ms;
+
+    &:active {
+      opacity: 0.8;
+    }
 
     & > div {
       height: 2px;
       width: 100%;
       background-color: gray;
+      box-shadow: 1px 0px 5px 2px purple;
       margin: 0px auto;
+      transition: width 700ms;
 
       &:last-child {
         width: 50%;
@@ -99,5 +106,8 @@ header#main-header {
     color: $buttons-color;
     border: 0;
     background: none;
+    overflow: hidden;
+
+    transition: width 1s;
   }
 }

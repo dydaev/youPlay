@@ -11,7 +11,6 @@ import Message from './components/Massage/index';
 import Settings from './components/Settings/index';
 import MainTimer from './components/MainTimer/index';
 // import Tabs from './components/Tabs';
-import PlayListContainer from './containers/PlayList';
 // import db from './db';
 // Compiler warns about unreachable code error
 import lib from './lib';
@@ -33,9 +32,7 @@ import './main.scss';
 
 const version = '1.3.0';
 
-const stateSavingItems = ['currentTrackNumber', 'currentPlaylistNumber'];
-
-type StateType = {
+export type MainStateType = {
   duration: number;
   progress: progressType;
   settings: settingsType;
@@ -53,8 +50,8 @@ type StateType = {
   PlayerRef: any;
 };
 
-class Main extends React.Component<{}, StateType> {
-  state: StateType = {
+class Main extends React.Component<{}, MainStateType> {
+  state: MainStateType = {
     currentTrackNumber: NaN,
     currentPlaylistNumber: NaN,
     duration: 0,
@@ -76,16 +73,19 @@ class Main extends React.Component<{}, StateType> {
     initDB(DBConfig);
   }
 
-  shouldComponentUpdate(nextProps: any, nextState: StateType): boolean {
+  shouldComponentUpdate(nextProps: any, nextState: MainStateType): boolean {
     if (
       !lib.equal(this.state.playList, nextState.playList) ||
       this.state.isBlurBg !== nextState.isBlurBg ||
       this.state.isShowSettings !== nextState.isShowSettings ||
       (!Number.isNaN(nextState.currentTrackNumber) &&
-        this.state.currentTrackNumber !== nextState.currentTrackNumber)
-    )
+        this.state.currentTrackNumber !== nextState.currentTrackNumber) ||
+      (!Number.isNaN(nextState.currentPlaylistNumber) &&
+        this.state.currentPlaylistNumber !== nextState.currentPlaylistNumber)
+    ) {
+      console.log('save to storage updated state', nextState);
       return true;
-    else return false;
+    } else return false;
   }
 
   handleSetSettings = (newState: settingsType): void => {
@@ -94,12 +94,17 @@ class Main extends React.Component<{}, StateType> {
     });
   };
 
-  handleSetState = <K extends keyof StateType>(key: K, value: StateType[K]): void => {
+  handleSetState = <K extends keyof MainStateType>(
+    newState: MainStateType | Pick<MainStateType, K>,
     // @ts-ignore
-    this.setState({
-      [key]: value,
-    });
-  };
+  ): void => this.setState({ ...newState });
+
+  // handleSetState = <K extends keyof MainStateType>(key: K, value: MainStateType[K]): void => {
+  //   // @ts-ignore
+  //   this.setState({
+  //     [key]: value,
+  //   });
+  // };
 
   handleSetIsReady = (stateOfReady: boolean): void =>
     this.setState({
@@ -283,7 +288,7 @@ class Main extends React.Component<{}, StateType> {
           <Message message={message} onHide={this.handleClearMessage} />
           <Header
             isShow={isShowHeader}
-            onSetPlaylist={this.handleSetState}
+            setToMainState={this.handleSetState}
             onShowMenu={() => {}}
             onShowSettings={this.handleShowSettings}
             bodyType={'player'}
