@@ -1,0 +1,45 @@
+div.top-list_manager-item {
+  display: flex;
+  justify-content: space-around;
+
+  div.top-list_manager-item_info {
+    flex-grow: 1;
+    transition: box-shadow 200ms;
+  }
+
+  div.top-list_manager-item_tools {
+    width: 0px;
+    background: black;
+    overflow: hidden;
+    position: relative;
+    transition: width 300ms;
+    // background: linear-gradient(to bottom, #405166 0%, #656f6f 100%);
+    & > div {
+      float: right;
+      height: 100%;
+      display: flex;
+      align-items: stretch;
+
+      & > button {
+        height: 100%;
+        width: 50px;
+        border: 0;
+        background: none;
+        color: green;
+        opacity: 0.7;
+        font-size: 36px;
+        margin: 0 6px;
+
+        &:last-child {
+          color: red;
+        }
+      }
+      &.top-list_manager-item_tools_remove-confirmation {
+        position: absolute;
+        background: black;
+        right: 0;
+        transition: right 300ms;
+      }
+    }
+  }
+}

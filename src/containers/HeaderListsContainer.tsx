@@ -82,6 +82,18 @@ const App: React.FunctionComponent<AppProps> = ({
     });
   };
 
+  const handleUpdateListOfPlaylist = (updatedList: listOfPlaylistItemType[]): void => {
+    clearListOfPlaylists()
+      .then((): void => {
+        updatedList.forEach((playlist: listOfPlaylistItemType): void => {
+          addPlaylistToList(playlist);
+        });
+      })
+      .then((): void => {
+        getListsFromStorage();
+      });
+  };
+
   React.useEffect((): void => {
     getListsFromStorage();
   });
@@ -89,18 +101,21 @@ const App: React.FunctionComponent<AppProps> = ({
   return (
     <div className="top-list_container" style={{ height: isVisible ? '100%' : 0 }}>
       <Playlist
+        // isShowTopList={isVisible}
+        isShow={showingList === 'playlist'}
         playlist={mainContext.playList}
         onSetCurrentTrackNumber={onSetCurrentTrackNumber}
         selectedTrackNumber={mainContext.currentTrackNumber}
-        isShow={showingList === 'playlist'}
       />
       <Manager
+        isShowTopList={isVisible}
         isShow={showingList === 'manager'}
         selectedPlaylist={mainContext.currentPlaylistNumber}
         playlists={mainContext.listOfPlaylist}
         onSetCurrentPlaylistNumber={onSetCurrentPlaylistNumber}
         onAddPlaylist={handleAddNewPlaylistToListOfPlaylist}
         onUpdatePlaylist={handleUpdatePlaylistInListOfPlaylist}
+        onUpdateListOfPlaylists={handleUpdateListOfPlaylist}
       />
     </div>
   );
