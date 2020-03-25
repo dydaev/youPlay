@@ -71,6 +71,14 @@ div.top-list_container {
             display: block;
           }
         }
+
+        td.top-list_top-list_row_track-name {
+          display: flex;
+
+          & > p {
+            flex-shrink: 0;
+          }
+        }
       }
       tr.select-row {
         color: white;

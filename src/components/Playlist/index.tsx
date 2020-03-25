@@ -33,7 +33,7 @@ export const Playlist: React.FunctionComponent<PlaylistProps> = ({
               <td>
                 <img src={playItem.image} alt="track Image" />
               </td>
-              <td>
+              <td className="top-list_top-list_row_track-name">
                 <p>{playItem.title}</p>
               </td>
             </tr>

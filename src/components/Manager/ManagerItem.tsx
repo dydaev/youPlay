@@ -83,8 +83,8 @@ const ManagerItem: React.FunctionComponent<ManagerItemProps> = ({
           ...(currentWidth > 0 ? { boxShadow: '2px 1px 5px 1px #22222288' } : {}),
         }}
       >
-        <p>{name}</p>
-        <p>{description || ''}</p>
+        <p style={isOpenTools ? { paddingLeft: 2 } : {}}>{name}</p>
+        <p style={isOpenTools ? { paddingLeft: 2 } : {}}>{description || ''}</p>
       </div>
       <div
         style={{

@@ -3,8 +3,25 @@ div.top-list_manager-item {
   justify-content: space-around;
 
   div.top-list_manager-item_info {
+    height: 60px;
+    padding-left: 10px;
     flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
     transition: box-shadow 200ms;
+
+    p {
+      margin: 5px 0px 7px;
+      padding-left: 10px;
+      transition: padding 200ms;
+
+      &:last-child {
+        color: lightsteelblue;
+        font-size: 12px;
+        margin: 0;
+      }
+    }
   }
 
   div.top-list_manager-item_tools {

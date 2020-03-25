@@ -106,7 +106,7 @@ export const Manager: React.FunctionComponent<ManagerProps> = ({
                     index === selectedPlaylist ? 'top-list_row select-row' : 'top-list_row'
                   }
                 >
-                  <td>
+                  <td style={{ width: 55 }}>
                     <span>{index + 1}</span>
                   </td>
                   <td>

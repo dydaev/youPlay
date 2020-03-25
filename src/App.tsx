@@ -76,6 +76,7 @@ class Main extends React.Component<{}, MainStateType> {
   shouldComponentUpdate(nextProps: any, nextState: MainStateType): boolean {
     if (
       !lib.equal(this.state.playList, nextState.playList) ||
+      !lib.equal(this.state.listOfPlaylist, nextState.listOfPlaylist) ||
       this.state.isBlurBg !== nextState.isBlurBg ||
       this.state.isShowSettings !== nextState.isShowSettings ||
       (!Number.isNaN(nextState.currentTrackNumber) &&
