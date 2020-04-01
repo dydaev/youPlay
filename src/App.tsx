@@ -105,18 +105,26 @@ class Main extends React.Component<{}, MainStateType> {
     });
 
   handleSetMessage = (newMessage: messageType): void => {
-    setTimeout(() => {
-      this.handleClearMessage();
-    }, 5000);
+    if (newMessage.text && newMessage.text.length) {
+      const newId: number = new Date().getTime();
+      const showingTime = newMessage.text.length < 100 ? newMessage.text.length * 150 : 10000;
 
-    this.setState({
-      message: newMessage,
-    });
+      setTimeout(() => {
+        this.handleClearMessage(newId);
+      }, showingTime);
+
+      this.setState({
+        message: { ...newMessage, id: newId },
+      });
+    }
   };
-  handleClearMessage = (): void => {
-    this.setState({
-      message: null,
-    });
+
+  handleClearMessage = (id: number): void => {
+    if (this.state.message && this.state.message.id === id) {
+      this.setState({
+        message: null,
+      });
+    }
   };
 
   handleSetPlayerRef = (ref: any): void => {

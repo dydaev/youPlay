@@ -1,40 +1,53 @@
-import * as React from "react";
+import * as React from 'react';
 
-import { messageType } from "../../types/messageType.ts";
+import { messageType } from '../../types/messageType';
 
-import "./style.scss";
+import './style.scss';
 
 export type props = {
-	onHide(): void;
-	message: messageType | null;
+  onHide(id: number): void;
+  message: messageType | null;
 };
 
-const Message = ({ message, onHide }: props) => {
-	let color = "green";
-	let text = "";
+const Message = ({ message, onHide }: props): JSX.Element => {
+  let color = 'green';
+  let text = '';
 
-	if (message) {
-		text = message.text;
+  if (message) {
+    text = message.text;
 
-		switch (message.type) {
-			case "WARNING":
-				color = "#ffd700b8";
-				break;
-			case "ERROR":
-				color = "#ffc0cbab";
-		}
-		setTimeout(() => {
-			onHide();
-		}, 3000);
-	}
+    switch (message.type) {
+      case 'WARNING':
+        color = '#fffa00ad';
+        break;
+      case 'ERROR':
+        color = '#ffc0cbab';
+    }
+  }
 
-	return (
-		<div className="main-message" style={message ? { top: 0, background: color } : {}}>
-			<p>{text || ""}</p>
-		</div>
-	);
+  const handleMessageHide = (): void => {
+    onHide(message.id);
+  };
+
+  return (
+    <div
+      className="main-message"
+      onClick={handleMessageHide}
+      style={
+        message
+          ? {
+              top: 0,
+              background: color,
+              height: message.text.length < 30 ? 90 : (message.text.length / 30) * 40,
+            }
+          : {}
+      }
+    >
+      <p>{text || ''}</p>
+    </div>
+  );
 };
 
-Message.displayName = "Message";
+Message.displayName = 'Message';
 
 export default Message;
