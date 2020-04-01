@@ -1,85 +1,80 @@
 import * as React from 'react';
-import TopList from '../TopList';
-import HeaderListsContainer from '../../containers/HeaderListsContainer';
-import { IndexedDB, useIndexedDB, initDB } from 'react-indexed-db';
-
-import MainContext from '../../context';
-
-import { bodyType } from '../../types/bodyType';
+// import TopList from '../TopList';
 
 import './style.scss';
-import { mainContextType } from '../../types/mainContextType';
-import { playItemType } from '../../types/playItemType';
 import { listOfPlaylistItemType } from '../../types/listOfPlaylistItemType';
 import { MainStateType } from '../../App';
+
+import { Manager } from '../../components/Manager';
+import { Playlist } from '../../components/Playlist';
 
 export type showingListType = 'playlist' | 'manager';
 
 type propsType = {
-  onSetVolume(newVolume: number): void;
+  isShow: boolean;
   onShowMenu(): void;
   onShowSettings(): void;
+  onGetPlaylistFromServer(): void;
+  onSetVolume(newVolume: number): void;
   onSetBlurBg(newSatte: boolean): void;
+  onSetCurrentTrackNumber(newNumber: number): void;
+  onChangeCurrentPlaylistNumber(newNumber: number): void;
+  onAddNewPlaylistToListOfPlaylist(newPlaylist: listOfPlaylistItemType): void;
+  onUpdatePlaylistInListOfPlaylist(playlist: listOfPlaylistItemType): void;
+  onUpdateListOfPlaylist(updatedList: listOfPlaylistItemType[]): void;
   setToMainState<K extends keyof MainStateType>(
     newState: MainStateType | Pick<MainStateType, K>,
   ): void;
-  bodyType: bodyType;
-  isShow: boolean;
 };
 
 const stylesOfListButtons = { width: 0, padding: 0, margin: 0 };
 
 const Header = ({
-  setToMainState,
   isShow,
   onShowSettings,
   onShowMenu,
   onSetVolume,
   onSetBlurBg,
+  onGetPlaylistFromServer,
+  onSetCurrentTrackNumber,
+  onAddNewPlaylistToListOfPlaylist,
+  onUpdatePlaylistInListOfPlaylist,
+  onUpdateListOfPlaylist,
+  onChangeCurrentPlaylistNumber,
 }: propsType): JSX.Element => {
-  const mainContext: mainContextType = React.useContext<mainContextType>(MainContext);
   const [showingList, setShowingList] = React.useState<showingListType>('playlist');
-  const [isShowPlaylist, setShowPlaylist] = React.useState(false);
-
-  const handleSetListsToState = (
-    newPlaylist: playItemType[],
-    newListOfPlaylist: listOfPlaylistItemType[],
-  ): void => {
-    setToMainState({
-      playList: newPlaylist,
-      listOfPlaylist: newListOfPlaylist,
-    });
-  };
-
-  const handleSetCurrentPlaylistNumber = (newNumber: number): void =>
-    setToMainState({ currentPlaylistNumber: newNumber });
-
-  const handleSetCurrentTreckNumber = (newNumber: number): void =>
-    setToMainState({ currentTrackNumber: newNumber });
+  const [isShowToplist, setShowToplist] = React.useState(false);
 
   const handleShowTopList = (): void => {
-    setShowPlaylist(!isShowPlaylist);
-    onSetBlurBg(!isShowPlaylist);
+    setShowToplist(!isShowToplist);
+    onSetBlurBg(!isShowToplist);
   };
 
   return (
-    <div className="header-wrapper" style={isShowPlaylist ? {} : { height: 0 }}>
+    <div className="header-wrapper" style={isShowToplist ? {} : { height: 0 }}>
       <header id="main-header" style={isShow ? { marginTop: 85 } : {}}>
-        <button id="settings" onClick={onShowSettings}>
-          <i className="fas fa-tools"></i>
+        <button
+          id="settings"
+          onClick={isShowToplist ? onGetPlaylistFromServer : onShowSettings}
+          style={{ position: 'relative' }}
+        >
+          <i className="fas fa-tools" style={isShowToplist ? { fontSize: 0 } : {}}></i>
+          <i className="fas fa-sync" style={!isShowToplist ? { fontSize: 0 } : {}}></i>
+          {/* <i className="fas fa-tools" style={isShowToplist ? { left: -25 } : { left: 18 }}></i>
+          <i className="fas fa-sync" style={!isShowToplist ? { right: -25 } : { right: 17 }}></i> */}
         </button>
-        <h5 onClick={isShowPlaylist ? handleShowTopList : onShowMenu}>
-          {!isShowPlaylist ? '-=plaYo=-' : showingList === 'playlist' ? 'Playlist' : 'Manager'}
+        <h5 onClick={isShowToplist ? handleShowTopList : onShowMenu}>
+          {!isShowToplist ? '-=plaYo=-' : showingList === 'playlist' ? 'Playlist' : 'Manager'}
         </h5>
 
         <button
-          style={isShowPlaylist && showingList === 'playlist' ? {} : stylesOfListButtons}
+          style={isShowToplist && showingList === 'playlist' ? {} : stylesOfListButtons}
           onClick={(): void => setShowingList('manager')}
         >
           <i className="fas fa-tasks"></i>
         </button>
         <button
-          style={isShowPlaylist && showingList === 'manager' ? {} : stylesOfListButtons}
+          style={isShowToplist && showingList === 'manager' ? {} : stylesOfListButtons}
           onClick={(): void => setShowingList('playlist')}
         >
           <i className="fas fa-th-list"></i>
@@ -90,25 +85,24 @@ const Header = ({
           {/* <i className="fas fa-bars"></i> */}
         </button>
       </header>
-      {/* <TopList
-        isVisible={isShowPlaylist}
-        setToMainState={handleSetPlaylist}
-        onSetCurrentTrackNumber={handleSetCurrentTreckNumber}
-      /> */}
-      <HeaderListsContainer
-        isVisible={isShowPlaylist}
-        showingList={showingList}
-        onSetListsFromStorage={handleSetListsToState}
-        onSetCurrentTrackNumber={handleSetCurrentTreckNumber}
-        onSetCurrentPlaylistNumber={handleSetCurrentPlaylistNumber}
-      />
-      <button
-        className="header-wrapper_open-list"
-        onClick={handleShowTopList}
-        // style={isShowPlaylist ? { background: 'black' } : {}}
-      >
-        <div style={isShowPlaylist ? { width: '50%' } : {}} />
-        <div style={isShowPlaylist ? { width: '100%' } : {}} />
+      <div className="top-list_container" style={{ height: isShow ? '100%' : 0 }}>
+        <Playlist
+          // isShowTopList={isShow}
+          isShow={showingList === 'playlist'}
+          onSetCurrentTrackNumber={onSetCurrentTrackNumber}
+        />
+        <Manager
+          isShowTopList={isShow}
+          isShow={showingList === 'manager'}
+          onChangeCurrentPlaylistNumber={onChangeCurrentPlaylistNumber}
+          onAddPlaylist={onAddNewPlaylistToListOfPlaylist}
+          onUpdatePlaylist={onUpdatePlaylistInListOfPlaylist}
+          onUpdateListOfPlaylists={onUpdateListOfPlaylist}
+        />
+      </div>
+      <button className="header-wrapper_open-list" onClick={handleShowTopList}>
+        <div style={isShowToplist ? { width: '50%' } : {}} />
+        <div style={isShowToplist ? { width: '100%' } : {}} />
       </button>
     </div>
   );

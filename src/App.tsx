@@ -1,27 +1,25 @@
 import * as React from 'react';
 
-import { IndexedDB, useIndexedDB, initDB } from 'react-indexed-db';
+import { IndexedDB, initDB } from 'react-indexed-db';
 import MainContext from './context';
 
 // import Roll from './components/PlayRoll';
 import Player from './components/Player';
 import Footer from './components/Footer/index';
-import Header from './components/Header/index';
 import Message from './components/Massage/index';
 import Settings from './components/Settings/index';
-import MainTimer from './components/MainTimer/index';
+// import MainTimer from './components/MainTimer/index';
+import HeaderContainer from './containers/HeaderContainer';
 // import Tabs from './components/Tabs';
 // import db from './db';
 
 import lib from './lib';
 
-import { bodyType } from './types/bodyType';
 import { messageType } from './types/messageType';
 import { progressType } from './types/progressType';
 import { playItemType } from './types/playItemType';
-import { playStrategicType } from './types/playStrategicType';
-import { listOfPlaylistItemType } from './types/listOfPlaylistItemType';
 import { settingsType } from './types/settingsType';
+import { listOfPlaylistItemType } from './types/listOfPlaylistItemType';
 
 import { progressModel } from './models/progressModel';
 import { settingsModel } from './models/settingsModel';
@@ -75,10 +73,11 @@ class Main extends React.Component<{}, MainStateType> {
 
   shouldComponentUpdate(nextProps: any, nextState: MainStateType): boolean {
     if (
-      !lib.equal(this.state.playList, nextState.playList) ||
-      !lib.equal(this.state.listOfPlaylist, nextState.listOfPlaylist) ||
       this.state.isBlurBg !== nextState.isBlurBg ||
       this.state.isShowSettings !== nextState.isShowSettings ||
+      !lib.equal(this.state.message, nextState.message) ||
+      !lib.equal(this.state.playList, nextState.playList) ||
+      !lib.equal(this.state.listOfPlaylist, nextState.listOfPlaylist) ||
       (!Number.isNaN(nextState.currentTrackNumber) &&
         this.state.currentTrackNumber !== nextState.currentTrackNumber) ||
       (!Number.isNaN(nextState.currentPlaylistNumber) &&
@@ -280,14 +279,13 @@ class Main extends React.Component<{}, MainStateType> {
           objectStoresMeta={DBConfig.objectStoresMeta}
         >
           <Message message={message} onHide={this.handleClearMessage} />
-          <Header
+          <HeaderContainer
             isShow={isShowHeader}
-            setToMainState={this.handleSetState}
-            onShowMenu={() => {}}
-            onShowSettings={this.handleShowSettings}
-            bodyType={'player'}
+            onShowMenu={(): void => {}}
             onSetVolume={this.handleSetVolume}
             onSetBlurBg={this.handleSetBlurBg}
+            setToMainState={this.handleSetState}
+            onShowSettings={this.handleShowSettings}
           />
           <Player
             ref={PlayerRef}

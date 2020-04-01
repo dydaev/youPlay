@@ -14,6 +14,21 @@
   -o-transition: height 1s;
   transition: height 1s;
 
+  button#settings {
+    & > i {
+      transition: font-size 0.5s;
+    }
+    // & > i {
+    //   position: absolute;
+    //   top: 19px;
+    //   transition: left 1s;
+
+    //   &:last-child {
+    //     transition: right 1s;
+    //   }
+    // }
+  }
+
   button.header-wrapper_open-list {
     width: 27%;
     height: 30px;

@@ -2,6 +2,45 @@ div.top-list_manager-item {
   display: flex;
   justify-content: space-around;
 
+  div.top-list_manager-item_form {
+    width: 0px;
+    height: 0px;
+    overflow: hidden;
+    transition: height 400ms;
+
+    div {
+      display: flex;
+
+      & > button {
+        background: gray;
+        border-radius: 15px;
+        border-color: lightgray;
+        font-size: 11px;
+        font-weight: bold;
+        color: white;
+      }
+    }
+
+    input {
+      height: 38px;
+      width: 100%;
+      padding-left: 10px;
+      border: 0;
+      color: white;
+      background: none;
+      border-bottom: 1px solid black;
+      font-size: 19px;
+      font-weight: bold;
+
+      &:focus {
+        outline: none;
+        caret-color: lightcoral;
+        border-bottom: 1px solid purple;
+        box-shadow: 0px 2px 2px -1px lightcoral;
+      }
+    }
+  }
+
   div.top-list_manager-item_info {
     height: 60px;
     padding-left: 10px;

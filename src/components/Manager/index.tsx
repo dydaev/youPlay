@@ -6,6 +6,9 @@ import Swiper from '../Swiper';
 import ManagerItem from './ManagerItem';
 import EditForm from './EditForm';
 
+import { mainContextType } from '../../types/mainContextType';
+import MainContext from '../../context';
+
 const clearForm: listOfPlaylistItemType = {
   name: '',
   description: '',
@@ -15,12 +18,10 @@ const clearForm: listOfPlaylistItemType = {
 export interface ManagerProps {
   isShow: boolean;
   isShowTopList: boolean;
-  selectedPlaylist: number;
-  playlists: listOfPlaylistItemType[];
   onAddPlaylist(newPlaylist: listOfPlaylistItemType): void;
   onUpdatePlaylist(newPlaylist: listOfPlaylistItemType): void;
   onUpdateListOfPlaylists(updatedList: listOfPlaylistItemType[]): void;
-  onSetCurrentPlaylistNumber(selectedPlaylistIndex: number): void;
+  onChangeCurrentPlaylistNumber(selectedPlaylistIndex: number): void;
 }
 
 export const notShowStyle = {
@@ -32,25 +33,30 @@ export const notShowStyle = {
 
 export const Manager: React.FunctionComponent<ManagerProps> = ({
   isShow,
-  playlists,
   isShowTopList,
-  selectedPlaylist,
   onAddPlaylist,
   onUpdatePlaylist,
   onUpdateListOfPlaylists,
-  onSetCurrentPlaylistNumber,
+  onChangeCurrentPlaylistNumber,
 }: ManagerProps) => {
-  const [showAddForm, setShowAddForm] = React.useState(false);
+  const mainContext: mainContextType = React.useContext<mainContextType>(MainContext);
   const [formItems, setFormItems] = React.useState<listOfPlaylistItemType>(clearForm);
   const [indexOfEditForm, setIndexOfEditForm] = React.useState(NaN);
+  const [showAddForm, setShowAddForm] = React.useState(false);
+  const [showForm, setShowForm] = React.useState(NaN);
+
+  const handleToggleForm = (index: number): void => {
+    if (showForm === index) setShowForm(NaN);
+    else {
+      setFormItems(mainContext.listOfPlaylist[index]);
+      setShowAddForm(false);
+      setShowForm(index);
+    }
+  };
 
   const handleClickAddButton = (): void => {
-    if (!showAddForm) {
-      setShowAddForm(!showAddForm);
-    } else {
-      console.log('save form');
-      setShowAddForm(!showAddForm);
-    }
+    setShowForm(NaN);
+    setShowAddForm(!showAddForm);
   };
   const handleChangeForm = (e: any): void => {
     const keyOfItem: string = e.target.id;
@@ -66,20 +72,18 @@ export const Manager: React.FunctionComponent<ManagerProps> = ({
 
     setFormItems(clearForm);
     setShowAddForm(false);
+    setShowForm(NaN);
   };
   const handleClearAddForm = (): void => {
     setFormItems(clearForm);
-    setIndexOfEditForm(NaN);
     setShowAddForm(false);
+    setShowForm(NaN);
   };
 
-  const handleEdit = (index: number): void => {
-    setShowAddForm(true);
-    setFormItems(playlists[index]);
-    setIndexOfEditForm(index);
-  };
   const handleRemove = (index: number): void =>
-    onUpdateListOfPlaylists(playlists.filter((_: any, idx: number): boolean => index !== idx));
+    onUpdateListOfPlaylists(
+      mainContext.listOfPlaylist.filter((_: any, idx: number): boolean => index !== idx),
+    );
 
   const calbackOfOpenItemTools = (isOpen: boolean): void => {
     if (!isOpen) setIndexOfEditForm(NaN);
@@ -89,62 +93,78 @@ export const Manager: React.FunctionComponent<ManagerProps> = ({
     <div style={isShow ? {} : notShowStyle}>
       <table className="top-list">
         <tbody>
-          {playlists.map(
-            (playlist: listOfPlaylistItemType, index: number): React.ReactNode =>
-              showAddForm && indexOfEditForm === index ? (
+          {mainContext.listOfPlaylist.map(
+            (playlist: listOfPlaylistItemType, index: number): React.ReactNode => (
+              <tr
+                key={'playlistItem-' + index}
+                onClick={(): void => onChangeCurrentPlaylistNumber(index)}
+                className={
+                  index === mainContext.currentPlaylistNumber
+                    ? 'top-list_row select-row'
+                    : 'top-list_row'
+                }
+              >
+                <td style={{ width: 55 }}>
+                  <span>{index + 1}</span>
+                </td>
+                <td>
+                  <Swiper>
+                    <ManagerItem
+                      formItems={formItems}
+                      onChangeForm={handleChangeForm}
+                      isShowForm={showForm === index}
+                      onToggleForm={handleToggleForm}
+                      url={playlist.url}
+                      name={playlist.name}
+                      description={playlist.description}
+                      onRemove={handleRemove}
+                      onOpendTools={calbackOfOpenItemTools}
+                      index={index}
+                      setCloseTools={!isShow || !isShowTopList}
+                    />
+                  </Swiper>
+                </td>
+              </tr>
+            ),
+          )}
+          <tr className="top-list_row">
+            <td colSpan={2} style={{ textAlign: 'center' }}>
+              <div
+                className="top-list_manager-item"
+                style={showAddForm && Number.isNaN(indexOfEditForm) ? {} : { height: 0 }}
+              >
                 <EditForm
-                  key={'playlistItem-' + index}
-                  onChangeForm={handleChangeForm}
-                  index={index + 1}
+                  isShowForm={showAddForm}
                   formItems={formItems}
-                />
-              ) : (
-                <tr
-                  key={'playlistItem-' + index}
-                  onClick={(): void => onSetCurrentPlaylistNumber(index)}
-                  className={
-                    index === selectedPlaylist ? 'top-list_row select-row' : 'top-list_row'
+                  onChangeForm={handleChangeForm}
+                  index={
+                    mainContext.listOfPlaylist.length ? mainContext.listOfPlaylist.length + 1 : 1
                   }
-                >
-                  <td style={{ width: 55 }}>
-                    <span>{index + 1}</span>
-                  </td>
-                  <td>
-                    <Swiper>
-                      <ManagerItem
-                        name={playlist.name}
-                        description={playlist.description}
-                        onEdit={handleEdit}
-                        onRemove={handleRemove}
-                        onOpendTools={calbackOfOpenItemTools}
-                        index={index}
-                        setCloseTools={!isShow || !isShowTopList}
-                      />
-                    </Swiper>
-                  </td>
-                </tr>
-              ),
-          )}
-          {showAddForm && Number.isNaN(indexOfEditForm) && (
-            <EditForm
-              formItems={formItems}
-              onChangeForm={handleChangeForm}
-              index={playlists.length ? playlists.length + 1 : 1}
-            />
-          )}
+                />
+              </div>
+
+              <button
+                style={showAddForm && Number.isNaN(indexOfEditForm) ? { display: 'none' } : {}}
+                onClick={handleClickAddButton}
+              >
+                Add
+              </button>
+            </td>
+          </tr>
         </tbody>
       </table>
-      <button style={isShow && !showAddForm ? {} : { right: -155 }} onClick={handleClickAddButton}>
-        Add
-      </button>
       <button
-        style={isShow && showAddForm ? { bottom: 90, right: 14 } : { bottom: 90, right: -180 }}
+        style={
+          isShow && (!Number.isNaN(showForm) || showAddForm)
+            ? { bottom: 90, right: 14 }
+            : { bottom: 90, right: -180 }
+        }
         onClick={handleSaveForm}
       >
         Save
       </button>
       <button
-        style={isShow && showAddForm ? { right: 12 } : { right: -140 }}
+        style={isShow && (!Number.isNaN(showForm) || showAddForm) ? { right: 12 } : { right: -140 }}
         onClick={handleClearAddForm}
       >
         Cancel

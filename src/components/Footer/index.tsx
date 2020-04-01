@@ -51,6 +51,8 @@ const Footer = ({
     onPrev();
   };
   const handleNext = (): void => {
+    console.log(mainContext);
+
     onNext();
   };
 

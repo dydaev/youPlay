@@ -1,32 +1,43 @@
 import * as React from 'react';
 
 import './ManagerItem.scss';
+import { listOfPlaylistItemType } from '../../types/listOfPlaylistItemType';
+import EditForm from './EditForm';
 
 export interface ManagerItemProps {
   index: number;
+  url: string;
   name: string;
-  description?: string;
   swipeLeft?: number;
+  isShowForm: boolean;
   swipeRight?: number;
+  description?: string;
   isSwipeTouch?: boolean;
   setCloseTools?: boolean;
-  onEdit(index: number): void;
+  formItems: listOfPlaylistItemType;
+  onChangeForm(e: any): void;
+  onToggleForm(index: number): void;
   onRemove(index: number): void;
   onOpendTools(isOpen: boolean): void;
 }
 
 const ManagerItem: React.FunctionComponent<ManagerItemProps> = ({
+  url,
   name,
   swipeLeft,
   swipeRight,
   isSwipeTouch,
   description,
   index,
-  onEdit,
+  formItems,
+  onChangeForm,
   onRemove,
+  isShowForm,
+  onToggleForm,
   onOpendTools,
   setCloseTools = false,
 }: ManagerItemProps) => {
+  // const [isShowForm, setIsShowForm] = React.useState(false);
   const [isOpenTools, setIsOpenTools] = React.useState(false);
   const [isRemoveCofirmation, setIsRemoveCofirmation] = React.useState(false);
   const [currentWidth, setCurrentWidth] = React.useState(0);
@@ -75,12 +86,36 @@ const ManagerItem: React.FunctionComponent<ManagerItemProps> = ({
     if (setCloseTools && isOpenTools) handleShowTools(false);
   })();
 
+  const handleToggleForm = (): void => {
+    onToggleForm(index);
+    handleShowTools(isShowForm);
+  };
+
+  const handleClickUrlButton = async (): Promise<void> => {
+    if (formItems.url) {
+      onChangeForm({ target: { id: 'url', value: '' } });
+    } else {
+      // UrlInput.current.select();
+      // document.execCommand('clipboardRead');
+      navigator.clipboard.readText().then((pastingText: string): void => {
+        onChangeForm({ target: { id: 'url', value: pastingText } });
+      });
+    }
+  };
+
   return (
     <div className="top-list_manager-item">
+      <EditForm
+        onChangeForm={onChangeForm}
+        formItems={formItems}
+        isShowForm={isShowForm}
+        index={index}
+      />
       <div
         className="top-list_manager-item_info"
         style={{
           ...(currentWidth > 0 ? { boxShadow: '2px 1px 5px 1px #22222288' } : {}),
+          ...(isShowForm ? { width: 0, padding: 0 } : {}),
         }}
       >
         <p style={isOpenTools ? { paddingLeft: 2 } : {}}>{name}</p>
@@ -93,7 +128,7 @@ const ManagerItem: React.FunctionComponent<ManagerItemProps> = ({
         className="top-list_manager-item_tools"
       >
         <div>
-          <button onClick={(): void => onEdit(index)}>
+          <button onClick={handleToggleForm /* onEdit(index) */}>
             <i className="fas fa-edit"></i>
           </button>
           <button onClick={(): void => setIsRemoveCofirmation(true)}>
