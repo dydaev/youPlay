@@ -2,6 +2,8 @@ import * as React from "react";
 
 import db from "../../db";
 
+import Tabs from "../Tabs/index.tsx";
+
 import { settingsModel } from "../../models/settingsModel";
 
 import { bodyType } from "../../types/bodyType";
@@ -106,10 +108,20 @@ class Settings extends React.Component<PropsType, StateType> {
       [target.id]: target.type === "checkbox" ? target.checked : target.value,
     });
   };
+  handleChageLang = (e: any) => {
+    console.log(e.target.value);
+  };
 
   render() {
     const { settings } = this.state;
     const { onShow, onClose } = this.props;
+
+    if (false) {
+      //settings.language === ''
+      const systemLang = navigator.language.toLowerCase().split("-")[0];
+
+      this.handleChageLang({ target: { value: systemLang } });
+    }
 
     return (
       <section id="main-settings" style={{ left: onShow ? 0 : "-100%" }}>
@@ -120,70 +132,88 @@ class Settings extends React.Component<PropsType, StateType> {
           <div />
           <p>Settings</p>
         </div>
+        <Tabs buttonHeight={60}>
+          <div title="General" className="main-settings_tab-item">
+            <label>
+              Language
+              <select>
+                onChange={this.handleChageLang}
+                <option value="sys">System({navigator.language})</option>
+                <option value="ua">Українська</option>
+                <option value="en">English</option>
+                <option value="ru">Русский</option>
+              </select>
+            </label>
+            <label>
+              Server of downloading
+              <input
+                id="downloadServer"
+                type="text"
+                value={settings.downloadServer}
+                onChange={this.handleChangeSettings}
+              />
+            </label>
+            <label>
+              Use downloading server
+              <input
+                id="directYoutubeLoad"
+                type="checkbox"
+                checked={settings.directYoutubeLoad}
+                onChange={this.handleChangeSettings}
+              />
+            </label>
+            <label>
+              Use third party server for playlist(often busy!)
+              <input
+                id="thirdPartyServerForPlaylist"
+                type="checkbox"
+                checked={settings.thirdPartyServerForPlaylist}
+                onChange={this.handleChangeSettings}
+              />
+            </label>
+            <label>
+              Full Screen Mode
+              <input
+                id="fullScreenMode"
+                type="checkbox"
+                checked={settings.fullScreenMode}
+                onChange={this.handleChangeSettings}
+              />
+            </label>
+            <label>
+              Play in tray(experemental)
+              <input
+                id="playInTray"
+                type="checkbox"
+                checked={settings.playInTray}
+                onChange={this.handleChangeSettings}
+              />
+            </label>
+          </div>
+          <div title="Audio" className="main-settings_tab-item">
+            <label>
+              Waiting of downloading track
+              <input
+                id="timeoutOfReadingFile"
+                type="number"
+                value={settings.timeoutOfReadingFile}
+                onChange={this.handleChangeSettings}
+              />
+            </label>
+          </div>
+          <div title="Video" className="main-settings_tab-item">
+            <label>
+              Show video
+              <input
+                id="showVideo"
+                type="checkbox"
+                checked={settings.showVideo}
+                onChange={this.handleChangeSettings}
+              />
+            </label>
+          </div>
+        </Tabs>
         <div>
-          <label>
-            Waiting of downloading track
-            <input
-              id="timeoutOfReadingFile"
-              type="number"
-              value={settings.timeoutOfReadingFile}
-              onChange={this.handleChangeSettings}
-            />
-          </label>
-          <label>
-            Play in tray
-            <input
-              id="playInTray"
-              type="checkbox"
-              checked={settings.playInTray}
-              onChange={this.handleChangeSettings}
-            />
-          </label>
-          <label>
-            Full Screen Mode
-            <input
-              id="fullScreenMode"
-              type="checkbox"
-              checked={settings.fullScreenMode}
-              onChange={this.handleChangeSettings}
-            />
-          </label>
-          <label>
-            Show video
-            <input
-              id="showVideo"
-              type="checkbox"
-              checked={settings.showVideo}
-              onChange={this.handleChangeSettings}
-            />
-          </label>
-          <label>
-            Use downloading server
-            <input
-              id="directYoutubeLoad"
-              type="checkbox"
-              checked={settings.directYoutubeLoad}
-              onChange={this.handleChangeSettings}
-            />
-          </label>
-          <label>
-            Use third party server for playlist(often busy!)
-            <input
-              id="thirdPartyServerForPlaylist"
-              type="checkbox"
-              checked={settings.thirdPartyServerForPlaylist}
-              onChange={this.handleChangeSettings}
-            />
-          </label>
-          <label>
-            Server of downloading
-            <input
-              id="downloadServer"
-              type="text"
-              value={settings.downloadServer}
-              onChange={this.handleChangeSettings}
-            />
-          </label>
           <div className="version">
             <span>version:{this.props.version}</span>
           </div>
