@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { IndexedDB, initDB } from 'react-indexed-db';
+import { IndexedDB, useIndexedDB, initDB } from 'react-indexed-db';
 import MainContext from './context';
 
 // import Roll from './components/PlayRoll';
@@ -10,8 +10,6 @@ import Message from './components/Massage/index';
 import Settings from './components/Settings/index';
 // import MainTimer from './components/MainTimer/index';
 import HeaderContainer from './containers/HeaderContainer';
-// import Tabs from './components/Tabs';
-// import db from './db';
 
 import lib from './lib';
 
@@ -19,6 +17,7 @@ import { messageType } from './types/messageType';
 import { progressType } from './types/progressType';
 import { playItemType } from './types/playItemType';
 import { settingsType } from './types/settingsType';
+import { MainStateType } from './types/mainStateType';
 import { listOfPlaylistItemType } from './types/listOfPlaylistItemType';
 
 import { progressModel } from './models/progressModel';
@@ -29,24 +28,7 @@ import { DBConfig } from './dbConfig';
 import './main.scss';
 
 const version = '1.3.0';
-
-export type MainStateType = {
-  duration: number;
-  progress: progressType;
-  settings: settingsType;
-  isBlurBg: boolean;
-  isPlaying: boolean;
-  isReady: boolean;
-  isShowFooter: boolean;
-  isShowHeader: boolean;
-  isShowSettings: boolean;
-  currentTrackNumber: number;
-  currentPlaylistNumber: number;
-  listOfPlaylist: listOfPlaylistItemType[];
-  playList: playItemType[];
-  message: messageType | null;
-  PlayerRef: any;
-};
+const stateSavingItems = ['currentTrackNumber', 'currentPlaylistNumber', 'settings'];
 
 class Main extends React.Component<{}, MainStateType> {
   state: MainStateType = {
@@ -83,9 +65,19 @@ class Main extends React.Component<{}, MainStateType> {
       (!Number.isNaN(nextState.currentPlaylistNumber) &&
         this.state.currentPlaylistNumber !== nextState.currentPlaylistNumber)
     ) {
-      console.log('save to storage updated state', nextState);
+      if (
+        stateSavingItems.some(
+          <K extends keyof MainStateType>(checkingSavingKey: K): boolean =>
+            this.state[checkingSavingKey] !== nextState[checkingSavingKey],
+        )
+      ) {
+        this.handleAddStateToStorage(nextState);
+      }
       return true;
     } else return false;
+  }
+  componentDidMount(): void {
+    this.handleGetStateFromStorage();
   }
 
   handleSetSettings = (newState: settingsType): void => {
@@ -244,6 +236,41 @@ class Main extends React.Component<{}, MainStateType> {
       isShowSettings: !this.state.isShowSettings,
     });
   };
+  handleGetStateFromStorage = (): void => {
+    const { getAll } = useIndexedDB('currentState');
+
+    getAll().then(
+      (stateFromDb: any[]): void => {
+        if (Array.isArray(stateFromDb) && stateFromDb.length) {
+          this.setState(
+            stateFromDb.reduce(
+              (acc: any, stateParam: any): any => ({
+                ...acc,
+                [stateParam.stateItem]: stateParam.value,
+              }),
+              {},
+            ),
+          );
+        }
+      },
+      (error: any): void => {
+        console.log('Cannt get state from storage.', error);
+      },
+    );
+  };
+
+  handleAddStateToStorage = (newState: MainStateType | void): void => {
+    const { add, clear }: any = useIndexedDB('currentState');
+    const state = newState ? newState : this.state;
+
+    clear().then((): void => {
+      stateSavingItems.forEach(<K extends keyof MainStateType>(key: K): void => {
+        add({ stateItem: key, value: state[key] }).catch((err: any): void =>
+          console.log('Cannt add state to storage.', err),
+        );
+      });
+    });
+  };
 
   render(): React.ReactNode {
     const {
@@ -263,7 +290,7 @@ class Main extends React.Component<{}, MainStateType> {
       PlayerRef,
       isShowSettings,
     } = this.state;
-    console.log(this);
+    console.log(this.state);
 
     const currentTrack = playList[currentTrackNumber];
 
@@ -296,6 +323,7 @@ class Main extends React.Component<{}, MainStateType> {
             onShowSettings={this.handleShowSettings}
           />
           <Player
+            // @ts-ignore
             ref={PlayerRef}
             isPlay={isPlaying}
             onSetReady={this.handleSetIsReady}

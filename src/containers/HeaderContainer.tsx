@@ -7,12 +7,11 @@ import lib from '../lib';
 import MainContext from '../context';
 
 import { mainContextType } from '../types/mainContextType';
+import { MainStateType } from '../types/mainStateType';
 import { playItemType } from '../types/playItemType';
 
 import { listOfPlaylistItemType } from '../types/listOfPlaylistItemType';
 import Header from '../components/Header';
-
-import { MainStateType } from '../App';
 
 import './HeaderContainer.scss';
 
@@ -144,7 +143,7 @@ const HeaderContainer = ({
   };
 
   const handleChangeCurrentPlaylistNumber = (newNumber: number): void => {
-    setToMainState({ currentPlaylistNumber: newNumber });
+    setToMainState({ currentPlaylistNumber: newNumber, currentTrackNumber: 0 });
     handleGetPlaylistFromServer();
   };
 

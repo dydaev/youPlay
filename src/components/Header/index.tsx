@@ -1,12 +1,13 @@
 import * as React from 'react';
 // import TopList from '../TopList';
 
-import './style.scss';
+import { MainStateType } from '../../types/mainStateType';
 import { listOfPlaylistItemType } from '../../types/listOfPlaylistItemType';
-import { MainStateType } from '../../App';
 
 import { Manager } from '../../components/Manager';
 import { Playlist } from '../../components/Playlist';
+
+import './style.scss';
 
 export type showingListType = 'playlist' | 'manager';
 
