@@ -55,7 +55,8 @@ class Main extends React.Component<{}, MainStateType> {
 
   shouldComponentUpdate(nextProps: any, nextState: MainStateType): boolean {
     if (
-      this.state.isBlurBg !== nextState.isBlurBg ||
+      this.state.isReady !== nextState.isReady ||
+      this.state.isPlaying !== nextState.isPlaying ||
       this.state.isShowSettings !== nextState.isShowSettings ||
       !lib.equal(this.state.settings, nextState.settings) ||
       !lib.equal(this.state.message, nextState.message) ||
@@ -330,7 +331,7 @@ class Main extends React.Component<{}, MainStateType> {
             ref={PlayerRef}
             isPlay={isPlaying}
             onSetReady={this.handleSetIsReady}
-            url={''}
+            track={currentTrack}
             isBlur={isBlurBg}
           />
           <Settings

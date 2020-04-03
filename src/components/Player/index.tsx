@@ -2,19 +2,21 @@ import * as React from 'react';
 
 import ReactPlayer from 'react-player';
 
+import { playItemType } from '../../types/playItemType';
+
 import './style.scss';
 
 export type propsType = {
   isBlur: boolean;
   isPlay: boolean;
-  url: string;
+  track: playItemType;
   ref: any;
   onSetReady(stateOfReady: boolean): void;
 };
 
 // eslint-disable-next-line react/display-name
 const Player: React.ComponentType<propsType> = React.forwardRef(
-  ({ isPlay, url, onSetReady, isBlur }: propsType, ref: any) => {
+  ({ isPlay, track, onSetReady, isBlur }: propsType, ref: any) => {
     const PlayerBack = React.useRef(null);
     // const PlayerSelf = React.useRef(null);
     // const [, setPlaying] = React.useState(false);
@@ -43,7 +45,7 @@ const Player: React.ComponentType<propsType> = React.forwardRef(
           }}
           ref={ref}
           onError={handleErr}
-          url={url}
+          url={track && track.url ? track.url : ''}
           playing={isPlay}
           onReady={handleReady}
           onEnded={handlePlayingEnded}
