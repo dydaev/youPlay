@@ -1,58 +1,94 @@
 section#main-settings {
-	position: absolute;
-	height: 100%;
-	display: -webkit-box;
-	display: -ms-flexbox;
-	display: flex;
-	-webkit-box-orient: vertical;
-	-webkit-box-direction: normal;
-	-ms-flex-direction: column;
-	flex-direction: column;
-	-webkit-box-pack: justify;
-	-ms-flex-pack: justify;
-	justify-content: space-between;
+  position: relative;
+  z-index: 3;
+  height: 100%;
+  width: 100%;
+  padding: 68px 0 0;
+  overflow: hidden;
+  background: #0c26358a;
+  color: lightpink;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -ms-flex-direction: column;
+  flex-direction: column;
+  -webkit-box-pack: justify;
+  -ms-flex-pack: justify;
+  justify-content: space-between;
+  -webkit-transition: 1s;
+  -o-transition: 1s;
+  transition: 1s;
 
-	.version {
-		position: absolute;
-		bottom: 0;
-		color: gray;
-		font-size: 12px;
-	}
+  div.main-settings_tab-item {
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
 
-	& > label {
-		padding: 5px 0;
-	}
+    & > label {
+      margin-top: 13px;
+      display: flex;
+      justify-content: space-between;
+    }
+  }
 
-	& > div:last-child {
-		height: 100%;
-		display: -webkit-box;
-		display: -ms-flexbox;
-		display: flex;
-		-webkit-box-orient: vertical;
-		-webkit-box-direction: normal;
-		-ms-flex-direction: column;
-		flex-direction: column;
-		-webkit-box-pack: center;
-		-ms-flex-pack: center;
-		justify-content: space-between;
-		padding: 20px;
-		background: palegoldenrod;
+  .version {
+    position: absolute;
+    bottom: 0;
+    color: gray;
+    font-size: 12px;
+  }
 
-		& > div {
-			margin-top: 20px;
-			display: -webkit-box;
-			display: -ms-flexbox;
-			display: flex;
-			-webkit-box-pack: justify;
-			-ms-flex-pack: justify;
-			justify-content: space-between;
-			width: 100%;
+  & > label {
+    padding: 5px 0;
+  }
 
-			& > button {
-				height: 40px;
-				width: 47%;
-				border-radius: 5px;
-			}
-		}
-	}
+  & > div:last-child {
+    // height: 100%;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    justify-content: space-between;
+    padding: 20px;
+    background: black;
+
+    & > div {
+      margin-top: 20px;
+      display: -webkit-box;
+      display: -ms-flexbox;
+      display: flex;
+      -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+      justify-content: space-between;
+      width: 100%;
+
+      & > button {
+        height: 60px;
+        width: 150px;
+        border-radius: 5px;
+        position: absolute;
+        bottom: 20px;
+        left: -150px;
+        transition: left 1s;
+        border: 0;
+        background: none;
+        color: white;
+        font-size: 30px;
+        font-weight: bold;
+
+        &:last-child {
+          left: unset;
+          right: -150px;
+          transition: right 1s;
+        }
+      }
+    }
+  }
 }

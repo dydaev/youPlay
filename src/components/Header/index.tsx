@@ -13,6 +13,7 @@ export type showingListType = 'playlist' | 'manager';
 
 type propsType = {
   isShow: boolean;
+  isShowSettings: boolean;
   onShowMenu(): void;
   onShowSettings(): void;
   onGetPlaylistFromServer(): void;
@@ -32,6 +33,7 @@ const stylesOfListButtons = { width: 0, padding: 0, margin: 0 };
 
 const Header = ({
   isShow,
+  isShowSettings,
   onShowSettings,
   onShowMenu,
   onSetVolume,
@@ -59,13 +61,28 @@ const Header = ({
           onClick={isShowToplist ? onGetPlaylistFromServer : onShowSettings}
           style={{ position: 'relative' }}
         >
-          <i className="fas fa-tools" style={isShowToplist ? { fontSize: 0 } : {}}></i>
-          <i className="fas fa-sync" style={!isShowToplist ? { fontSize: 0 } : {}}></i>
+          <i className="fas fa-chevron-left" style={isShowSettings ? {} : { fontSize: 0 }}></i>
+          <i
+            className="fas fa-tools"
+            style={isShowToplist || isShowSettings ? { fontSize: 0 } : {}}
+          ></i>
+          <i
+            className="fas fa-sync"
+            style={!isShowToplist || isShowSettings ? { fontSize: 0 } : {}}
+          ></i>
           {/* <i className="fas fa-tools" style={isShowToplist ? { left: -25 } : { left: 18 }}></i>
           <i className="fas fa-sync" style={!isShowToplist ? { right: -25 } : { right: 17 }}></i> */}
         </button>
-        <h5 onClick={isShowToplist ? handleShowTopList : onShowMenu}>
-          {!isShowToplist ? '-=plaYo=-' : showingList === 'playlist' ? 'Playlist' : 'Manager'}
+        <h5
+          onClick={isShowSettings ? onShowSettings : isShowToplist ? handleShowTopList : onShowMenu}
+        >
+          {!isShowToplist
+            ? isShowSettings
+              ? 'Settings'
+              : '-=plaYo=-'
+            : showingList === 'playlist'
+            ? 'Playlist'
+            : 'Manager'}
         </h5>
 
         <button
@@ -101,9 +118,13 @@ const Header = ({
           onUpdateListOfPlaylists={onUpdateListOfPlaylist}
         />
       </div>
-      <button className="header-wrapper_open-list" onClick={handleShowTopList}>
-        <div style={isShowToplist ? { width: '50%' } : {}} />
-        <div style={isShowToplist ? { width: '100%' } : {}} />
+      <button
+        className="header-wrapper_open-list"
+        onClick={!isShowSettings ? handleShowTopList : (): void => {}}
+        style={isShowSettings ? { width: '100%', padding: '6px 0' } : {}}
+      >
+        <div style={isShowSettings ? { width: '100%' } : isShowToplist ? { width: '50%' } : {}} />
+        <div style={isShowSettings ? { width: 0 } : isShowToplist ? { width: '100%' } : {}} />
       </button>
     </div>
   );

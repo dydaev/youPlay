@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import db from '../../db';
+import Tabs from '../Tabs';
 
 import { settingsModel } from '../../models/settingsModel';
 
@@ -8,6 +8,7 @@ import { bodyType } from '../../types/bodyType';
 import { settingsType } from '../../types/settingsType';
 
 import './style.scss';
+import lib from '../../lib';
 
 type PropsType = {
   version: string;
@@ -25,171 +26,163 @@ class Settings extends React.Component<PropsType, StateType> {
     settings: { ...this.props.mainSettings },
   };
 
-  shouldComponentUpdate(nextProps: PropsType, nextState: StateType) {
+  shouldComponentUpdate(nextProps: PropsType, nextState: StateType): boolean {
+    console.log();
+
     return (
-      JSON.stringify(nextState.settings) !== JSON.stringify(this.state.settings) ||
-      JSON.stringify(nextProps.isShow) !== JSON.stringify(this.props.isShow)
+      !lib.equal(nextProps.mainSettings, this.props.mainSettings) ||
+      !lib.equal(nextState.settings, this.state.settings) ||
+      nextProps.isShow !== this.props.isShow
     );
   }
 
-  UNSAFE_componentWillReceiveProps(nextProps: PropsType) {
-    if (JSON.stringify(nextProps.mainSettings) !== JSON.stringify(this.props.mainSettings)) {
+  UNSAFE_componentWillReceiveProps(nextProps: PropsType): void {
+    if (!lib.equal(nextProps.mainSettings, this.props.mainSettings)) {
       this.setState({
         settings: nextProps.mainSettings,
       });
     }
   }
 
-  setSettings = (newSettings: settingsType) => {
+  setSettings = (newSettings: settingsType): void => {
     this.setState({
       settings: { ...newSettings },
     });
   };
 
-  settingsInStorage = (anySettings: any) => {
+  settingsInStorage = (anySettings: any): void => {
     console.log('any settings', anySettings);
   };
 
-  // getAllSettingsFromStorage = async () => {
-  //   const setSettingsFunc = (params: any): void => {
-  //     let tempSetting: settingsType;
-  //     if (params && params.rows && params.rows.length) {
-  //       for (let i = 0; i < params.rows.length; i++) {
-  //         const rowItem: { setting: string; value: any } = params.rows.item(i);
-  //         tempSetting = {
-  //           ...tempSetting,
-  //           [rowItem.setting]: rowItem.value == "true",
-  //         };
-  //       }
-  //     }
-  //     this.setSettings(tempSetting);
-  //   };
-  //   db.getData("settings", setSettingsFunc);
-  // };
-
-  handleAddSettingToStorage = (name: string, value: any) => {
-    db.setData('settings', { setting: name, value: JSON.stringify(value) });
-    // console.log("add setting item", name, value);
-  };
-  handleRemoveSettingOnStorage = (name: string, value: any) => {
-    db.removeData('settings', { setting: name, value: value });
-    // console.log("remove setting item");
-  };
-  handleUpdateSettingOnStorage = async (name: string, value: any) => {
-    const res = await db.updateData(
-      'settings',
-      { setting: name },
-      { setting: name, value: JSON.stringify(value) },
-    );
-    // console.log("update setting item", res, name, JSON.stringify(value));
-  };
-
-  handleResetSettings = () => {
+  handleResetSettings = (): void => {
     this.props.onSetSettings(settingsModel);
   };
 
-  handleSaveSettings = async () => {
-    Object.keys(this.state.settings).forEach((settingName: string) => {
-      // @ts-ignore
-      this.handleUpdateSettingOnStorage(settingName, this.state.settings[settingName]);
-    });
+  handleSaveSettings = async (): Promise<void> => {
     //let settingsTemp = await getAllSettingsFromStorage();
     this.props.onSetSettings(this.state.settings);
   };
 
-  handleCancelSettings = () => {
+  handleCancelSettings = (): void => {
     this.setSettings(this.props.mainSettings);
   };
-  handleChangeSettings = ({ target }: any) => {
+  handleChangeSettings = ({ target }: any): void => {
     this.setSettings({
       ...this.state.settings,
       [target.id]: target.type === 'checkbox' ? target.checked : target.value,
     });
   };
+  handleChageLang = (e: any): void => {
+    console.log(e.target.value);
+  };
 
-  render() {
+  render(): React.ReactNode {
     const { settings } = this.state;
-    const { isShow, onClose } = this.props;
+    const { isShow, mainSettings } = this.props;
+
+    if (false) {
+      //settings.language === ''
+      const systemLang = navigator.language.toLowerCase().split('-')[0];
+
+      this.handleChageLang({ target: { value: systemLang } });
+    }
+
+    const settingsChanged = !lib.equal(settings, mainSettings);
 
     return (
       <section id="main-settings" style={{ left: isShow ? 0 : '-100%' }}>
-        <div className="settings-playlist_header">
-          <button onClick={() => onClose('player')}>
-            <i className="fas fa-chevron-left"></i>
-          </button>
-          <div />
-          <p>Settings</p>
-        </div>
+        <Tabs buttonHeight={60}>
+          <div title="General" className="main-settings_tab-item">
+            <label>
+              Language
+              <select>
+                onChange={this.handleChageLang}
+                <option value="sys">System({navigator.language})</option>
+                <option value="ua">Українська</option>
+                <option value="en">English</option>
+                <option value="ru">Русский</option>
+              </select>
+            </label>
+            <label>
+              Server of downloading
+              <input
+                id="downloadServer"
+                type="text"
+                value={settings.downloadServer}
+                onChange={this.handleChangeSettings}
+              />
+            </label>
+            <label>
+              Use downloading server
+              <input
+                id="directYoutubeLoad"
+                type="checkbox"
+                checked={settings.directYoutubeLoad}
+                onChange={this.handleChangeSettings}
+              />
+            </label>
+            <label>
+              Use third party server for playlist(often busy!)
+              <input
+                id="thirdPartyServerForPlaylist"
+                type="checkbox"
+                checked={settings.thirdPartyServerForPlaylist}
+                onChange={this.handleChangeSettings}
+              />
+            </label>
+            <label>
+              Full Screen Mode
+              <input
+                id="fullScreenMode"
+                type="checkbox"
+                checked={settings.fullScreenMode}
+                onChange={this.handleChangeSettings}
+              />
+            </label>
+            <label>
+              Play in tray(experemental)
+              <input
+                id="playInTray"
+                type="checkbox"
+                checked={settings.playInTray}
+                onChange={this.handleChangeSettings}
+              />
+            </label>
+          </div>
+          <div title="Audio" className="main-settings_tab-item">
+            <label>
+              Waiting of downloading track
+              <input
+                id="timeoutOfReadingFile"
+                type="number"
+                value={settings.timeoutOfReadingFile}
+                onChange={this.handleChangeSettings}
+              />
+            </label>
+          </div>
+          <div title="Video" className="main-settings_tab-item">
+            <label>
+              Show video
+              <input
+                id="showVideo"
+                type="checkbox"
+                checked={settings.showVideo}
+                onChange={this.handleChangeSettings}
+              />
+            </label>
+          </div>
+        </Tabs>
         <div>
-          <label>
-            Waiting of downloading track
-            <input
-              id="timeoutOfReadingFile"
-              type="number"
-              value={settings.timeoutOfReadingFile}
-              onChange={this.handleChangeSettings}
-            />
-          </label>
-          <label>
-            Play in tray
-            <input
-              id="playInTray"
-              type="checkbox"
-              checked={settings.playInTray}
-              onChange={this.handleChangeSettings}
-            />
-          </label>
-          <label>
-            Full Screen Mode
-            <input
-              id="fullScreenMode"
-              type="checkbox"
-              checked={settings.fullScreenMode}
-              onChange={this.handleChangeSettings}
-            />
-          </label>
-          <label>
-            Show video
-            <input
-              id="showVideo"
-              type="checkbox"
-              checked={settings.showVideo}
-              onChange={this.handleChangeSettings}
-            />
-          </label>
-          <label>
-            Use downloading server
-            <input
-              id="directYoutubeLoad"
-              type="checkbox"
-              checked={settings.directYoutubeLoad}
-              onChange={this.handleChangeSettings}
-            />
-          </label>
-          <label>
-            Use third party server for playlist(often busy!)
-            <input
-              id="thirdPartyServerForPlaylist"
-              type="checkbox"
-              checked={settings.thirdPartyServerForPlaylist}
-              onChange={this.handleChangeSettings}
-            />
-          </label>
-          <label>
-            Server of downloading
-            <input
-              id="downloadServer"
-              type="text"
-              value={settings.downloadServer}
-              onChange={this.handleChangeSettings}
-            />
-          </label>
           <div className="version">
             <span>version:{this.props.version}</span>
           </div>
           <div>
-            <button onClick={this.handleSaveSettings}>Save</button>
-            <button onClick={this.handleCancelSettings}>Cancel</button>
+            <button style={settingsChanged ? { left: 0 } : {}} onClick={this.handleSaveSettings}>
+              Save
+            </button>
+            <button style={settingsChanged ? { right: 0 } : {}} onClick={this.handleCancelSettings}>
+              Cancel
+            </button>
           </div>
         </div>
       </section>

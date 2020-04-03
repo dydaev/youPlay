@@ -41,17 +41,6 @@ main#main {
     width: 85px;
   }
 
-  & > section {
-    position: absolute;
-    z-index: 10;
-    height: 100%;
-    width: 100%;
-    background: white;
-    -webkit-transition: 1s;
-    -o-transition: 1s;
-    transition: 1s;
-  }
-
   .settings-playlist_header {
     height: 74px;
     display: -webkit-box;

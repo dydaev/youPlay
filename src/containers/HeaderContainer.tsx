@@ -17,6 +17,7 @@ import './HeaderContainer.scss';
 
 interface HeaderContainerProps {
   isShow: boolean;
+  isShowSettings: boolean;
   onSetVolume(newVolume: number): void;
   onShowMenu(): void;
   onShowSettings(): void;
@@ -27,6 +28,7 @@ interface HeaderContainerProps {
 }
 
 const HeaderContainer = ({
+  isShowSettings,
   onSetVolume,
   onShowMenu,
   onShowSettings,
@@ -156,6 +158,7 @@ const HeaderContainer = ({
 
   return (
     <Header
+      isShowSettings={isShowSettings}
       isShow={isShow}
       onShowMenu={onShowMenu}
       onSetVolume={onSetVolume}

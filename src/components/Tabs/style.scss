@@ -1,36 +1,39 @@
 .base-component_tab {
-	position: relative;
-	ul {
-		display: -webkit-box;
-		display: -ms-flexbox;
-		display: flex;
-		list-style-type: none;
-		position: absolute;
-		z-index: 5;
-		top: 0;
-		margin: 0;
+  position: relative;
+  ul {
+    width: 100%;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    justify-content: space-between;
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    margin-left: -1px;
 
-		li.base-component_tab-field {
-			margin-right: 3px;
+    li.base-component_tab-field {
+      margin-right: -1px;
+      flex-grow: 1;
 
-			& > button {
-				padding: 2px 12px 0px;
-				border: 1px solid gray;
-				background: white;
-				user-select: none; /* supported by Chrome and Opera */
-				-webkit-user-select: none; /* Safari */
-				-khtml-user-select: none; /* Konqueror HTML */
-				-moz-user-select: none; /* Firefox */
-				-ms-user-select: none; /* Internet Explorer/Edge */
-			}
-		}
-	}
-	& > div.base-component_tab__tab {
-		width: 100%;
-		height: 100%;
-		border: 1px solid gray;
-		position: absolute;
-		top: 20px;
-		left: 0;
-	}
+      & > button {
+        width: 100%;
+        padding: 0px 20px;
+        border: 1px solid #420000;
+        background: none;
+        color: #8e4e77;
+        font-size: 16px;
+        font-weight: bold;
+        user-select: none; /* supported by Chrome and Opera */
+        -webkit-user-select: none; /* Safari */
+        -khtml-user-select: none; /* Konqueror HTML */
+        -moz-user-select: none; /* Firefox */
+        -ms-user-select: none; /* Internet Explorer/Edge */
+      }
+    }
+  }
+  & > div.base-component_tab__tab {
+    width: 100%;
+    box-shadow: inset 0px -1px 1px -1px;
+    box-sizing: border-box;
+  }
 }

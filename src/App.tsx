@@ -57,6 +57,7 @@ class Main extends React.Component<{}, MainStateType> {
     if (
       this.state.isBlurBg !== nextState.isBlurBg ||
       this.state.isShowSettings !== nextState.isShowSettings ||
+      !lib.equal(this.state.settings, nextState.settings) ||
       !lib.equal(this.state.message, nextState.message) ||
       !lib.equal(this.state.playList, nextState.playList) ||
       !lib.equal(this.state.listOfPlaylist, nextState.listOfPlaylist) ||
@@ -233,6 +234,7 @@ class Main extends React.Component<{}, MainStateType> {
   };
   handleShowSettings = (): void => {
     this.setState({
+      isBlurBg: !this.state.isBlurBg,
       isShowSettings: !this.state.isShowSettings,
     });
   };
@@ -316,6 +318,7 @@ class Main extends React.Component<{}, MainStateType> {
           <Message message={message} onHide={this.handleClearMessage} />
           <HeaderContainer
             isShow={isShowHeader}
+            isShowSettings={isShowSettings}
             onShowMenu={(): void => {}}
             onSetVolume={this.handleSetVolume}
             onSetBlurBg={this.handleSetBlurBg}
