@@ -55,7 +55,7 @@ const Header = ({
 
   return (
     <div className="header-wrapper" style={isShowToplist ? {} : { height: 0 }}>
-      <header id="main-header" style={isShow ? { marginTop: 85 } : {}}>
+      <header id="main-header" style={isShow ? { marginTop: 78 } : {}}>
         <button
           id="settings"
           onClick={isShowToplist ? onGetPlaylistFromServer : onShowSettings}

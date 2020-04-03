@@ -56,6 +56,7 @@ class Main extends React.Component<{}, MainStateType> {
   shouldComponentUpdate(nextProps: any, nextState: MainStateType): boolean {
     if (
       this.state.isReady !== nextState.isReady ||
+      this.state.isBlurBg !== nextState.isBlurBg ||
       this.state.isPlaying !== nextState.isPlaying ||
       this.state.isShowSettings !== nextState.isShowSettings ||
       !lib.equal(this.state.settings, nextState.settings) ||

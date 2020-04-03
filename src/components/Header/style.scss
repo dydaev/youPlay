@@ -3,7 +3,7 @@
 .header-wrapper {
   position: fixed;
   z-index: 4;
-  top: -83px;
+  top: -78px;
   width: 100%;
   height: 100%;
   display: flex;
@@ -31,14 +31,14 @@
 
   button.header-wrapper_open-list {
     width: 27%;
-    height: 30px;
-    padding: 6px 10px;
+    height: 14px;
+    padding-bottom: 6px;
     display: flex;
     flex-direction: column;
     justify-content: space-around;
     align-items: stretch;
     margin: 0 auto;
-    margin-top: -19px;
+    margin-top: -14px;
     border: 0;
     background: none;
     opacity: 0.4;
@@ -53,7 +53,7 @@
       width: 100%;
       background-color: gray;
       box-shadow: 1px 0px 5px 2px purple;
-      margin: 0px auto;
+      margin: 12px auto;
       transition: width 700ms;
 
       &:last-child {
@@ -114,7 +114,7 @@ header#main-header {
 
   & > button {
     margin: 0 10px;
-    height: 60px;
+    height: 65px;
     width: 60px;
     border-radius: 50%;
     font-size: 25px;
