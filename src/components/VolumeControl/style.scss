@@ -1,0 +1,57 @@
+div.base-component_volume-control {
+  & > button {
+    margin: 0 10px;
+    height: 65px;
+    width: 60px;
+    font-size: 25px;
+    color: #de6ac2;
+    border: 0;
+    background: none;
+    overflow: hidden;
+    transition: width 1s;
+    div.base-component_volume-control_icon-hider {
+      overflow: hidden;
+      margin: 0 auto;
+      border-radius: 0 50% 50% 0;
+    }
+  }
+
+  div.base-component_volume-control_control-container {
+    overflow: hidden;
+    position: relative;
+    height: 0;
+    margin-top: -20px;
+    padding: 12px 0;
+    transition: height 1s;
+
+    div.base-component_volume-control_line {
+      background-color: purple;
+      height: 100%;
+      width: 2px;
+      margin: 0 auto;
+    }
+    div.base-component_volume-control_handle {
+      position: absolute;
+      //   margin: 0 auto;
+      width: 0;
+      height: 0;
+      border: 11px solid transparent;
+      border-bottom-color: #53ba88;
+      position: relative;
+      top: -36px;
+      left: 29px;
+      transition: top 1.3s;
+
+      &:after {
+        content: '';
+        width: 0;
+        height: 0;
+        position: absolute;
+        left: -11px;
+        top: 13px;
+        border: 11px solid transparent;
+        border-top-color: #53ba88;
+      }
+    }
+  }
+}

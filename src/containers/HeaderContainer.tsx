@@ -158,11 +158,12 @@ const HeaderContainer = ({
 
   return (
     <Header
-      isShowSettings={isShowSettings}
+      volume={mainContext.settings.volume}
       isShow={isShow}
       onShowMenu={onShowMenu}
       onSetVolume={onSetVolume}
       onSetBlurBg={onSetBlurBg}
+      isShowSettings={isShowSettings}
       onShowSettings={onShowSettings}
       setToMainState={setToMainState}
       onUpdateListOfPlaylist={handleUpdateListOfPlaylist}

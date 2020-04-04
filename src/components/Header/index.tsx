@@ -8,10 +8,12 @@ import { Manager } from '../../components/Manager';
 import { Playlist } from '../../components/Playlist';
 
 import './style.scss';
+import VolumeControl from '../VolumeControl/index';
 
 export type showingListType = 'playlist' | 'manager';
 
 type propsType = {
+  volume: number;
   isShow: boolean;
   isShowSettings: boolean;
   onShowMenu(): void;
@@ -32,6 +34,7 @@ type propsType = {
 const stylesOfListButtons = { width: 0, padding: 0, margin: 0 };
 
 const Header = ({
+  volume,
   isShow,
   isShowSettings,
   onShowSettings,
@@ -97,11 +100,7 @@ const Header = ({
         >
           <i className="fas fa-th-list"></i>
         </button>
-
-        <button>
-          <i className="fas fa-volume-up"></i>
-          {/* <i className="fas fa-bars"></i> */}
-        </button>
+        <VolumeControl valueLevel={volume} onChangeVolume={onSetVolume} />
       </header>
       <div className="top-list_container" style={{ height: isShow ? '100%' : 0 }}>
         <Playlist

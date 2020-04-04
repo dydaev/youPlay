@@ -4,11 +4,16 @@ import ReactPlayer from 'react-player';
 
 import { playItemType } from '../../types/playItemType';
 
+import MainContext from '../../context';
+
+import { mainContextType } from '../../types/mainContextType';
+
 import './style.scss';
 
 export type propsType = {
   isBlur: boolean;
   isPlay: boolean;
+  onTrackEnded(): void;
   track: playItemType;
   ref: any;
   onSetReady(stateOfReady: boolean): void;
@@ -16,7 +21,8 @@ export type propsType = {
 
 // eslint-disable-next-line react/display-name
 const Player: React.ComponentType<propsType> = React.forwardRef(
-  ({ isPlay, track, onSetReady, isBlur }: propsType, ref: any) => {
+  ({ isPlay, track, onSetReady, isBlur, onTrackEnded }: propsType, ref: any) => {
+    const context: mainContextType = React.useContext(MainContext);
     const PlayerBack = React.useRef(null);
     // const PlayerSelf = React.useRef(null);
     // const [, setPlaying] = React.useState(false);
@@ -30,6 +36,7 @@ const Player: React.ComponentType<propsType> = React.forwardRef(
     };
     const handlePlayingEnded = (): void => {
       onSetReady(false);
+      onTrackEnded();
     };
 
     return (
@@ -49,6 +56,7 @@ const Player: React.ComponentType<propsType> = React.forwardRef(
           playing={isPlay}
           onReady={handleReady}
           onEnded={handlePlayingEnded}
+          volume={context.settings.volume}
           // onStart={handleStartPlay}
           // onSeek={handleSeek}
           // onPlay={handlePlayerPlay}

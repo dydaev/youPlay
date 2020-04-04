@@ -331,6 +331,7 @@ class Main extends React.Component<{}, MainStateType> {
             // @ts-ignore
             ref={PlayerRef}
             isPlay={isPlaying}
+            onTrackEnded={this.handleNext}
             onSetReady={this.handleSetIsReady}
             track={currentTrack}
             isBlur={isBlurBg}
