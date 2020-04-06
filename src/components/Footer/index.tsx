@@ -6,6 +6,7 @@ import { progressType } from '../../types/progressType';
 import { mainContextType } from '../../types/mainContextType';
 
 import './style.scss';
+import lib from '../../lib';
 
 type propsType = {
   // onShowFooter(): void;
@@ -13,7 +14,8 @@ type propsType = {
   onNext(): void;
   onPrev(): void;
   onSetSeekPosition(position: number): void;
-  runString: string;
+  playerRef: any;
+  trackTitle: string;
   isBlur: boolean;
   isBlurTitle: boolean;
   isShowing: boolean;
@@ -31,8 +33,9 @@ const Footer = ({
   onPlay,
   onNext,
   onPrev,
+  playerRef,
   onSetSeekPosition,
-  runString,
+  trackTitle,
   isShowing,
   progress,
 }: propsType): JSX.Element => {
@@ -40,9 +43,35 @@ const Footer = ({
 
   const [isLineMouseDown, setIsLineMouseDown] = React.useState(false);
   const [bikePosition, setBikePosition] = React.useState(0);
+  const [timeOfPlaing, setTimeOfPlaing] = React.useState(0);
+  const [duration, setDuration] = React.useState(0);
+  const [seekTo, setSeekTo] = React.useState<any>(0);
   const mainContext: mainContextType = React.useContext<mainContextType>(MainContext);
 
   const bikeSize = 36;
+  React.useEffect(() => {
+    setTimeout((): void => {
+      if (playerRef && playerRef.current) {
+        setTimeOfPlaing(playerRef.current.getCurrentTime());
+
+        // if (!seekTo && playerRef.current.seekTo) setSeekTo(playerRef.current.seekTo);
+
+        if (playerRef.current.getCurrentTime() !== timeOfPlaing) {
+          setTimeOfPlaing(playerRef.current.getCurrentTime());
+        }
+
+        if (duration !== playerRef.current.getDuration()) {
+          setDuration(playerRef.current.getDuration());
+        } else if (!playerRef.current.getDuration() && duration) {
+          setDuration(0);
+        }
+        console.log('player:', playerRef.current.getDuration());
+      } else {
+        setDuration(0);
+        setTimeOfPlaing(0);
+      }
+    }, 1000);
+  });
 
   const handlePlay = (): void => {
     if (isReady) onPlay();
@@ -98,6 +127,7 @@ const Footer = ({
     const x = typeof e.changedTouches === 'object' ? e.changedTouches[0].clientX : e.clientX;
     const positionOnClick = x / widthOfLine;
 
+    // if (seekTo) seekTo(positionOnClick);
     onSetSeekPosition(positionOnClick);
     setIsLineMouseDown(false);
   };
@@ -123,7 +153,8 @@ const Footer = ({
           onTouchEnd={handleLineMouseUp}
           ref={Line}
         >
-          <span className={isBlurTitle ? 'noselect is_blur2' : 'noselect'}>{runString}</span>
+          <span className={isBlurTitle ? 'noselect is_blur2' : 'noselect'}>{`${trackTitle ||
+            ''} (${lib.seconds2time(Math.floor(duration))})`}</span>
           <div
             style={{
               zIndex: 0,
@@ -136,6 +167,7 @@ const Footer = ({
           />
           {isReady && (
             <button
+              className={isBlurTitle ? 'is_blur2' : ''}
               style={{
                 marginLeft: bikePosition || 0, //`${bikeProgress}%`,
                 color: isLineMouseDown ? 'gray' : 'blueviolet',

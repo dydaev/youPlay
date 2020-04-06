@@ -11,6 +11,7 @@ import MainContext from '../../context';
 import { mainContextType } from '../../types/mainContextType';
 
 import './style.scss';
+import { progressModel } from '../../models/progressModel';
 
 export type propsType = {
   isBlur: boolean;
@@ -28,6 +29,7 @@ const Player: React.ComponentType<propsType> = React.forwardRef(
     const PlayerBack = React.useRef(null);
     // const PlayerSelf = React.useRef(null);
     const [trackUrl, setTrackUrl] = React.useState(track && track.url ? track.url : '');
+    const [progress, setProgress] = React.useState(progressModel);
 
     const handleErr = (err: any): void => {
       console.log('Cannt play track.', err);
@@ -104,7 +106,7 @@ const Player: React.ComponentType<propsType> = React.forwardRef(
           // onSeek={handleSeek}
           // onPlay={handlePlayerPlay}
           // onPause={() => setPlaying(false)}
-          // onProgress={handleProgress}
+          onProgress={setProgress}
           // onDuration={handleDuration}
           width={'100%'}
           height={'100%'}
@@ -112,7 +114,11 @@ const Player: React.ComponentType<propsType> = React.forwardRef(
         />
         <div className="base-component_player__album-image">
           <img
-            src="https://i.pinimg.com/236x/bd/37/e8/bd37e8d4447f60ef28f949cbc73fe3da.jpg"
+            src={
+              track && track.image
+                ? track.image
+                : 'https://i.pinimg.com/236x/bd/37/e8/bd37e8d4447f60ef28f949cbc73fe3da.jpg'
+            }
             alt="album image"
           />
         </div>

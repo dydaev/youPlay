@@ -21,10 +21,6 @@ export const Playlist: React.FunctionComponent<PlaylistProps> = ({
   onSetCurrentTrackNumber,
 }: PlaylistProps) => {
   const mainContext: mainContextType = React.useContext<mainContextType>(MainContext);
-  const [indexOfEditForm, setIndexOfEditForm] = React.useState(NaN);
-  const calbackOfOpenItemTools = (isOpen: boolean): void => {
-    if (!isOpen) setIndexOfEditForm(NaN);
-  };
   return (
     <div style={isShow ? {} : notShowStyle}>
       <table className="top-list">
@@ -47,12 +43,8 @@ export const Playlist: React.FunctionComponent<PlaylistProps> = ({
                   <img src={playItem.image} alt="track Image" />
                 </td>
                 <td className="top-list_top-list_row_track-name">
-                  <Swiper>
-                    <PlaylistItem
-                      playItem={playItem}
-                      onOpendTools={calbackOfOpenItemTools}
-                      setCloseTools={!isShow || !isShowTopList}
-                    />
+                  <Swiper onClick={(): void => onSetCurrentTrackNumber(index)}>
+                    <PlaylistItem playItem={playItem} setCloseTools={!isShow || !isShowTopList} />
                   </Swiper>
                 </td>
               </tr>

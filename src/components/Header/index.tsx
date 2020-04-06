@@ -54,6 +54,7 @@ const Header = ({
   const handleShowTopList = (): void => {
     setShowToplist(!isShowToplist);
     onSetBlurBg(!isShowToplist);
+    if (isShowToplist) setTimeout((): void => setShowingList('playlist'), 1000);
   };
 
   return (

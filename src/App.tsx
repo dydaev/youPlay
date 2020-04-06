@@ -318,6 +318,15 @@ class Main extends React.Component<{}, MainStateType> {
           objectStoresMeta={DBConfig.objectStoresMeta}
         >
           <Message message={message} onHide={this.handleClearMessage} />
+          <Settings
+            version={version}
+            mainSettings={settings}
+            isShow={isShowSettings}
+            onSetSettings={this.handleSetSettings}
+            onClose={(): void => {
+              this.setState({ isShowSettings: !isShowSettings });
+            }}
+          />
           <HeaderContainer
             isShow={isShowHeader}
             isShowSettings={isShowSettings}
@@ -336,21 +345,9 @@ class Main extends React.Component<{}, MainStateType> {
             track={currentTrack}
             isBlur={isBlurBg}
           />
-          <Settings
-            version={version}
-            mainSettings={settings}
-            isShow={isShowSettings}
-            onSetSettings={this.handleSetSettings}
-            onClose={(): void => {
-              this.setState({ isShowSettings: !isShowSettings });
-            }}
-          />
           <Footer
-            runString={
-              currentTrack
-                ? `${currentTrack.title || ''} (${lib.seconds2time(Math.floor(duration))})`
-                : ''
-            }
+            trackTitle={(currentTrack && currentTrack.title) || ''}
+            playerRef={PlayerRef}
             isPlaying={isPlaying}
             isReady={isReady}
             onPlay={this.handlePlay}

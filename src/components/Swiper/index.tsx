@@ -10,13 +10,12 @@ type ChildrenWithProps = React.ReactChild & {
 };
 
 export interface SwiperProps {
-  // onSwipe(e: any): void;
+  onSwipe?(direction: 'up' | 'down' | 'left' | 'right'): void;
+  onClick?(e: MouseEvent): void;
   children: ChildrenWithProps;
 }
 
-const Swiper: React.FunctionComponent<SwiperProps> = ({ children }: SwiperProps) => {
-  // const Self = React.useRef(null);
-
+const Swiper: React.FunctionComponent<SwiperProps> = ({ children, onClick }: SwiperProps) => {
   const [isTouch, setIsTouch] = React.useState(false);
   const [positionStartFlipMouseDown, setPositionStartFlipMouseDown] = React.useState({
     x: 0,
@@ -39,7 +38,24 @@ const Swiper: React.FunctionComponent<SwiperProps> = ({ children }: SwiperProps)
     setIsTouch(true);
   };
 
-  const handleFlipMouseUp = (): void => {
+  const handleClick = (e: any): void => {
+    e.stopPropagation();
+  };
+
+  const handleFlipMouseUp = (e: any): void => {
+    if (
+      onClick &&
+      swipeShift.x > -10 &&
+      swipeShift.x < 10 &&
+      swipeShift.y > -10 &&
+      swipeShift.y < 10
+    ) {
+      onClick(e);
+    }
+    // else if () {
+    //   onSwipe?(direction: 'up' | 'down' | 'left' | 'right'): void;
+    // }
+
     setPositionStartFlipMouseDown({ x: 0, y: 0 });
     setSwipeShift({ x: 0, y: 0 });
 
@@ -48,9 +64,6 @@ const Swiper: React.FunctionComponent<SwiperProps> = ({ children }: SwiperProps)
 
   const handleMouseMove = (e: any): void => {
     if (isTouch) {
-      // const widthOfSelf = Self.current.getBoundingClientRect().width;
-      // const heightOfSelf = Self.current.getBoundingClientRect().height;
-
       const x = typeof e.changedTouches === 'object' ? e.changedTouches[0].clientX : e.clientX;
       const y = typeof e.changedTouches === 'object' ? e.changedTouches[0].clientY : e.clientY;
 
@@ -76,14 +89,13 @@ const Swiper: React.FunctionComponent<SwiperProps> = ({ children }: SwiperProps)
 
   return (
     <div
-      // ref={Self}
       onMouseMove={handleMouseMove}
       onTouchMove={handleMouseMove}
       onMouseDown={handleMouseDown}
       onTouchStart={handleMouseDown}
       onMouseUp={handleFlipMouseUp}
       onTouchEnd={handleFlipMouseUp}
-      // style={{ position: 'absolute', width: '100%', height: '100%', left: 0, top: 0 }}
+      onClick={handleClick}
       style={{ width: '100%' }}
     >
       {Object.assign({}, children, {

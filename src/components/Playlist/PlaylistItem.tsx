@@ -12,7 +12,6 @@ export interface ManagerItemProps {
   swipeRight?: number;
   isSwipeTouch?: boolean;
   setCloseTools?: boolean;
-  onOpendTools(isOpen: boolean): void;
 }
 
 const ManagerItem: React.FunctionComponent<ManagerItemProps> = ({
@@ -20,7 +19,6 @@ const ManagerItem: React.FunctionComponent<ManagerItemProps> = ({
   swipeLeft,
   swipeRight,
   isSwipeTouch,
-  onOpendTools,
   setCloseTools = false,
 }: ManagerItemProps) => {
   // const [isShowForm, setIsShowForm] = React.useState(false);
@@ -35,11 +33,9 @@ const ManagerItem: React.FunctionComponent<ManagerItemProps> = ({
     if (isShow) {
       setCurrentWidth(widthOfOpenTools);
       setIsOpenTools(true);
-      onOpendTools(true);
     } else {
       setCurrentWidth(0);
       setIsOpenTools(false);
-      onOpendTools(false);
     }
   };
 

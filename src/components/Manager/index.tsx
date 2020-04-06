@@ -109,7 +109,7 @@ export const Manager: React.FunctionComponent<ManagerProps> = ({
                   <span>{index + 1}</span>
                 </td>
                 <td>
-                  <Swiper>
+                  <Swiper onClick={(): void => onChangeCurrentPlaylistNumber(index)}>
                     <ManagerItem
                       formItems={formItems}
                       onChangeForm={handleChangeForm}
