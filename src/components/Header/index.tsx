@@ -104,7 +104,7 @@ const Header = ({
       </header>
       <div className="top-list_container" style={{ height: isShow ? '100%' : 0 }}>
         <Playlist
-          // isShowTopList={isShow}
+          isShowTopList={isShow}
           isShow={showingList === 'playlist'}
           onSetCurrentTrackNumber={onSetCurrentTrackNumber}
         />

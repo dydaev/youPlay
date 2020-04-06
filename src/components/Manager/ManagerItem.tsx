@@ -42,7 +42,7 @@ const ManagerItem: React.FunctionComponent<ManagerItemProps> = ({
   const [isRemoveCofirmation, setIsRemoveCofirmation] = React.useState(false);
   const [currentWidth, setCurrentWidth] = React.useState(0);
 
-  const widthOfOpenTools = 135;
+  const widthOfOpenTools = 215;
   const minWidthForOpen = 30;
 
   const handleShowTools = (isShow: boolean): void => {
@@ -86,7 +86,8 @@ const ManagerItem: React.FunctionComponent<ManagerItemProps> = ({
     if (setCloseTools && isOpenTools) handleShowTools(false);
   })();
 
-  const handleToggleForm = (): void => {
+  const handleToggleForm = (e: any): void => {
+    e.stopPropagation();
     onToggleForm(index);
     handleShowTools(isShowForm);
   };
@@ -106,6 +107,7 @@ const ManagerItem: React.FunctionComponent<ManagerItemProps> = ({
   return (
     <div className="top-list_manager-item">
       <EditForm
+        prefixForId={index + 'I'}
         onChangeForm={onChangeForm}
         formItems={formItems}
         isShowForm={isShowForm}
@@ -131,7 +133,12 @@ const ManagerItem: React.FunctionComponent<ManagerItemProps> = ({
           <button onClick={handleToggleForm /* onEdit(index) */}>
             <i className="fas fa-edit"></i>
           </button>
-          <button onClick={(): void => setIsRemoveCofirmation(true)}>
+          <button
+            onClick={(e: any): void => {
+              e.stopPropagation();
+              setIsRemoveCofirmation(true);
+            }}
+          >
             <i className="far fa-trash-alt"></i>
           </button>
         </div>
@@ -140,10 +147,20 @@ const ManagerItem: React.FunctionComponent<ManagerItemProps> = ({
           className="top-list_manager-item_tools_remove-confirmation"
           style={{ right: isRemoveCofirmation ? 0 : widthOfOpenTools * -1 }}
         >
-          <button onClick={(): void => onRemove(index)}>
+          <button
+            onClick={(e: any): void => {
+              e.stopPropagation();
+              onRemove(index);
+            }}
+          >
             <i className="fas fa-check-circle"></i>
           </button>
-          <button onClick={(): void => setIsRemoveCofirmation(false)}>
+          <button
+            onClick={(e: any): void => {
+              e.stopPropagation();
+              setIsRemoveCofirmation(false);
+            }}
+          >
             <i className="fas fa-times-circle"></i>
           </button>
         </div>

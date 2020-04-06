@@ -43,6 +43,7 @@ div.top-list_manager-item {
 
   div.top-list_manager-item_info {
     height: 60px;
+    width: 100%;
     padding-left: 10px;
     flex-grow: 1;
     display: flex;
@@ -53,11 +54,14 @@ div.top-list_manager-item {
     p {
       margin: 5px 0px 7px;
       padding-left: 10px;
+      line-height: 1.5em;
+      max-height: 3em;
+      overflow: hidden;
       transition: padding 200ms;
 
       &:last-child {
         color: lightsteelblue;
-        font-size: 12px;
+        font-size: 16px;
         margin: 0;
       }
     }

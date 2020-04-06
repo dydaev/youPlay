@@ -4,8 +4,9 @@ import { listOfPlaylistItemType } from '../../types/listOfPlaylistItemType';
 interface EditFormProps {
   index: number;
   isShowForm: boolean;
+  prefixForId?: string;
   formItems: listOfPlaylistItemType;
-  onChangeForm(e: any): void;
+  onChangeForm(e: any, prefixForId: string): void;
   //   playlists: listOfPlaylistItemType[];
 }
 
@@ -13,16 +14,17 @@ const EditForm: React.FunctionComponent<EditFormProps> = ({
   onChangeForm,
   formItems,
   isShowForm,
+  prefixForId = '',
   index,
 }: EditFormProps) => {
   const UrlInput = React.useRef(null);
 
   const handleClickUrlButton = async (): Promise<void> => {
     if (formItems.url) {
-      onChangeForm({ target: { id: 'url', value: '' } });
+      onChangeForm({ target: { id: 'url', value: '' } }, prefixForId);
     } else {
       navigator.clipboard.readText().then((pastingText: string): void => {
-        onChangeForm({ target: { id: 'url', value: pastingText } });
+        onChangeForm({ target: { id: 'url', value: pastingText } }, prefixForId);
       });
     }
   };
@@ -33,27 +35,27 @@ const EditForm: React.FunctionComponent<EditFormProps> = ({
       style={isShowForm ? { width: '100%', height: 125 } : {}}
     >
       <input
-        id="name"
+        id={prefixForId + '_' + 'name'}
         type="text"
         placeholder="Name"
-        onChange={onChangeForm}
+        onChange={(e: any): void => onChangeForm(e, prefixForId)}
         value={formItems.name}
       />
       <input
-        id="description"
+        id={prefixForId + '_' + 'description'}
         type="text"
         placeholder="Description"
-        onChange={onChangeForm}
+        onChange={(e: any): void => onChangeForm(e, prefixForId)}
         value={formItems.description}
       />
       <div>
         <input
           ref={UrlInput}
-          id="url"
+          id={prefixForId + '_' + 'url'}
           type="text"
           placeholder="URL"
           spellCheck={false}
-          onChange={onChangeForm}
+          onChange={(e: any): void => onChangeForm(e, prefixForId)}
           value={formItems.url}
         />
         <button onClick={handleClickUrlButton}>{formItems.url ? 'Clear' : 'Paste'}</button>

@@ -95,8 +95,7 @@ class Settings extends React.Component<PropsType, StateType> {
           <div title="General" className="main-settings_tab-item">
             <label>
               Language
-              <select>
-                onChange={this.handleChageLang}
+              <select onChange={this.handleChageLang}>
                 <option value="sys">System({navigator.language})</option>
                 <option value="ua">Українська</option>
                 <option value="en">English</option>

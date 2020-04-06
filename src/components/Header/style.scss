@@ -32,13 +32,13 @@
   button.header-wrapper_open-list {
     width: 27%;
     height: 14px;
-    padding-bottom: 6px;
+    // padding-bottom: 6px;
     display: flex;
     flex-direction: column;
     justify-content: space-around;
     align-items: stretch;
     margin: 0 auto;
-    margin-top: -14px;
+    margin-top: -18px; //-18
     border: 0;
     background: none;
     opacity: 0.4;
@@ -53,7 +53,7 @@
       width: 100%;
       background-color: gray;
       box-shadow: 1px 0px 5px 2px purple;
-      margin: 12px auto;
+      margin: 10px auto; //12
       transition: width 700ms;
 
       &:last-child {

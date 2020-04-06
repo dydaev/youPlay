@@ -3,6 +3,7 @@ div.base-component_volume-control {
     margin: 0 10px;
     height: 65px;
     width: 60px;
+    padding-bottom: 5px;
     font-size: 25px;
     color: #de6ac2;
     border: 0;
@@ -12,6 +13,7 @@ div.base-component_volume-control {
     div.base-component_volume-control_icon-hider {
       overflow: hidden;
       margin: 0 auto;
+      height: 25px;
       border-radius: 0 50% 50% 0;
     }
   }

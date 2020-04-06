@@ -58,8 +58,9 @@ export const Manager: React.FunctionComponent<ManagerProps> = ({
     setShowForm(NaN);
     setShowAddForm(!showAddForm);
   };
-  const handleChangeForm = (e: any): void => {
-    const keyOfItem: string = e.target.id;
+  const handleChangeForm = (e: any, idPrefix?: string): void => {
+    const keyOfItem: string = e.target.id.replace(new RegExp(`\^${idPrefix}_`), '');
+    console.log(new RegExp(`\\^${idPrefix}_`));
 
     setFormItems({
       ...formItems,
@@ -134,6 +135,7 @@ export const Manager: React.FunctionComponent<ManagerProps> = ({
                 style={showAddForm && Number.isNaN(indexOfEditForm) ? {} : { height: 0 }}
               >
                 <EditForm
+                  prefixForId="add"
                   isShowForm={showAddForm}
                   formItems={formItems}
                   onChangeForm={handleChangeForm}

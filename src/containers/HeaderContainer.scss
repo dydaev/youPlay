@@ -17,6 +17,7 @@ div.top-list_container {
     overflow: hidden;
     overflow-y: auto;
     transition: width 1s;
+    margin-bottom: 4px;
 
     & > button {
       right: 10px;
