@@ -27,7 +27,7 @@ const VolumeControl: React.FunctionComponent<VolumeControlProps> = ({
       : 33;
 
   const handleMouseDown = (e: any): void => {
-    if (e.target.id === 'volume-handler') {
+    if (e.target.id === 'volume-handler' || e.target.id === 'volume-handler-icon') {
       const position = typeof e.touches === 'object' ? e.touches[0].clientY : e.clientY;
       setStartPosition(position);
     }
@@ -36,15 +36,16 @@ const VolumeControl: React.FunctionComponent<VolumeControlProps> = ({
     if (startPosition) {
       const currentPosition = typeof e.touches === 'object' ? e.touches[0].clientY : e.clientY;
 
-      const shiftHandle = currentPosition - startPosition;
+      // const shiftHandle = currentPosition - startPosition;
 
-      const result = valueLevel + shiftHandle - 60;
+      const result = currentPosition - (40 + 32) - 133;
 
-      setHandlePosition(result > -22 ? -22 : result < -122 ? -122 : result);
+      setHandlePosition(result > -33 ? -33 : result < -133 ? -133 : result);
     }
   };
-  const handleMouseUp = (e: any): void => {
-    const newVolumeLevel = (-1 * handlePosition - 22) / 100;
+  const handleMouseUp = (): void => {
+    const newVolumeLevel = (-1 * handlePosition - 33) / 100;
+
     onChangeVolume(newVolumeLevel);
     setStartPosition(0);
   };
@@ -68,16 +69,18 @@ const VolumeControl: React.FunctionComponent<VolumeControlProps> = ({
       >
         <div className="base-component_volume-control_line" />
         <div
-          id="volume-handler"
           className="base-component_volume-control_handle"
+          id="volume-handler"
           style={
             !isOpen
               ? { top: -124 }
               : !startPosition
-              ? { top: (valueLevel * 100 + 22) * -1 }
+              ? { top: (valueLevel * 100 + 33) * -1 }
               : { top: handlePosition, transition: 'unset' }
-          } // ((valueLevel * 100) + 22) * -1
-        />
+          }
+        >
+          <div className="base-component_volume-control_handle_button" id="volume-handler-icon" />
+        </div>
       </div>
     </div>
   );
