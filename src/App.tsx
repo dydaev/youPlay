@@ -12,6 +12,7 @@ import Settings from './components/Settings/index';
 import HeaderContainer from './containers/HeaderContainer';
 
 import lib from './lib';
+import useStorage from './lib/storage';
 
 import { messageType } from './types/messageType';
 import { progressType } from './types/progressType';
@@ -26,6 +27,7 @@ import { settingsModel } from './models/settingsModel';
 import { DBConfig } from './dbConfig';
 
 import './main.scss';
+import PlayerContainer from './containers/PlayerContainer';
 
 const version = '1.3.0';
 const stateSavingItems = ['currentTrackNumber', 'currentPlaylistNumber', 'settings'];
@@ -193,29 +195,43 @@ class Main extends React.Component<{}, MainStateType> {
     const secondsForChangeTrack = 5;
 
     if (countOfTracks > 0) {
-      if (this.state.duration < secondsForChangeTrack) {
-        if (this.state.settings.playStrategic !== 'replay') {
-          //"normal" | "replay" | "randome" | "once"
-          if (this.state.currentTrackNumber > 0) {
-            this.setState({
-              currentTrackNumber: countOfTracks - 1,
-            });
-          } else if (this.state.settings.playStrategic !== 'once') {
-            if (this.state.settings.playStrategic !== 'randome') this.handleShakeTracks();
+      // if (this.state.duration < secondsForChangeTrack) {
+      switch (this.state.settings.playStrategic) {
+        case 'once':
+          this.handleSetSeek(0);
+          break;
 
-            this.setState({
-              currentTrackNumber: countOfTracks - 1,
-            });
-          }
-        }
-      } else {
-        this.handleSetSeek(0);
+        case 'randome':
+          // if (this.state.currentTrackNumber === 0) this.handleShakeTracks();
+          this.setState({
+            currentTrackNumber:
+              this.state.currentTrackNumber === 0
+                ? countOfTracks - 1
+                : this.state.currentTrackNumber - 1,
+          });
+          break;
+
+        case 'replay':
+          this.handleSetSeek(0);
+          break;
+
+        case 'normal':
+          this.setState({
+            currentTrackNumber:
+              this.state.currentTrackNumber === 0
+                ? countOfTracks - 1
+                : this.state.currentTrackNumber - 1,
+          });
+          break;
       }
+      // } else {
+      //   this.handleSetSeek(0);
+      // }
     }
   };
 
   handleSetSeek = (seconds: number): void => {
-    if (this.state.PlayerRef) {
+    if (this.state.PlayerRef && this.state.PlayerRef.current) {
       this.state.PlayerRef.current.seekTo(seconds);
     }
   };
@@ -240,40 +256,12 @@ class Main extends React.Component<{}, MainStateType> {
       isShowSettings: !this.state.isShowSettings,
     });
   };
-  handleGetStateFromStorage = (): void => {
-    const { getAll } = useIndexedDB('currentState');
-
-    getAll().then(
-      (stateFromDb: any[]): void => {
-        if (Array.isArray(stateFromDb) && stateFromDb.length) {
-          this.setState(
-            stateFromDb.reduce(
-              (acc: any, stateParam: any): any => ({
-                ...acc,
-                [stateParam.stateItem]: stateParam.value,
-              }),
-              {},
-            ),
-          );
-        }
-      },
-      (error: any): void => {
-        console.log('Cannt get state from storage.', error);
-      },
-    );
+  handleGetStateFromStorage = async (): Promise<void> => {
+    this.setState(await useStorage.getAll('currentState'));
   };
 
   handleAddStateToStorage = (newState: MainStateType | void): void => {
-    const { add, clear }: any = useIndexedDB('currentState');
-    const state = newState ? newState : this.state;
-
-    clear().then((): void => {
-      stateSavingItems.forEach(<K extends keyof MainStateType>(key: K): void => {
-        add({ stateItem: key, value: state[key] }).catch((err: any): void =>
-          console.log('Cannt add state to storage.', err),
-        );
-      });
-    });
+    useStorage.replaceAll('currentState', newState, stateSavingItems);
   };
 
   render(): React.ReactNode {
@@ -294,7 +282,9 @@ class Main extends React.Component<{}, MainStateType> {
       PlayerRef,
       isShowSettings,
     } = this.state;
-    console.log(this.state);
+
+    //@ts-ignore
+    console.log(this);
 
     const currentTrack = playList[currentTrackNumber];
 
@@ -336,7 +326,23 @@ class Main extends React.Component<{}, MainStateType> {
             setToMainState={this.handleSetState}
             onShowSettings={this.handleShowSettings}
           />
-          <Player
+          <PlayerContainer
+            ref={PlayerRef}
+            track={currentTrack}
+            isPlay={isPlaying}
+            isBlur={isBlurBg}
+            isReady={isReady}
+            isPlaying={isPlaying}
+            isBlurTitle={isBlurBg}
+            isShowing={isShowFooter}
+            onPlay={this.handlePlay}
+            onPrev={this.handlePrev}
+            onNext={this.handleNext}
+            onTrackEnded={this.handleNext}
+            onSetReady={this.handleSetIsReady}
+            trackTitle={(currentTrack && currentTrack.title) || ''}
+          />
+          {/* <Player
             // @ts-ignore
             ref={PlayerRef}
             isPlay={isPlaying}
@@ -358,7 +364,7 @@ class Main extends React.Component<{}, MainStateType> {
             progress={progress}
             isBlur={false}
             isBlurTitle={isBlurBg}
-          />
+          /> */}
         </IndexedDB>
       </MainContext.Provider>
     );

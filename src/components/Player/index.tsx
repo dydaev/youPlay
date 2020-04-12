@@ -2,7 +2,6 @@ import * as React from 'react';
 
 import ReactPlayer from 'react-player';
 import * as axios from 'axios';
-// const axios = require('axios');
 
 import { playItemType } from '../../types/playItemType';
 
@@ -11,7 +10,7 @@ import MainContext from '../../context';
 import { mainContextType } from '../../types/mainContextType';
 
 import './style.scss';
-import { progressModel } from '../../models/progressModel';
+import { progressType } from '../../types/progressType';
 
 export type propsType = {
   isBlur: boolean;
@@ -20,16 +19,18 @@ export type propsType = {
   track: playItemType;
   ref: any;
   onSetReady(stateOfReady: boolean): void;
+  onProgress(newProgress: progressType): void;
+  onDuration(newDuration: number): void;
 };
-
 // eslint-disable-next-line react/display-name
 const Player: React.ComponentType<propsType> = React.forwardRef(
-  ({ isPlay, track, onSetReady, isBlur, onTrackEnded }: propsType, ref: any) => {
+  (
+    { isPlay, track, onSetReady, isBlur, onTrackEnded, onProgress, onDuration }: propsType,
+    ref: any,
+  ) => {
     const context: mainContextType = React.useContext(MainContext);
     const PlayerBack = React.useRef(null);
-    // const PlayerSelf = React.useRef(null);
     const [trackUrl, setTrackUrl] = React.useState(track && track.url ? track.url : '');
-    const [progress, setProgress] = React.useState(progressModel);
 
     const handleErr = (err: any): void => {
       console.log('Cannt play track.', err);
@@ -106,8 +107,8 @@ const Player: React.ComponentType<propsType> = React.forwardRef(
           // onSeek={handleSeek}
           // onPlay={handlePlayerPlay}
           // onPause={() => setPlaying(false)}
-          onProgress={setProgress}
-          // onDuration={handleDuration}
+          onProgress={onProgress}
+          onDuration={onDuration}
           width={'100%'}
           height={'100%'}
           style={{ position: 'fixed', top: 0 }}

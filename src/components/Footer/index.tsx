@@ -13,28 +13,32 @@ type propsType = {
   onPlay(): void;
   onNext(): void;
   onPrev(): void;
-  onSetSeekPosition(position: number): void;
-  playerRef: any;
+  onSetSeek(position: number): void;
+  onSetMoverPosition(position: number): void;
   trackTitle: string;
   isBlur: boolean;
   isBlurTitle: boolean;
   isShowing: boolean;
   isPlaying: boolean;
   isReady: boolean;
+  duration: number;
+  moverPosition: number;
   progress: progressType;
 };
 
 const Footer = ({
   // onShowFooter,
+  onSetSeek,
   isBlur,
   isBlurTitle,
   isReady,
   isPlaying,
   onPlay,
   onNext,
+  moverPosition,
   onPrev,
-  playerRef,
-  onSetSeekPosition,
+  duration,
+  onSetMoverPosition,
   trackTitle,
   isShowing,
   progress,
@@ -42,36 +46,10 @@ const Footer = ({
   const Line = React.useRef();
 
   const [isLineMouseDown, setIsLineMouseDown] = React.useState(false);
-  const [bikePosition, setBikePosition] = React.useState(0);
-  const [timeOfPlaing, setTimeOfPlaing] = React.useState(0);
-  const [duration, setDuration] = React.useState(0);
-  const [seekTo, setSeekTo] = React.useState<any>(0);
+  const [bikePosition, setBikePosition] = React.useState(moverPosition);
   const mainContext: mainContextType = React.useContext<mainContextType>(MainContext);
 
   const bikeSize = 36;
-  React.useEffect(() => {
-    setTimeout((): void => {
-      if (playerRef && playerRef.current) {
-        setTimeOfPlaing(playerRef.current.getCurrentTime());
-
-        // if (!seekTo && playerRef.current.seekTo) setSeekTo(playerRef.current.seekTo);
-
-        if (playerRef.current.getCurrentTime() !== timeOfPlaing) {
-          setTimeOfPlaing(playerRef.current.getCurrentTime());
-        }
-
-        if (duration !== playerRef.current.getDuration()) {
-          setDuration(playerRef.current.getDuration());
-        } else if (!playerRef.current.getDuration() && duration) {
-          setDuration(0);
-        }
-        console.log('player:', playerRef.current.getDuration());
-      } else {
-        setDuration(0);
-        setTimeOfPlaing(0);
-      }
-    }, 1000);
-  });
 
   const handlePlay = (): void => {
     if (isReady) onPlay();
@@ -85,26 +63,19 @@ const Footer = ({
     onNext();
   };
 
-  // const handleBikePosition = (bikeShift: number): number => {
-  //   if (typeof Line !== 'undefined' && Line.current) {
-  //     // @ts-ignore:
-  //     const widthOfLine = Line.current.getBoundingClientRect().width;
+  const calculatePosition = (bikeShift: number): number => {
+    if (typeof Line !== 'undefined' && Line.current) {
+      // @ts-ignore:
+      const widthOfLine = Line.current.getBoundingClientRect().width;
 
-  //     const bikeWidth = bikeSize * 1.25;
+      const bikeWidth = bikeSize * 1.25;
 
-  //     const lineWithoutBike = widthOfLine - bikeWidth;
+      const lineWithoutBike = widthOfLine - bikeWidth;
 
-  //     return (bikeShift / 100) * lineWithoutBike;
-  //   }
-  //   return 0;
-  // };
-
-  // const handleProgress = (newProgress: progressType): void => {
-  //   setProgress(newProgress);
-
-  //   // setBikeProgress(~~(newProgress.played * 100) || 0);
-  //   if (!isLineMouseDown) setBikePosition(handleBikePosition(~~(newProgress.played * 100) || 0));
-  // };
+      return (bikeShift / 100) * lineWithoutBike;
+    }
+    return 0;
+  };
 
   const handleLineMouseDown = (e: any): void => {
     if (e.target.id === 'progress_mover') {
@@ -113,8 +84,6 @@ const Footer = ({
   };
 
   const handleMouseMove = (e: any): void => {
-    // console.log("mouseMove");
-
     if (isLineMouseDown) {
       const x = typeof e.touches === 'object' ? e.touches[0].clientX : e.clientX;
       setBikePosition(x - bikeSize / 2);
@@ -127,14 +96,17 @@ const Footer = ({
     const x = typeof e.changedTouches === 'object' ? e.changedTouches[0].clientX : e.clientX;
     const positionOnClick = x / widthOfLine;
 
-    // if (seekTo) seekTo(positionOnClick);
-    onSetSeekPosition(positionOnClick);
+    onSetMoverPosition(positionOnClick);
+    onSetSeek(positionOnClick);
     setIsLineMouseDown(false);
   };
 
-  const convertProgressToBikePosition = (): number => {
-    return ~~(progress.played * 100) || 0;
-  };
+  React.useEffect((): void => {
+    if (!isLineMouseDown) {
+      const moverProgressPosition = calculatePosition(~~(progress.played * 100) || 0);
+      if (moverProgressPosition !== bikePosition) setBikePosition(moverProgressPosition);
+    }
+  });
 
   return (
     <footer
@@ -179,8 +151,8 @@ const Footer = ({
           )}
           <div
             style={
-              mainContext.progress && mainContext.progress.loaded
-                ? { width: `${mainContext.progress.loaded * 100}%` }
+              progress && progress.loaded
+                ? { width: `${progress.loaded * 100}%` }
                 : { background: 'lightgray' }
             }
           />

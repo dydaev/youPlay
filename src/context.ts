@@ -1,8 +1,9 @@
 import { createContext } from 'react';
 
 import { mainContextType } from './types/mainContextType';
+import { useIndexedDB } from 'react-indexed-db';
 
-export default createContext<mainContextType>({
+let mainContext: mainContextType = {
   duration: NaN,
   isPlaying: false,
   currentTrackNumber: NaN,
@@ -27,4 +28,7 @@ export default createContext<mainContextType>({
   playList: [],
   listOfPlaylist: [],
   showMessage: () => {},
-});
+  getStateFromStorage: () => {},
+};
+
+export default createContext<mainContextType>(mainContext);
