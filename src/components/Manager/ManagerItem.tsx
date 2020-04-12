@@ -15,6 +15,7 @@ export interface ManagerItemProps {
   isSwipeTouch?: boolean;
   setCloseTools?: boolean;
   formItems: listOfPlaylistItemType;
+  onSelect(index: number): void;
   onChangeForm(e: any): void;
   onToggleForm(index: number): void;
   onRemove(index: number): void;
@@ -30,6 +31,7 @@ const ManagerItem: React.FunctionComponent<ManagerItemProps> = ({
   description,
   index,
   formItems,
+  onSelect,
   onChangeForm,
   onRemove,
   isShowForm,
@@ -115,6 +117,10 @@ const ManagerItem: React.FunctionComponent<ManagerItemProps> = ({
       />
       <div
         className="top-list_manager-item_info"
+        onClick={(e: any): void => {
+          e.stopPropagation();
+          onSelect(index);
+        }}
         style={{
           ...(currentWidth > 0 ? { boxShadow: '2px 1px 5px 1px #22222288' } : {}),
           ...(isShowForm ? { width: 0, padding: 0 } : {}),

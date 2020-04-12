@@ -7,19 +7,23 @@ import { playItemType } from '../../types/playItemType';
 // import './ManagerItem.scss';
 
 export interface ManagerItemProps {
+  index: number;
   playItem: playItemType;
   swipeLeft?: number;
   swipeRight?: number;
   isSwipeTouch?: boolean;
   setCloseTools?: boolean;
+  onSelect(index: number): void;
 }
 
 const ManagerItem: React.FunctionComponent<ManagerItemProps> = ({
+  index,
   playItem,
   swipeLeft,
   swipeRight,
   isSwipeTouch,
   setCloseTools = false,
+  onSelect,
 }: ManagerItemProps) => {
   // const [isShowForm, setIsShowForm] = React.useState(false);
   const mainContext: mainContextType = React.useContext<mainContextType>(MainContext);
@@ -41,6 +45,7 @@ const ManagerItem: React.FunctionComponent<ManagerItemProps> = ({
 
   const download = (url: string, trackName: string, e: any): void => {
     e.stopPropagation();
+
     const fileId = url.replace(/^.*v=/, '');
     const downloadingUrl = `${mainContext.settings.downloadServer}/downloading/${fileId}`;
     fetch(downloadingUrl, { method: 'POST' })
@@ -55,10 +60,8 @@ const ManagerItem: React.FunctionComponent<ManagerItemProps> = ({
         a.remove();
         handleShowTools(false);
       })
-      .catch(e => console.log('Cannt downloading track.', e));
+      .catch(err => console.log('Cannt downloading track.', err));
   };
-
-  const handleDownload = (): void => {};
 
   ((): void => {
     if (!isOpenTools && swipeLeft !== currentWidth) {
@@ -95,6 +98,7 @@ const ManagerItem: React.FunctionComponent<ManagerItemProps> = ({
         style={{
           ...(currentWidth > 0 ? { boxShadow: '2px 1px 5px 1px #22222288' } : {}),
         }}
+        onClick={(): void => onSelect(index)}
       >
         <p style={isOpenTools ? { paddingLeft: 2 } : {}}>{playItem.title}</p>
       </div>
@@ -105,7 +109,7 @@ const ManagerItem: React.FunctionComponent<ManagerItemProps> = ({
         className="top-list_manager-item_tools"
       >
         <div>
-          <button onClick={handleDownload}>
+          <button onClick={(e): void => download(playItem.url, playItem.title, e)}>
             <img
               style={{
                 position: 'absolute',
@@ -117,7 +121,6 @@ const ManagerItem: React.FunctionComponent<ManagerItemProps> = ({
                 transform: 'translate(-15%, -50%)',
                 opacity: 0.7,
               }}
-              onClick={(e): void => download(playItem.url, playItem.title, e)}
               src={
                 process.env.NODE_ENV == 'development'
                   ? '../../img/download.png'

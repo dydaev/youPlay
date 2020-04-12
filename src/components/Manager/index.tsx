@@ -109,8 +109,10 @@ export const Manager: React.FunctionComponent<ManagerProps> = ({
                   <span>{index + 1}</span>
                 </td>
                 <td>
-                  <Swiper onClick={(): void => onChangeCurrentPlaylistNumber(index)}>
+                  <Swiper>
                     <ManagerItem
+                      index={index}
+                      onSelect={onChangeCurrentPlaylistNumber}
                       formItems={formItems}
                       onChangeForm={handleChangeForm}
                       isShowForm={showForm === index}
@@ -120,7 +122,6 @@ export const Manager: React.FunctionComponent<ManagerProps> = ({
                       description={playlist.description}
                       onRemove={handleRemove}
                       onOpendTools={calbackOfOpenItemTools}
-                      index={index}
                       setCloseTools={!isShow || !isShowTopList}
                     />
                   </Swiper>

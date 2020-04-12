@@ -43,8 +43,13 @@ export const Playlist: React.FunctionComponent<PlaylistProps> = ({
                   <img src={playItem.image} alt="track Image" />
                 </td>
                 <td className="top-list_top-list_row_track-name">
-                  <Swiper onClick={(): void => onSetCurrentTrackNumber(index)}>
-                    <PlaylistItem playItem={playItem} setCloseTools={!isShow || !isShowTopList} />
+                  <Swiper>
+                    <PlaylistItem
+                      index={index}
+                      playItem={playItem}
+                      setCloseTools={!isShow || !isShowTopList}
+                      onSelect={onSetCurrentTrackNumber}
+                    />
                   </Swiper>
                 </td>
               </tr>
