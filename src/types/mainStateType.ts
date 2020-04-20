@@ -13,6 +13,7 @@ export type MainStateType = {
   isReady: boolean;
   isShowFooter: boolean;
   isShowHeader: boolean;
+  isShowPlaylist: boolean;
   isShowSettings: boolean;
   currentTrackNumber: number;
   currentPlaylistNumber: number;

@@ -11,11 +11,17 @@ type ChildrenWithProps = React.ReactChild & {
 
 export interface SwiperProps {
   onSwipe?(direction: 'up' | 'down' | 'left' | 'right'): void;
+  triggerLimit?: number;
   onClick?(e: MouseEvent): void;
   children: ChildrenWithProps;
 }
 
-const Swiper: React.FunctionComponent<SwiperProps> = ({ children, onClick }: SwiperProps) => {
+const Swiper: React.FunctionComponent<SwiperProps> = ({
+  children,
+  onClick,
+  onSwipe,
+  triggerLimit = 10,
+}: SwiperProps) => {
   const [isTouch, setIsTouch] = React.useState(false);
   const [positionStartFlipMouseDown, setPositionStartFlipMouseDown] = React.useState({
     x: 0,
@@ -42,19 +48,32 @@ const Swiper: React.FunctionComponent<SwiperProps> = ({ children, onClick }: Swi
     e.stopPropagation();
   };
 
+  const isSwipeHorizontal = Math.abs(swipeShift.x) > Math.abs(swipeShift.y);
+
   const handleFlipMouseUp = (e: any): void => {
     if (
-      onClick &&
-      swipeShift.x > -10 &&
-      swipeShift.x < 10 &&
-      swipeShift.y > -10 &&
-      swipeShift.y < 10
+      swipeShift.x > -triggerLimit &&
+      swipeShift.x < triggerLimit &&
+      swipeShift.y > -triggerLimit &&
+      swipeShift.y < triggerLimit
     ) {
-      onClick(e);
+      if (onClick) onClick(e);
+    } else if (onSwipe) {
+      switch (true) {
+        case !isSwipeHorizontal && swipeShift.y < 0:
+          onSwipe('up');
+          break;
+        case !isSwipeHorizontal && swipeShift.y > 0:
+          onSwipe('down');
+          break;
+        case isSwipeHorizontal && swipeShift.x < 0:
+          onSwipe('left');
+          break;
+        case isSwipeHorizontal && swipeShift.x > 0:
+          onSwipe('right');
+          break;
+      }
     }
-    // else if () {
-    //   onSwipe?(direction: 'up' | 'down' | 'left' | 'right'): void;
-    // }
 
     setPositionStartFlipMouseDown({ x: 0, y: 0 });
     setSwipeShift({ x: 0, y: 0 });
@@ -84,8 +103,6 @@ const Swiper: React.FunctionComponent<SwiperProps> = ({ children, onClick }: Swi
       setSwipeShift(mouseShiftPosition);
     }
   };
-
-  const isSwipeHorizontal = (): boolean => Math.abs(swipeShift.x) > Math.abs(swipeShift.y);
 
   return (
     <div

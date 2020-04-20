@@ -18,11 +18,14 @@ interface PlayerContainerProps {
   isPlaying: boolean;
   trackTitle: string;
   track: playItemType;
+  isShowHeader: boolean;
   isBlurTitle: boolean;
   onPlay(): void;
   onNext(): void;
   onPrev(): void;
   onTrackEnded(): void;
+  onTogglePlaylist(): void;
+  onToggleHeaderAndFooter(): void;
   onSetReady(stateOfReady: boolean): void;
 }
 
@@ -50,7 +53,15 @@ const PlayerContainer: React.FunctionComponent<PlayerContainerProps> = props => 
 
   return (
     <>
-      <Player {...props} onProgress={handleProgress} onDuration={handleDuration} ref={playerRef} />
+      <Player
+        {...props}
+        onProgress={handleProgress}
+        onDuration={handleDuration}
+        ref={playerRef}
+        isShowHeader={props.isShowHeader}
+        onTogglePlaylist={props.onTogglePlaylist}
+        onToggleHeaderAndFooter={props.onToggleHeaderAndFooter}
+      />
       <Footer
         {...props}
         isBlur={false}

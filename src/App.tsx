@@ -41,6 +41,7 @@ class Main extends React.Component<{}, MainStateType> {
     isReady: false,
     isShowFooter: true,
     isShowHeader: true,
+    isShowPlaylist: false,
     isShowSettings: false,
     settings: settingsModel,
     progress: progressModel,
@@ -59,8 +60,11 @@ class Main extends React.Component<{}, MainStateType> {
     if (
       this.state.isReady !== nextState.isReady ||
       this.state.isBlurBg !== nextState.isBlurBg ||
-      this.state.isPlaying !== nextState.isPlaying ||
+      this.state.isShowHeader !== nextState.isShowHeader ||
+      this.state.isShowFooter !== nextState.isShowFooter ||
       this.state.isShowSettings !== nextState.isShowSettings ||
+      this.state.isShowPlaylist !== nextState.isShowPlaylist ||
+      this.state.isPlaying !== nextState.isPlaying ||
       !lib.equal(this.state.settings, nextState.settings) ||
       !lib.equal(this.state.message, nextState.message) ||
       !lib.equal(this.state.playList, nextState.playList) ||
@@ -250,6 +254,16 @@ class Main extends React.Component<{}, MainStateType> {
       isBlurBg: newState,
     });
   };
+
+  handleTogglePlaylist = (): void => {
+    if (this.state.isShowHeader) {
+      this.setState({
+        isShowPlaylist: !this.state.isShowPlaylist,
+        isBlurBg: !this.state.isShowPlaylist,
+      });
+    }
+  };
+
   handleShowSettings = (): void => {
     this.setState({
       isBlurBg: !this.state.isBlurBg,
@@ -264,6 +278,13 @@ class Main extends React.Component<{}, MainStateType> {
     useStorage.replaceAll('currentState', newState, stateSavingItems);
   };
 
+  handleToggleHeaderAndFooter = (): void => {
+    this.setState({
+      isShowFooter: !(this.state.isShowFooter || this.state.isShowHeader),
+      isShowHeader: !(this.state.isShowFooter || this.state.isShowHeader),
+    });
+  };
+
   render(): React.ReactNode {
     const {
       isBlurBg,
@@ -271,6 +292,8 @@ class Main extends React.Component<{}, MainStateType> {
       isReady,
       isShowFooter,
       isShowHeader,
+      isShowPlaylist,
+      isShowSettings,
       settings,
       duration,
       progress,
@@ -280,7 +303,6 @@ class Main extends React.Component<{}, MainStateType> {
       playList,
       message,
       PlayerRef,
-      isShowSettings,
     } = this.state;
 
     //@ts-ignore
@@ -320,11 +342,12 @@ class Main extends React.Component<{}, MainStateType> {
           <HeaderContainer
             isShow={isShowHeader}
             isShowSettings={isShowSettings}
+            isShowPlaylist={isShowPlaylist}
             onShowMenu={(): void => {}}
             onSetVolume={this.handleSetVolume}
-            onSetBlurBg={this.handleSetBlurBg}
             setToMainState={this.handleSetState}
             onShowSettings={this.handleShowSettings}
+            onTogglePlaylist={this.handleTogglePlaylist}
           />
           <PlayerContainer
             ref={PlayerRef}
@@ -335,36 +358,16 @@ class Main extends React.Component<{}, MainStateType> {
             isPlaying={isPlaying}
             isBlurTitle={isBlurBg}
             isShowing={isShowFooter}
+            isShowHeader={isShowHeader}
             onPlay={this.handlePlay}
             onPrev={this.handlePrev}
             onNext={this.handleNext}
             onTrackEnded={this.handleNext}
             onSetReady={this.handleSetIsReady}
             trackTitle={(currentTrack && currentTrack.title) || ''}
+            onToggleHeaderAndFooter={this.handleToggleHeaderAndFooter}
+            onTogglePlaylist={this.handleTogglePlaylist}
           />
-          {/* <Player
-            // @ts-ignore
-            ref={PlayerRef}
-            isPlay={isPlaying}
-            onTrackEnded={this.handleNext}
-            onSetReady={this.handleSetIsReady}
-            track={currentTrack}
-            isBlur={isBlurBg}
-          />
-          <Footer
-            trackTitle={(currentTrack && currentTrack.title) || ''}
-            playerRef={PlayerRef}
-            isPlaying={isPlaying}
-            isReady={isReady}
-            onPlay={this.handlePlay}
-            onPrev={this.handlePrev}
-            onNext={this.handleNext}
-            onSetSeekPosition={(): void => {}}
-            isShowing={isShowFooter}
-            progress={progress}
-            isBlur={false}
-            isBlurTitle={isBlurBg}
-          /> */}
         </IndexedDB>
       </MainContext.Provider>
     );

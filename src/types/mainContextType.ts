@@ -14,7 +14,7 @@ type mainContextType = {
   currentPlaylistNumber: number;
   listOfPlaylist: listOfPlaylistItemType[];
   showMessage(message: messageType | void): void;
-  //   getStateFromStorage?(): any;
+  // getStateFromStorage?(): any;
 };
 
 export { mainContextType };

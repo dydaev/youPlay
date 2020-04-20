@@ -4,18 +4,19 @@ import './style.scss';
 
 interface VolumeControlProps {
   valueLevel: number;
+  isShowControll: boolean;
+  onToggleVolumeControll(): void;
   onChangeVolume(newvalueLevel: number): void;
 }
 
 const VolumeControl: React.FunctionComponent<VolumeControlProps> = ({
   valueLevel,
+  isShowControll,
+  onToggleVolumeControll,
   onChangeVolume,
 }) => {
-  const [isOpen, setOpen] = React.useState(false);
   const [startPosition, setStartPosition] = React.useState(0);
   const [handlePosition, setHandlePosition] = React.useState(valueLevel);
-
-  const handleToggleOpen = (): void => setOpen(!isOpen);
 
   const iconHiderSize =
     valueLevel === 0
@@ -52,13 +53,13 @@ const VolumeControl: React.FunctionComponent<VolumeControlProps> = ({
 
   return (
     <div className="base-component_volume-control">
-      <button onClick={handleToggleOpen}>
+      <button onClick={onToggleVolumeControll}>
         <div className="base-component_volume-control_icon-hider" style={{ width: iconHiderSize }}>
           <i className="fas fa-volume-up"></i>
         </div>
       </button>
       <div
-        style={isOpen ? { height: 100 } : {}}
+        style={isShowControll ? { height: 100 } : {}}
         className="base-component_volume-control_control-container"
         onMouseDown={handleMouseDown}
         onTouchStart={handleMouseDown}
@@ -72,7 +73,7 @@ const VolumeControl: React.FunctionComponent<VolumeControlProps> = ({
           className="base-component_volume-control_handle"
           id="volume-handler"
           style={
-            !isOpen
+            !isShowControll
               ? { top: -124 }
               : !startPosition
               ? { top: (valueLevel * 100 + 33) * -1 }

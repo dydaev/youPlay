@@ -28,7 +28,7 @@ let mainContext: mainContextType = {
   playList: [],
   listOfPlaylist: [],
   showMessage: () => {},
-  getStateFromStorage: () => {},
+  // getStateFromStorage: () => {},
 };
 
 export default createContext<mainContextType>(mainContext);

@@ -30,4 +30,4 @@ type bdType = {
   removeTable(tableName: dbTableNamesType): Promise<void>;
 };
 
-export { txType, dbTableNamesType, tablesCreatorType, bdType };
+export { txType, tablesCreatorType, bdType };

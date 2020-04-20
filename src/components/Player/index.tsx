@@ -11,21 +11,43 @@ import { mainContextType } from '../../types/mainContextType';
 
 import './style.scss';
 import { progressType } from '../../types/progressType';
+import Swiper from '../Swiper';
+import Shield from './Shield';
 
 export type propsType = {
   isBlur: boolean;
   isPlay: boolean;
+  isShowHeader: boolean;
   onTrackEnded(): void;
   track: playItemType;
   ref: any;
+  onTogglePlaylist(): void;
+  onToggleHeaderAndFooter(): void;
   onSetReady(stateOfReady: boolean): void;
   onProgress(newProgress: progressType): void;
   onDuration(newDuration: number): void;
+  onPlay(): void;
+  onNext(): void;
+  onPrev(): void;
 };
 // eslint-disable-next-line react/display-name
 const Player: React.ComponentType<propsType> = React.forwardRef(
   (
-    { isPlay, track, onSetReady, isBlur, onTrackEnded, onProgress, onDuration }: propsType,
+    {
+      isPlay,
+      onPlay,
+      onNext,
+      onPrev,
+      track,
+      isBlur,
+      isShowHeader,
+      onSetReady,
+      onProgress,
+      onDuration,
+      onTrackEnded,
+      onTogglePlaylist,
+      onToggleHeaderAndFooter,
+    }: propsType,
     ref: any,
   ) => {
     const context: mainContextType = React.useContext(MainContext);
@@ -33,6 +55,7 @@ const Player: React.ComponentType<propsType> = React.forwardRef(
     const [trackUrl, setTrackUrl] = React.useState(track && track.url ? track.url : '');
 
     const handleErr = (err: any): void => {
+      context.showMessage({ text: 'Cannt play track: ' + track.title, type: 'WARNING' });
       console.log('Cannt play track.', err);
     };
 
@@ -80,6 +103,18 @@ const Player: React.ComponentType<propsType> = React.forwardRef(
       }
     };
 
+    const handleSwipe = (dir: 'up' | 'down' | 'left' | 'right'): void => {
+      if (dir === 'up') onToggleHeaderAndFooter();
+
+      if (dir === 'down') {
+        if (isShowHeader) onTogglePlaylist();
+        else onToggleHeaderAndFooter();
+      }
+
+      if (dir === 'right') onPrev();
+      if (dir === 'left') onNext();
+    };
+
     React.useEffect((): void => {
       if (context.settings.directYoutubeLoad) getTrackFromServer();
       else if (track) handleSetTrackUrl(track.url);
@@ -90,6 +125,9 @@ const Player: React.ComponentType<propsType> = React.forwardRef(
         className={isBlur ? 'base-component_player is_blur' : 'base-component_player'}
         ref={PlayerBack}
       >
+        <Swiper onSwipe={handleSwipe} onClick={onPlay}>
+          <Shield />
+        </Swiper>
         <ReactPlayer
           config={{
             youtube: {

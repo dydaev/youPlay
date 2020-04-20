@@ -16,11 +16,12 @@ type propsType = {
   volume: number;
   isShow: boolean;
   isShowSettings: boolean;
+  isShowPlaylist: boolean;
   onShowMenu(): void;
   onShowSettings(): void;
+  onTogglePlaylist(): void;
   onGetPlaylistFromServer(): void;
   onSetVolume(newVolume: number): void;
-  onSetBlurBg(newSatte: boolean): void;
   onSetCurrentTrackNumber(newNumber: number): void;
   onChangeCurrentPlaylistNumber(newNumber: number): void;
   onAddNewPlaylistToListOfPlaylist(newPlaylist: listOfPlaylistItemType): void;
@@ -37,10 +38,11 @@ const Header = ({
   volume,
   isShow,
   isShowSettings,
+  isShowPlaylist,
   onShowSettings,
   onShowMenu,
   onSetVolume,
-  onSetBlurBg,
+  onTogglePlaylist,
   onGetPlaylistFromServer,
   onSetCurrentTrackNumber,
   onAddNewPlaylistToListOfPlaylist,
@@ -49,38 +51,46 @@ const Header = ({
   onChangeCurrentPlaylistNumber,
 }: propsType): JSX.Element => {
   const [showingList, setShowingList] = React.useState<showingListType>('playlist');
-  const [isShowToplist, setShowToplist] = React.useState(false);
+  const [isShowVolumeControll, setIsShowVolumeControll] = React.useState(false);
 
   const handleShowTopList = (): void => {
-    setShowToplist(!isShowToplist);
-    onSetBlurBg(!isShowToplist);
-    if (isShowToplist) setTimeout((): void => setShowingList('playlist'), 1000);
+    onTogglePlaylist();
+    setIsShowVolumeControll(false);
+    if (isShowPlaylist) setTimeout((): void => setShowingList('playlist'), 1000);
   };
 
+  const handleToggleVolumeControll = (): void => setIsShowVolumeControll(!isShowVolumeControll);
+
+  React.useEffect(() => {
+    if (!isShow && isShowVolumeControll) setIsShowVolumeControll(false);
+  });
+
   return (
-    <div className="header-wrapper" style={isShowToplist ? {} : { height: 0 }}>
-      <header id="main-header" style={isShow ? { marginTop: 78 } : {}}>
+    <div className="header-wrapper" style={isShowPlaylist ? {} : { height: 0 }}>
+      <header id="main-header" style={isShow ? { marginTop: 78 } : { marginTop: -1 }}>
         <button
           id="settings"
-          onClick={isShowToplist ? onGetPlaylistFromServer : onShowSettings}
+          onClick={isShowPlaylist ? onGetPlaylistFromServer : onShowSettings}
           style={{ position: 'relative' }}
         >
           <i className="fas fa-chevron-left" style={isShowSettings ? {} : { fontSize: 0 }}></i>
           <i
             className="fas fa-tools"
-            style={isShowToplist || isShowSettings ? { fontSize: 0 } : {}}
+            style={isShowPlaylist || isShowSettings ? { fontSize: 0 } : {}}
           ></i>
           <i
             className="fas fa-sync"
-            style={!isShowToplist || isShowSettings ? { fontSize: 0 } : {}}
+            style={!isShowPlaylist || isShowSettings ? { fontSize: 0 } : {}}
           ></i>
-          {/* <i className="fas fa-tools" style={isShowToplist ? { left: -25 } : { left: 18 }}></i>
-          <i className="fas fa-sync" style={!isShowToplist ? { right: -25 } : { right: 17 }}></i> */}
+          {/* <i className="fas fa-tools" style={isShowPlaylist ? { left: -25 } : { left: 18 }}></i>
+          <i className="fas fa-sync" style={!isShowPlaylist ? { right: -25 } : { right: 17 }}></i> */}
         </button>
         <h5
-          onClick={isShowSettings ? onShowSettings : isShowToplist ? handleShowTopList : onShowMenu}
+          onClick={
+            isShowSettings ? onShowSettings : isShowPlaylist ? handleShowTopList : onShowMenu
+          }
         >
-          {!isShowToplist
+          {!isShowPlaylist
             ? isShowSettings
               ? 'Settings'
               : '-=plaYo=-'
@@ -90,18 +100,23 @@ const Header = ({
         </h5>
 
         <button
-          style={isShowToplist && showingList === 'playlist' ? {} : stylesOfListButtons}
+          style={isShowPlaylist && showingList === 'playlist' ? {} : stylesOfListButtons}
           onClick={(): void => setShowingList('manager')}
         >
           <i className="fas fa-tasks"></i>
         </button>
         <button
-          style={isShowToplist && showingList === 'manager' ? {} : stylesOfListButtons}
+          style={isShowPlaylist && showingList === 'manager' ? {} : stylesOfListButtons}
           onClick={(): void => setShowingList('playlist')}
         >
           <i className="fas fa-th-list"></i>
         </button>
-        <VolumeControl valueLevel={volume} onChangeVolume={onSetVolume} />
+        <VolumeControl
+          valueLevel={volume}
+          onChangeVolume={onSetVolume}
+          isShowControll={isShowVolumeControll}
+          onToggleVolumeControll={handleToggleVolumeControll}
+        />
       </header>
       <div className="top-list_container" style={{ height: isShow ? '100%' : 0 }}>
         <Playlist
@@ -123,8 +138,8 @@ const Header = ({
         onClick={!isShowSettings ? handleShowTopList : (): void => {}}
         style={isShowSettings ? { width: '100%', padding: '6px 0' } : {}}
       >
-        <div style={isShowSettings ? { width: '100%' } : isShowToplist ? { width: '50%' } : {}} />
-        <div style={isShowSettings ? { width: 0 } : isShowToplist ? { width: '100%' } : {}} />
+        <div style={isShowSettings ? { width: '100%' } : isShowPlaylist ? { width: '50%' } : {}} />
+        <div style={isShowSettings ? { width: 0 } : isShowPlaylist ? { width: '100%' } : {}} />
       </button>
     </div>
   );

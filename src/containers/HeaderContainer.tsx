@@ -17,11 +17,12 @@ import './HeaderContainer.scss';
 
 interface HeaderContainerProps {
   isShow: boolean;
+  isShowPlaylist: boolean;
   isShowSettings: boolean;
   onSetVolume(newVolume: number): void;
   onShowMenu(): void;
   onShowSettings(): void;
-  onSetBlurBg(newSatte: boolean): void;
+  onTogglePlaylist(): void;
   setToMainState<K extends keyof MainStateType>(
     newState: MainStateType | Pick<MainStateType, K>,
   ): void;
@@ -29,11 +30,12 @@ interface HeaderContainerProps {
 
 const HeaderContainer = ({
   isShowSettings,
+  isShowPlaylist,
   onSetVolume,
   onShowMenu,
   onShowSettings,
-  onSetBlurBg,
   setToMainState,
+  onTogglePlaylist,
   isShow,
 }: HeaderContainerProps): JSX.Element => {
   const mainContext: mainContextType = React.useContext<mainContextType>(MainContext);
@@ -160,11 +162,12 @@ const HeaderContainer = ({
     <Header
       volume={mainContext.settings.volume}
       isShow={isShow}
+      isShowPlaylist={isShowPlaylist}
       onShowMenu={onShowMenu}
       onSetVolume={onSetVolume}
-      onSetBlurBg={onSetBlurBg}
       isShowSettings={isShowSettings}
       onShowSettings={onShowSettings}
+      onTogglePlaylist={onTogglePlaylist}
       setToMainState={setToMainState}
       onUpdateListOfPlaylist={handleUpdateListOfPlaylist}
       onSetCurrentTrackNumber={handleSetCurrentTrackNumber}
