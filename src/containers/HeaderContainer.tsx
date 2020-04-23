@@ -163,6 +163,7 @@ const HeaderContainer = ({
       volume={mainContext.settings.volume}
       isShow={isShow}
       isShowPlaylist={isShowPlaylist}
+      isPlaylistEmpty={mainContext.playList && !mainContext.playList.length}
       onShowMenu={onShowMenu}
       onSetVolume={onSetVolume}
       isShowSettings={isShowSettings}

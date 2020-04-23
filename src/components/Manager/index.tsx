@@ -60,7 +60,6 @@ export const Manager: React.FunctionComponent<ManagerProps> = ({
   };
   const handleChangeForm = (e: any, idPrefix?: string): void => {
     const keyOfItem: string = e.target.id.replace(new RegExp(`\^${idPrefix}_`), '');
-    console.log(new RegExp(`\\^${idPrefix}_`));
 
     setFormItems({
       ...formItems,
@@ -92,7 +91,7 @@ export const Manager: React.FunctionComponent<ManagerProps> = ({
 
   return (
     <div style={isShow ? {} : notShowStyle}>
-      <table className="top-list">
+      <table className="top-list_manager">
         <tbody>
           {mainContext.listOfPlaylist.map(
             (playlist: listOfPlaylistItemType, index: number): React.ReactNode => (
@@ -147,10 +146,15 @@ export const Manager: React.FunctionComponent<ManagerProps> = ({
               </div>
 
               <button
+                className={
+                  mainContext.listOfPlaylist && !mainContext.listOfPlaylist.length
+                    ? 'button_add blob green'
+                    : 'button_add'
+                }
                 style={showAddForm && Number.isNaN(indexOfEditForm) ? { display: 'none' } : {}}
                 onClick={handleClickAddButton}
               >
-                Add
+                <i className="fas fa-plus"></i>
               </button>
             </td>
           </tr>

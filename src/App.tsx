@@ -313,14 +313,14 @@ class Main extends React.Component<{}, MainStateType> {
     return (
       <MainContext.Provider
         value={{
-          settings,
-          duration,
-          progress,
-          isPlaying,
-          currentTrackNumber,
           currentPlaylistNumber,
+          currentTrackNumber,
+          duration,
+          isPlaying,
           listOfPlaylist,
           playList,
+          progress,
+          settings,
           showMessage: this.handleSetMessage,
         }}
       >

@@ -1,3 +1,5 @@
+@import './pulse.scss';
+
 body {
   margin: 0;
   padding: 0;
@@ -136,6 +138,10 @@ main#main {
       }
     }
   }
+}
+
+.no_opacity {
+  opacity: unset !important;
 }
 
 .is_blur {

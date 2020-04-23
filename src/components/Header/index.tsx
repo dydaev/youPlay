@@ -1,22 +1,23 @@
 import * as React from 'react';
 // import TopList from '../TopList';
 
-import { MainStateType } from '../../types/mainStateType';
 import { listOfPlaylistItemType } from '../../types/listOfPlaylistItemType';
+import { MainStateType } from '../../types/mainStateType';
+import VolumeControl from '../VolumeControl/index';
 
 import { Manager } from '../../components/Manager';
 import { Playlist } from '../../components/Playlist';
 
 import './style.scss';
-import VolumeControl from '../VolumeControl/index';
 
 export type showingListType = 'playlist' | 'manager';
 
-type propsType = {
+interface IPropsType {
   volume: number;
   isShow: boolean;
   isShowSettings: boolean;
   isShowPlaylist: boolean;
+  isPlaylistEmpty: boolean;
   onShowMenu(): void;
   onShowSettings(): void;
   onTogglePlaylist(): void;
@@ -30,7 +31,7 @@ type propsType = {
   setToMainState<K extends keyof MainStateType>(
     newState: MainStateType | Pick<MainStateType, K>,
   ): void;
-};
+}
 
 const stylesOfListButtons = { width: 0, padding: 0, margin: 0 };
 
@@ -39,6 +40,7 @@ const Header = ({
   isShow,
   isShowSettings,
   isShowPlaylist,
+  isPlaylistEmpty,
   onShowSettings,
   onShowMenu,
   onSetVolume,
@@ -49,7 +51,7 @@ const Header = ({
   onUpdatePlaylistInListOfPlaylist,
   onUpdateListOfPlaylist,
   onChangeCurrentPlaylistNumber,
-}: propsType): JSX.Element => {
+}: IPropsType): JSX.Element => {
   const [showingList, setShowingList] = React.useState<showingListType>('playlist');
   const [isShowVolumeControll, setIsShowVolumeControll] = React.useState(false);
 
@@ -100,6 +102,11 @@ const Header = ({
         </h5>
 
         <button
+          className={
+            isPlaylistEmpty && !isShowSettings && isShowPlaylist && showingList === 'playlist'
+              ? 'blob purple'
+              : ''
+          }
           style={isShowPlaylist && showingList === 'playlist' ? {} : stylesOfListButtons}
           onClick={(): void => setShowingList('manager')}
         >
@@ -134,7 +141,11 @@ const Header = ({
         />
       </div>
       <button
-        className="header-wrapper_open-list"
+        className={
+          isPlaylistEmpty && !isShowSettings && !isShowPlaylist
+            ? 'header-wrapper_open-list blob purple no_opacity'
+            : 'header-wrapper_open-list'
+        }
         onClick={!isShowSettings ? handleShowTopList : (): void => {}}
         style={isShowSettings ? { width: '100%', padding: '6px 0' } : {}}
       >
