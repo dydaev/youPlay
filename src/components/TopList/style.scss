@@ -15,6 +15,19 @@ div.top-list_container {
       border: 0;
       border-spacing: 0;
     }
+    button.button_add {
+      margin-top: 20px;
+      padding-top: 5px;
+      height: 64px;
+      width: 64px;
+      color: green;
+      text-align: center;
+      border: none;
+      border-radius: 50%;
+      background: no-repeat;
+      font-size: 40px;
+      font-weight: bold;
+    }
 
     width: 100%;
     img {
@@ -35,6 +48,19 @@ div.top-list_container {
       color: white;
       background: #ffffff33;
       box-shadow: #ffffff23 0px 0px 20px 25px;
+    }
+    button.button_add {
+      margin-top: 20px;
+      padding-top: 5px;
+      height: 64px;
+      width: 64px;
+      color: green;
+      text-align: center;
+      border: none;
+      border-radius: 50%;
+      background: no-repeat;
+      font-size: 40px;
+      font-weight: bold;
     }
   }
 }

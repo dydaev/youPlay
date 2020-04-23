@@ -56,7 +56,7 @@ const Player: React.ComponentType<propsType> = React.forwardRef(
 
     const handleErr = (err: any): void => {
       context.showMessage({ text: 'Cannt play track: ' + track.title, type: 'WARNING' });
-      console.log('Cannt play track.', err);
+      console.warn('Cannt play track.', err);
     };
 
     const handleReady = (): void => {
@@ -116,7 +116,7 @@ const Player: React.ComponentType<propsType> = React.forwardRef(
     };
 
     React.useEffect((): void => {
-      if (context.settings.directYoutubeLoad) getTrackFromServer();
+      if (context.settings.directYoutubeLoad && !context.settings.showVideo) getTrackFromServer();
       else if (track) handleSetTrackUrl(track.url);
     });
 

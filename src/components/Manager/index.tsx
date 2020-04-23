@@ -91,7 +91,7 @@ export const Manager: React.FunctionComponent<ManagerProps> = ({
 
   return (
     <div style={isShow ? {} : notShowStyle}>
-      <table className="top-list_manager">
+      <table className="top-list">
         <tbody>
           {mainContext.listOfPlaylist.map(
             (playlist: listOfPlaylistItemType, index: number): React.ReactNode => (

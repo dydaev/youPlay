@@ -143,7 +143,7 @@ const Header = ({
       <button
         className={
           isPlaylistEmpty && !isShowSettings && !isShowPlaylist
-            ? 'header-wrapper_open-list blob purple no_opacity'
+            ? 'header-wrapper_open-list blob orange no_opacity'
             : 'header-wrapper_open-list'
         }
         onClick={!isShowSettings ? handleShowTopList : (): void => {}}

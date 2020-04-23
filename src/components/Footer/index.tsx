@@ -108,6 +108,37 @@ const Footer = ({
     }
   });
 
+  let title = '';
+  let warning = false;
+
+  if (mainContext.listOfPlaylist && !mainContext.listOfPlaylist.length) {
+    title = 'Please add playlist in manager';
+    warning = true;
+  } else if (
+    mainContext.listOfPlaylist &&
+    mainContext.listOfPlaylist.length &&
+    Number.isNaN(mainContext.currentPlaylistNumber)
+  ) {
+    title = 'Please select playlist in manager';
+    warning = true;
+  } else {
+    if (mainContext.playList && !mainContext.playList.length) {
+      title = 'Playlist is empty, please try update playlist or check playlist in youtube';
+      warning = true;
+    } else if (
+      mainContext.playList &&
+      mainContext.playList.length &&
+      Number.isNaN(mainContext.currentTrackNumber)
+    ) {
+      title = 'Playlist select track for playing';
+      warning = true;
+    } else if (Math.floor(duration)) {
+      title = `${trackTitle || ''} (${lib.seconds2time(Math.floor(duration))})`;
+    } else {
+      title = trackTitle || '';
+    }
+  }
+
   return (
     <footer
       id="main-footer"
@@ -125,8 +156,12 @@ const Footer = ({
           onTouchEnd={handleLineMouseUp}
           ref={Line}
         >
-          <span className={isBlurTitle ? 'noselect is_blur2' : 'noselect'}>{`${trackTitle ||
-            ''} (${lib.seconds2time(Math.floor(duration))})`}</span>
+          <span
+            className={isBlurTitle ? 'noselect is_blur2' : 'noselect'}
+            style={warning ? { color: 'orange' } : {}}
+          >
+            {title}
+          </span>
           <div
             style={{
               zIndex: 0,

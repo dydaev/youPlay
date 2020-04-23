@@ -305,9 +305,6 @@ class Main extends React.Component<{}, MainStateType> {
       PlayerRef,
     } = this.state;
 
-    //@ts-ignore
-    console.log(this);
-
     const currentTrack = playList[currentTrackNumber];
 
     return (
