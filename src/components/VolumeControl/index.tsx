@@ -16,6 +16,7 @@ const VolumeControl: React.FunctionComponent<VolumeControlProps> = ({
   onChangeVolume,
 }) => {
   const [startPosition, setStartPosition] = React.useState(0);
+  const [volumeLevel, setVolumeLevel] = React.useState(0);
   const [handlePosition, setHandlePosition] = React.useState(valueLevel);
 
   const iconHiderSize =
@@ -51,11 +52,29 @@ const VolumeControl: React.FunctionComponent<VolumeControlProps> = ({
     setStartPosition(0);
   };
 
+  const handleMute = (): void => {
+    if (volumeLevel !== 0) {
+      setVolumeLevel(valueLevel);
+      onChangeVolume(0);
+    } else {
+      setVolumeLevel(0);
+      onChangeVolume(volumeLevel);
+    }
+  };
+  console.log(valueLevel);
+
   return (
     <div className="base-component_volume-control">
       <button onClick={onToggleVolumeControll}>
-        <div className="base-component_volume-control_icon-hider" style={{ width: iconHiderSize }}>
-          <i className="fas fa-volume-up"></i>
+        <div
+          className="base-component_volume-control_icon-hider"
+          style={valueLevel > 0 ? { width: iconHiderSize } : {}}
+        >
+          {valueLevel > 0 ? (
+            <i className="fas fa-volume-up"></i>
+          ) : (
+            <i className="fas fa-volume-mute"></i>
+          )}
         </div>
       </button>
       <div
@@ -67,6 +86,7 @@ const VolumeControl: React.FunctionComponent<VolumeControlProps> = ({
         onTouchMove={handleMouseMove}
         onMouseUp={handleMouseUp}
         onTouchEnd={handleMouseUp}
+        onBlur={onToggleVolumeControll}
       >
         <div className="base-component_volume-control_line" />
         <div
@@ -82,6 +102,9 @@ const VolumeControl: React.FunctionComponent<VolumeControlProps> = ({
         >
           <div className="base-component_volume-control_handle_button" id="volume-handler-icon" />
         </div>
+        <button onClick={handleMute} className="base-component_volume-control_handle_button_muter">
+          <i className="fas fa-volume-mute"></i>
+        </button>
       </div>
     </div>
   );

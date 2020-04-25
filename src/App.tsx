@@ -244,7 +244,7 @@ class Main extends React.Component<{}, MainStateType> {
     this.setState({
       settings: {
         ...this.state.settings,
-        volume: newVolume,
+        volume: newVolume > 1 ? 1 : newVolume < 0 ? 0 : newVolume,
       },
     });
   };

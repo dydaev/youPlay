@@ -66,5 +66,14 @@ div.base-component_volume-control {
         }
       }
     }
+    button.base-component_volume-control_handle_button_muter {
+      position: fixed;
+      height: 40px;
+      width: 40px;
+      color: purple;
+      background: none;
+      border: 0;
+      font-size: 20px;
+    }
   }
 }
