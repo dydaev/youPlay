@@ -115,6 +115,24 @@ const Player: React.ComponentType<propsType> = React.forwardRef(
       if (dir === 'left') onNext();
     };
 
+    const handleClickSwiper = (): void => {
+      const controlContainerElement = document.querySelector(
+        '.base-component_volume-control_control-container',
+      );
+
+      if (controlContainerElement) {
+        // @ts-ignore
+        const height = window
+          .getComputedStyle(controlContainerElement, null)
+          .getPropertyValue('height');
+
+        // tslint:disable-next-line:radix
+        const volumControllIsClosed: boolean = !parseInt(height);
+
+        if (volumControllIsClosed) onPlay();
+      }
+    };
+
     React.useEffect((): void => {
       if (context.settings.directYoutubeLoad && !context.settings.showVideo) getTrackFromServer();
       else if (track) handleSetTrackUrl(track.url);
@@ -125,7 +143,7 @@ const Player: React.ComponentType<propsType> = React.forwardRef(
         className={isBlur ? 'base-component_player is_blur' : 'base-component_player'}
         ref={PlayerBack}
       >
-        <Swiper onSwipe={handleSwipe} onClick={onPlay}>
+        <Swiper onSwipe={handleSwipe} onClick={handleClickSwiper}>
           <Shield />
         </Swiper>
         <ReactPlayer

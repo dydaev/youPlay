@@ -29,8 +29,8 @@ div.base-component_volume-control {
     position: absolute;
     height: 0;
     margin-top: -20px;
-    padding: 14px 0;
-    transition: height 1s;
+    padding: 14px 0 50px;
+    transition: 1.1s;
 
     div.base-component_volume-control_line {
       background-color: purple;
@@ -44,6 +44,8 @@ div.base-component_volume-control {
       height: 22px;
       padding: 18px;
       top: -36px;
+      transition: top 1.3s;
+
       div.base-component_volume-control_handle_button {
         //   margin: 0 auto;
         margin-top: -10px;
@@ -67,7 +69,8 @@ div.base-component_volume-control {
       }
     }
     button.base-component_volume-control_handle_button_muter {
-      position: fixed;
+      // position: fixed;
+      margin: 110px -20px;
       height: 40px;
       width: 40px;
       color: purple;

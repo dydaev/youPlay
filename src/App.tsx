@@ -29,7 +29,7 @@ import { DBConfig } from './dbConfig';
 import './main.scss';
 import PlayerContainer from './containers/PlayerContainer';
 
-const version = '1.3.0';
+const version = '1.3.1';
 const stateSavingItems = ['currentTrackNumber', 'currentPlaylistNumber', 'settings'];
 
 class Main extends React.Component<{}, MainStateType> {

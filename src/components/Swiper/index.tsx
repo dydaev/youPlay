@@ -1,27 +1,22 @@
 import * as React from 'react';
 
-export type SwipeType = {
-  x: number;
-  y: number;
-};
-
 type ChildrenWithProps = React.ReactChild & {
   props: any;
 };
 
-export interface SwiperProps {
-  onSwipe?(direction: 'up' | 'down' | 'left' | 'right'): void;
-  triggerLimit?: number;
-  onClick?(e: MouseEvent): void;
+export interface ISwiperProps {
   children: ChildrenWithProps;
+  triggerLimit?: number;
+  onSwipe?(direction: 'up' | 'down' | 'left' | 'right'): void;
+  onClick?(e: MouseEvent): void;
 }
 
-const Swiper: React.FunctionComponent<SwiperProps> = ({
+const Swiper: React.FunctionComponent<ISwiperProps> = ({
   children,
   onClick,
   onSwipe,
   triggerLimit = 10,
-}: SwiperProps) => {
+}: ISwiperProps) => {
   const [isTouch, setIsTouch] = React.useState(false);
   const [positionStartFlipMouseDown, setPositionStartFlipMouseDown] = React.useState({
     x: 0,
@@ -37,7 +32,7 @@ const Swiper: React.FunctionComponent<SwiperProps> = ({
     // const componentHeight = Self.current.getBoundingClientRect().height;
     const x = typeof e.changedTouches === 'object' ? e.changedTouches[0].clientX : e.clientX;
     const y = typeof e.changedTouches === 'object' ? e.changedTouches[0].clientY : e.clientY;
-    const positionOnClick = { x: x, y: y };
+    const positionOnClick = { x, y };
 
     setPositionStartFlipMouseDown(positionOnClick);
 
@@ -57,7 +52,8 @@ const Swiper: React.FunctionComponent<SwiperProps> = ({
       swipeShift.y > -triggerLimit &&
       swipeShift.y < triggerLimit
     ) {
-      if (onClick) onClick(e);
+      if (onClick && e.type !== 'touchend') onClick(e);
+      // tslint:disable-next-line:curly
     } else if (onSwipe) {
       switch (true) {
         case !isSwipeHorizontal && swipeShift.y < 0:
@@ -86,10 +82,7 @@ const Swiper: React.FunctionComponent<SwiperProps> = ({
       const x = typeof e.changedTouches === 'object' ? e.changedTouches[0].clientX : e.clientX;
       const y = typeof e.changedTouches === 'object' ? e.changedTouches[0].clientY : e.clientY;
 
-      const mousePosition = {
-        x: x,
-        y: y,
-      };
+      const mousePosition = { x, y };
       const mouseStartPosition = {
         x: positionStartFlipMouseDown.x,
         y: positionStartFlipMouseDown.y,
@@ -118,12 +111,12 @@ const Swiper: React.FunctionComponent<SwiperProps> = ({
       {Object.assign({}, children, {
         props: {
           ...children.props,
-          swipeShift: swipeShift,
           isSwipeTouch: isTouch,
+          swipeDown: !isSwipeHorizontal && swipeShift.y > 0 ? Math.abs(swipeShift.y) : 0,
           swipeLeft: isSwipeHorizontal && swipeShift.x < 0 ? Math.abs(swipeShift.x) : 0,
           swipeRight: isSwipeHorizontal && swipeShift.x > 0 ? Math.abs(swipeShift.x) : 0,
+          swipeShift,
           swipeUp: !isSwipeHorizontal && swipeShift.y < 0 ? Math.abs(swipeShift.y) : 0,
-          swipeDown: !isSwipeHorizontal && swipeShift.y > 0 ? Math.abs(swipeShift.y) : 0,
         },
       })}
     </div>

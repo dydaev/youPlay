@@ -61,7 +61,7 @@ const Header = ({
     if (isShowPlaylist) setTimeout((): void => setShowingList('playlist'), 1000);
   };
 
-  const handleToggleVolumeControll = (): void => setIsShowVolumeControll(!isShowVolumeControll);
+  const handleToggleVolumeControll = (state: boolean): void => setIsShowVolumeControll(state);
 
   React.useEffect(() => {
     if (!isShow && isShowVolumeControll) setIsShowVolumeControll(false);
@@ -119,7 +119,7 @@ const Header = ({
           <i className="fas fa-th-list"></i>
         </button>
         <VolumeControl
-          valueLevel={volume}
+          volumeLevel={volume}
           onChangeVolume={onSetVolume}
           isShowControll={isShowVolumeControll}
           onToggleVolumeControll={handleToggleVolumeControll}
