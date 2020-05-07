@@ -1,44 +1,39 @@
-import * as React from 'react';
-
 import * as Axios from 'axios';
+import * as React from 'react';
 
 import { useIndexedDB } from 'react-indexed-db';
 import lib from '../lib';
 import { getPlaylistFromCurlServer, getPlaylistFromServer } from '../lib/getPlaylist';
 
-import MainContext from '../context';
+import { Manager } from '../components/Manager';
+import { Playlist } from '../components/Playlist';
 
 import { IMainContextType } from '../types/mainContextType';
-import { IMainStateType } from '../types/mainStateType';
 import { IPlayItemTypeV2 } from '../types/playItemType';
 
-import Header from '../components/Header';
+import MainContext from '../context';
+
 import { listOfPlaylistItemType } from '../types/listOfPlaylistItemType';
 
 import './HeaderContainer.scss';
 
 interface IListContainerProps {
   isShow: boolean;
-  isShowPlaylist: boolean;
-  isShowSettings: boolean;
-  onSetVolume(newVolume: number): void;
-  onShowMenu(): void;
-  onShowSettings(): void;
-  onTogglePlaylist(): void;
-  setToMainState<K extends keyof IMainStateType>(
-    newState: IMainStateType | Pick<IMainStateType, K>,
+  showingList: string;
+  onChangePlaylistAndTrackNumbers(playlistNUmber: number, trackNumber: number): void;
+  onGetPlaylistFromServer(): void;
+  onSetPlaylistToMainState(
+    newPlaylist: IPlayItemTypeV2[],
+    newListOfPlaylist: listOfPlaylistItemType[],
   ): void;
 }
 
 const ListContainer = ({
-  isShowSettings,
-  isShowPlaylist,
-  onSetVolume,
-  onShowMenu,
-  onShowSettings,
-  setToMainState,
-  onTogglePlaylist,
   isShow,
+  showingList,
+  onChangePlaylistAndTrackNumbers,
+  onGetPlaylistFromServer,
+  onSetPlaylistToMainState,
 }: IListContainerProps): JSX.Element => {
   const mainContext: IMainContextType = React.useContext<IMainContextType>(MainContext);
 
@@ -55,16 +50,6 @@ const ListContainer = ({
     update: updateListOfPlaylists,
   }: any = useIndexedDB('playLists');
 
-  const handleSetListsToState = (
-    newPlaylist: IPlayItemTypeV2[],
-    newListOfPlaylist: listOfPlaylistItemType[],
-  ): void => {
-    setToMainState({
-      listOfPlaylist: newListOfPlaylist,
-      playList: newPlaylist,
-    });
-  };
-
   const getListsFromStorage = async (): Promise<void> => {
     try {
       const playList: IPlayItemTypeV2[] = await getPlaylist();
@@ -74,44 +59,10 @@ const ListContainer = ({
         !lib.equal(playList, mainContext.playList) ||
         !lib.equal(listOfPlayLists, mainContext.listOfPlaylist)
       ) {
-        handleSetListsToState(playList, listOfPlayLists);
+        onSetPlaylistToMainState(playList, listOfPlayLists);
       }
     } catch (err) {
       console.log('Cannt get playlist items from storage', err);
-    }
-  };
-
-  const handleGetPlaylistFromServer = async (): Promise<void> => {
-    if (
-      !Number.isNaN(mainContext.currentPlaylistNumber) &&
-      Array.isArray(mainContext.listOfPlaylist) &&
-      mainContext.currentPlaylistNumber < mainContext.listOfPlaylist.length
-    ) {
-      const playlist: IPlayItemTypeV2[] | void = mainContext.settings.thirdPartyServerForPlaylist
-        ? await getPlaylistFromCurlServer(
-            mainContext.listOfPlaylist[mainContext.currentPlaylistNumber].url,
-            'https://cors-anywhere.herokuapp.com/',
-            mainContext.showMessage,
-          )
-        : await getPlaylistFromServer(
-            mainContext.listOfPlaylist[mainContext.currentPlaylistNumber].url,
-            mainContext.settings.downloadServer,
-            mainContext.showMessage,
-          );
-
-      if (playlist && !lib.equal(playlist, mainContext.playList)) {
-        clearPlaylistItems()
-          .then((): void => {
-            playlist.forEach((newPlaylistItem: IPlayItemTypeV2): void => {
-              addPlaylistItem(newPlaylistItem);
-            });
-          })
-          .then((): void => {
-            getListsFromStorage();
-          });
-      }
-    } else {
-      mainContext.showMessage({ text: 'Didn`t select playlist', type: 'WARNING' });
     }
   };
 
@@ -170,37 +121,34 @@ const ListContainer = ({
   };
 
   const handleChangeCurrentPlaylistNumber = (newNumber: number): void => {
-    setToMainState({ currentPlaylistNumber: newNumber, currentTrackNumber: 0 });
-    handleGetPlaylistFromServer();
+    onChangePlaylistAndTrackNumbers(newNumber, 0);
+    onGetPlaylistFromServer();
   };
 
   const handleSetCurrentTrackNumber = (newNumber: number): void =>
-    setToMainState({ currentTrackNumber: newNumber });
+    onChangePlaylistAndTrackNumbers(mainContext.currentPlaylistNumber, newNumber);
 
   React.useEffect((): void => {
     getListsFromStorage();
   });
 
   return (
-    <Header
-      volume={mainContext.settings.volume}
-      isShow={isShow}
-      isShowPlaylist={isShowPlaylist}
-      isPlaylistEmpty={mainContext.playList && !mainContext.playList.length}
-      onShowMenu={onShowMenu}
-      onSetVolume={onSetVolume}
-      isShowSettings={isShowSettings}
-      onShowSettings={onShowSettings}
-      onTogglePlaylist={onTogglePlaylist}
-      setToMainState={setToMainState}
-      onGetTrackInfoFromServer={handleGetTrackInfoFromServer}
-      onUpdateListOfPlaylist={handleUpdateListOfPlaylist}
-      onSetCurrentTrackNumber={handleSetCurrentTrackNumber}
-      onGetPlaylistFromServer={handleGetPlaylistFromServer}
-      onChangeCurrentPlaylistNumber={handleChangeCurrentPlaylistNumber}
-      onAddNewPlaylistToListOfPlaylist={handleAddNewPlaylistToListOfPlaylist}
-      onUpdatePlaylistInListOfPlaylist={handleUpdatePlaylistInListOfPlaylist}
-    />
+    <div className="top-list_container" style={{ height: isShow ? '100%' : 0 }}>
+      <Playlist
+        isShowTopList={isShow}
+        isShow={showingList === 'playlist'}
+        onGetTrackInfoFromServer={handleGetTrackInfoFromServer}
+        onSetCurrentTrackNumber={handleSetCurrentTrackNumber}
+      />
+      <Manager
+        isShowTopList={isShow}
+        isShow={showingList === 'manager'}
+        onChangeCurrentPlaylistNumber={handleChangeCurrentPlaylistNumber}
+        onAddPlaylist={handleAddNewPlaylistToListOfPlaylist}
+        onUpdatePlaylist={handleUpdatePlaylistInListOfPlaylist}
+        onUpdateListOfPlaylists={handleUpdateListOfPlaylist}
+      />
+    </div>
   );
 };
 

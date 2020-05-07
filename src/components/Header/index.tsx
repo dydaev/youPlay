@@ -1,14 +1,11 @@
 import * as React from 'react';
 // import TopList from '../TopList';
 
-import { listOfPlaylistItemType } from '../../types/listOfPlaylistItemType';
-import { IMainStateType } from '../../types/mainStateType';
-import { IPlayItemTypeV2 } from '../../types/playItemType';
-
+import ListContainer from '../../containers/ListContainer';
 import VolumeControl from '../VolumeControl/index';
 
-import { Manager } from '../../components/Manager';
-import { Playlist } from '../../components/Playlist';
+import { listOfPlaylistItemType } from '../../types/listOfPlaylistItemType';
+import { IPlayItemTypeV2 } from '../../types/playItemType';
 
 import './style.scss';
 
@@ -24,15 +21,11 @@ interface IPropsType {
   onShowSettings(): void;
   onTogglePlaylist(): void;
   onGetPlaylistFromServer(): void;
+  onChangePlaylistAndTrackNumbers(playlistNUmber: number, trackNumber: number): void;
   onSetVolume(newVolume: number): void;
-  onSetCurrentTrackNumber(newNumber: number): void;
-  onChangeCurrentPlaylistNumber(newNumber: number): void;
-  onGetTrackInfoFromServer(url: string): Promise<IPlayItemTypeV2 | void>;
-  onAddNewPlaylistToListOfPlaylist(newPlaylist: listOfPlaylistItemType): void;
-  onUpdatePlaylistInListOfPlaylist(playlist: listOfPlaylistItemType): void;
-  onUpdateListOfPlaylist(updatedList: listOfPlaylistItemType[]): void;
-  setToMainState<K extends keyof IMainStateType>(
-    newState: IMainStateType | Pick<IMainStateType, K>,
+  onSetPlaylistToMainState(
+    newPlaylist: IPlayItemTypeV2[],
+    newListOfPlaylist: listOfPlaylistItemType[],
   ): void;
 }
 
@@ -49,12 +42,8 @@ const Header = ({
   onSetVolume,
   onTogglePlaylist,
   onGetPlaylistFromServer,
-  onSetCurrentTrackNumber,
-  onGetTrackInfoFromServer,
-  onAddNewPlaylistToListOfPlaylist,
-  onUpdatePlaylistInListOfPlaylist,
-  onUpdateListOfPlaylist,
-  onChangeCurrentPlaylistNumber,
+  onSetPlaylistToMainState,
+  onChangePlaylistAndTrackNumbers,
 }: IPropsType): JSX.Element => {
   const [showingList, setShowingList] = React.useState<showingListType>('playlist');
   const [isShowVolumeControll, setIsShowVolumeControll] = React.useState(false);
@@ -129,22 +118,13 @@ const Header = ({
           onToggleVolumeControll={handleToggleVolumeControll}
         />
       </header>
-      <div className="top-list_container" style={{ height: isShow ? '100%' : 0 }}>
-        <Playlist
-          isShowTopList={isShow}
-          isShow={showingList === 'playlist'}
-          onGetTrackInfoFromServer={onGetTrackInfoFromServer}
-          onSetCurrentTrackNumber={onSetCurrentTrackNumber}
-        />
-        <Manager
-          isShowTopList={isShow}
-          isShow={showingList === 'manager'}
-          onChangeCurrentPlaylistNumber={onChangeCurrentPlaylistNumber}
-          onAddPlaylist={onAddNewPlaylistToListOfPlaylist}
-          onUpdatePlaylist={onUpdatePlaylistInListOfPlaylist}
-          onUpdateListOfPlaylists={onUpdateListOfPlaylist}
-        />
-      </div>
+      <ListContainer
+        isShow={isShow}
+        showingList={showingList}
+        onGetPlaylistFromServer={onGetPlaylistFromServer}
+        onChangePlaylistAndTrackNumbers={onChangePlaylistAndTrackNumbers}
+        onSetPlaylistToMainState={onSetPlaylistToMainState}
+      />
       <button
         className={
           isPlaylistEmpty && !isShowSettings && !isShowPlaylist

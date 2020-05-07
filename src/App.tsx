@@ -29,6 +29,7 @@ import { DBConfig } from './dbConfig';
 import PlayerContainer from './containers/PlayerContainer';
 
 import './main.scss';
+import { listOfPlaylistItemType } from './types/listOfPlaylistItemType';
 
 const version = '2.0.0';
 const stateSavingItems = ['currentTrackNumber', 'currentPlaylistNumber', 'settings'];
@@ -279,6 +280,25 @@ class Main extends React.Component<any, IMainStateType> {
     });
   };
 
+  public handleSetPlaylistToState = (
+    newPlaylist: IPlayItemTypeV2[],
+    newListOfPlaylist: listOfPlaylistItemType[],
+  ): void => {
+    this.setState({
+      listOfPlaylist: newListOfPlaylist,
+      playList: newPlaylist,
+    });
+  };
+
+  public handleChangePlaylistAndTrackNumbers = (
+    playlistNUmber: number,
+    trackNumber: number,
+  ): void =>
+    this.setState({
+      currentPlaylistNumber: playlistNUmber,
+      currentTrackNumber: trackNumber,
+    });
+
   public render(): React.ReactNode {
     const {
       isBlurBg,
@@ -334,10 +354,11 @@ class Main extends React.Component<any, IMainStateType> {
             isShow={isShowHeader}
             isShowSettings={isShowSettings}
             isShowPlaylist={isShowPlaylist}
+            onSetPlaylistToMainState={this.handleSetPlaylistToState}
             // tslint:disable-next-line:no-empty
             onShowMenu={(): void => {}}
             onSetVolume={this.handleSetVolume}
-            setToMainState={this.handleSetState}
+            onChangePlaylistAndTrackNumbers={this.handleChangePlaylistAndTrackNumbers}
             onShowSettings={this.handleShowSettings}
             onTogglePlaylist={this.handleTogglePlaylist}
           />
