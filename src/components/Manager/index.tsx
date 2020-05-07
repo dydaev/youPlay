@@ -6,7 +6,7 @@ import Swiper from '../Swiper';
 import ManagerItem from './ManagerItem';
 import EditForm from './EditForm';
 
-import { mainContextType } from '../../types/mainContextType';
+import { IMainContextType } from '../../types/mainContextType';
 import MainContext from '../../context';
 
 const clearForm: listOfPlaylistItemType = {
@@ -39,7 +39,7 @@ export const Manager: React.FunctionComponent<ManagerProps> = ({
   onUpdateListOfPlaylists,
   onChangeCurrentPlaylistNumber,
 }: ManagerProps) => {
-  const mainContext: mainContextType = React.useContext<mainContextType>(MainContext);
+  const mainContext: IMainContextType = React.useContext<IMainContextType>(MainContext);
   const [formItems, setFormItems] = React.useState<listOfPlaylistItemType>(clearForm);
   const [indexOfEditForm, setIndexOfEditForm] = React.useState(NaN);
   const [showAddForm, setShowAddForm] = React.useState(false);

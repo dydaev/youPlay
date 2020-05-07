@@ -2,7 +2,9 @@ import * as React from 'react';
 // import TopList from '../TopList';
 
 import { listOfPlaylistItemType } from '../../types/listOfPlaylistItemType';
-import { MainStateType } from '../../types/mainStateType';
+import { IMainStateType } from '../../types/mainStateType';
+import { IPlayItemTypeV2 } from '../../types/playItemType';
+
 import VolumeControl from '../VolumeControl/index';
 
 import { Manager } from '../../components/Manager';
@@ -25,11 +27,12 @@ interface IPropsType {
   onSetVolume(newVolume: number): void;
   onSetCurrentTrackNumber(newNumber: number): void;
   onChangeCurrentPlaylistNumber(newNumber: number): void;
+  onGetTrackInfoFromServer(url: string): Promise<IPlayItemTypeV2 | void>;
   onAddNewPlaylistToListOfPlaylist(newPlaylist: listOfPlaylistItemType): void;
   onUpdatePlaylistInListOfPlaylist(playlist: listOfPlaylistItemType): void;
   onUpdateListOfPlaylist(updatedList: listOfPlaylistItemType[]): void;
-  setToMainState<K extends keyof MainStateType>(
-    newState: MainStateType | Pick<MainStateType, K>,
+  setToMainState<K extends keyof IMainStateType>(
+    newState: IMainStateType | Pick<IMainStateType, K>,
   ): void;
 }
 
@@ -47,6 +50,7 @@ const Header = ({
   onTogglePlaylist,
   onGetPlaylistFromServer,
   onSetCurrentTrackNumber,
+  onGetTrackInfoFromServer,
   onAddNewPlaylistToListOfPlaylist,
   onUpdatePlaylistInListOfPlaylist,
   onUpdateListOfPlaylist,
@@ -129,6 +133,7 @@ const Header = ({
         <Playlist
           isShowTopList={isShow}
           isShow={showingList === 'playlist'}
+          onGetTrackInfoFromServer={onGetTrackInfoFromServer}
           onSetCurrentTrackNumber={onSetCurrentTrackNumber}
         />
         <Manager
@@ -146,6 +151,7 @@ const Header = ({
             ? 'header-wrapper_open-list blob orange no_opacity'
             : 'header-wrapper_open-list'
         }
+        // tslint:disable-next-line:no-empty
         onClick={!isShowSettings ? handleShowTopList : (): void => {}}
         style={isShowSettings ? { width: '100%', padding: '6px 0' } : {}}
       >

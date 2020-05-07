@@ -1,14 +1,17 @@
 import * as React from 'react';
 
+import * as Axios from 'axios';
+
 import MainContext from '../../context';
-import { mainContextType } from '../../types/mainContextType';
-import { playItemType } from '../../types/playItemType';
+
+import { IMainContextType } from '../../types/mainContextType';
+import { IPlayItemTypeV2 } from '../../types/playItemType';
 
 // import './ManagerItem.scss';
 
-export interface ManagerItemProps {
+export interface IManagerItemProps {
   index: number;
-  playItem: playItemType;
+  playItem: IPlayItemTypeV2;
   swipeLeft?: number;
   swipeRight?: number;
   isSwipeTouch?: boolean;
@@ -16,7 +19,7 @@ export interface ManagerItemProps {
   onSelect(index: number): void;
 }
 
-const ManagerItem: React.FunctionComponent<ManagerItemProps> = ({
+const ManagerItem: React.FunctionComponent<IManagerItemProps> = ({
   index,
   playItem,
   swipeLeft,
@@ -24,9 +27,9 @@ const ManagerItem: React.FunctionComponent<ManagerItemProps> = ({
   isSwipeTouch,
   setCloseTools = false,
   onSelect,
-}: ManagerItemProps) => {
+}: IManagerItemProps) => {
   // const [isShowForm, setIsShowForm] = React.useState(false);
-  const mainContext: mainContextType = React.useContext<mainContextType>(MainContext);
+  const mainContext: IMainContextType = React.useContext<IMainContextType>(MainContext);
   const [isOpenTools, setIsOpenTools] = React.useState(false);
   const [currentWidth, setCurrentWidth] = React.useState(0);
 
@@ -43,17 +46,16 @@ const ManagerItem: React.FunctionComponent<ManagerItemProps> = ({
     }
   };
 
-  const download = (url: string, trackName: string, e: any): void => {
+  const download = (id: string, trackName: string, e: any): void => {
     e.stopPropagation();
 
-    const fileId = url.replace(/^.*v=/, '');
-    const downloadingUrl = `${mainContext.settings.downloadServer}/downloading/${fileId}`;
+    // const fileId = url.replace(/^.*v=/, '');
+    const downloadingUrl = `${mainContext.settings.downloadServer}/downloading/${id}`;
     fetch(downloadingUrl, { method: 'POST' })
       .then(response => response.blob())
       .then(blob => {
-        const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
-        a.href = url;
+        a.href = window.URL.createObjectURL(blob);
         a.download = `${trackName}.webm`;
         document.body.appendChild(a);
         a.click();
@@ -84,8 +86,9 @@ const ManagerItem: React.FunctionComponent<ManagerItemProps> = ({
           setCurrentWidth(widthOfOpenTools);
         }
       } else {
-        if (swipeRight > 0 && swipeRight < widthOfOpenTools)
+        if (swipeRight > 0 && swipeRight < widthOfOpenTools) {
           setCurrentWidth(widthOfOpenTools - swipeRight);
+        }
       }
     }
     if (setCloseTools && isOpenTools) handleShowTools(false);
@@ -100,7 +103,23 @@ const ManagerItem: React.FunctionComponent<ManagerItemProps> = ({
         }}
         onClick={(): void => onSelect(index)}
       >
-        <p style={isOpenTools ? { paddingLeft: 2 } : {}}>{playItem.title}</p>
+        <p
+          style={{
+            color: playItem.downloaded < 100 ? '#333333' : 'unset',
+            paddingLeft: isOpenTools ? 2 : 'unset',
+          }}
+        >
+          {playItem.title || ''}
+        </p>
+        {true && (
+          <div className="top-list_manager-item_info-spiner">
+            <span>83%</span>
+            <div className="spiner">
+              <div className="dot1"></div>
+              <div className="dot2"></div>
+            </div>
+          </div>
+        )}
       </div>
       <div
         style={{
@@ -109,20 +128,20 @@ const ManagerItem: React.FunctionComponent<ManagerItemProps> = ({
         className="top-list_manager-item_tools"
       >
         <div>
-          <button onClick={(e): void => download(playItem.url, playItem.title, e)}>
+          <button onClick={(e): void => download(playItem.id, playItem.title, e)}>
             <img
               style={{
-                position: 'absolute',
                 height: 50,
-                width: 50,
-                top: '50%',
-                right: 0,
-                padding: 3,
-                transform: 'translate(-15%, -50%)',
                 opacity: 0.7,
+                padding: 3,
+                position: 'absolute',
+                right: 0,
+                top: '50%',
+                transform: 'translate(-15%, -50%)',
+                width: 50,
               }}
               src={
-                process.env.NODE_ENV == 'development'
+                process.env.NODE_ENV === 'development'
                   ? '../../img/download.png'
                   : 'img/download.png'
               }

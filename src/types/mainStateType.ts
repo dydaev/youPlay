@@ -1,10 +1,10 @@
+import { listOfPlaylistItemType } from './listOfPlaylistItemType';
+import { messageType } from './messageType';
+import { IPlayItemTypeV2 } from './playItemType';
 import { progressType } from './progressType';
 import { settingsType } from './settingsType';
-import { listOfPlaylistItemType } from './listOfPlaylistItemType';
-import { playItemType } from './playItemType';
-import { messageType } from './messageType';
 
-export type MainStateType = {
+export interface IMainStateType {
   duration: number;
   progress: progressType;
   settings: settingsType;
@@ -18,7 +18,7 @@ export type MainStateType = {
   currentTrackNumber: number;
   currentPlaylistNumber: number;
   listOfPlaylist: listOfPlaylistItemType[];
-  playList: playItemType[];
+  playList: IPlayItemTypeV2[];
   message: messageType | null;
   PlayerRef: any;
-};
+}

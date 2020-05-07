@@ -1,41 +1,42 @@
 import * as React from 'react';
 
-import { IndexedDB, useIndexedDB, initDB } from 'react-indexed-db';
+import { IndexedDB, initDB } from 'react-indexed-db';
 import MainContext from './context';
 
 // import Roll from './components/PlayRoll';
-import Player from './components/Player';
+// import MainTimer from './components/MainTimer/index';
 import Footer from './components/Footer/index';
 import Message from './components/Massage/index';
+import Player from './components/Player';
 import Settings from './components/Settings/index';
-// import MainTimer from './components/MainTimer/index';
 import HeaderContainer from './containers/HeaderContainer';
 
 import lib from './lib';
 import useStorage from './lib/storage';
 
+import { IMainStateType } from './types/mainStateType';
 import { messageType } from './types/messageType';
+import { IPlayItemTypeV2 } from './types/playItemType';
 import { progressType } from './types/progressType';
-import { playItemType } from './types/playItemType';
 import { settingsType } from './types/settingsType';
-import { MainStateType } from './types/mainStateType';
-import { listOfPlaylistItemType } from './types/listOfPlaylistItemType';
+// import { listOfPlaylistItemType } from './types/listOfPlaylistItemType';
 
 import { progressModel } from './models/progressModel';
 import { settingsModel } from './models/settingsModel';
 
 import { DBConfig } from './dbConfig';
 
-import './main.scss';
 import PlayerContainer from './containers/PlayerContainer';
 
-const version = '1.3.1';
+import './main.scss';
+
+const version = '2.0.0';
 const stateSavingItems = ['currentTrackNumber', 'currentPlaylistNumber', 'settings'];
 
-class Main extends React.Component<{}, MainStateType> {
-  state: MainStateType = {
-    currentTrackNumber: NaN,
+class Main extends React.Component<any, IMainStateType> {
+  public state: IMainStateType = {
     currentPlaylistNumber: NaN,
+    currentTrackNumber: NaN,
     duration: 0,
     isPlaying: false,
     isReady: false,
@@ -43,20 +44,21 @@ class Main extends React.Component<{}, MainStateType> {
     isShowHeader: true,
     isShowPlaylist: false,
     isShowSettings: false,
-    settings: settingsModel,
-    progress: progressModel,
     listOfPlaylist: [],
-    playList: [],
     message: null,
+    // tslint:disable-next-line:object-literal-sort-keys
     PlayerRef: React.createRef(),
+    playList: [],
+    progress: progressModel,
+    settings: settingsModel,
     isBlurBg: false,
   };
 
-  UNSAFE_componentWillMount(): void {
+  public UNSAFE_componentWillMount(): void {
     initDB(DBConfig);
   }
 
-  shouldComponentUpdate(nextProps: any, nextState: MainStateType): boolean {
+  public shouldComponentUpdate(nextProps: any, nextState: IMainStateType): boolean {
     if (
       this.state.isReady !== nextState.isReady ||
       this.state.isBlurBg !== nextState.isBlurBg ||
@@ -76,36 +78,35 @@ class Main extends React.Component<{}, MainStateType> {
     ) {
       if (
         stateSavingItems.some(
-          <K extends keyof MainStateType>(checkingSavingKey: K): boolean =>
+          <K extends keyof IMainStateType>(checkingSavingKey: K): boolean =>
             this.state[checkingSavingKey] !== nextState[checkingSavingKey],
         )
-      ) {
+      )
         this.handleAddStateToStorage(nextState);
-      }
       return true;
     } else return false;
   }
-  componentDidMount(): void {
+  public componentDidMount(): void {
     this.handleGetStateFromStorage();
   }
 
-  handleSetSettings = (newState: settingsType): void => {
+  public handleSetSettings = (newState: settingsType): void => {
     this.setState({
       settings: newState,
     });
   };
 
-  handleSetState = <K extends keyof MainStateType>(
-    newState: MainStateType | Pick<MainStateType, K>,
+  public handleSetState = <K extends keyof IMainStateType>(
+    newState: IMainStateType | Pick<IMainStateType, K>,
     // @ts-ignore
   ): void => this.setState({ ...newState });
 
-  handleSetIsReady = (stateOfReady: boolean): void =>
+  public handleSetIsReady = (stateOfReady: boolean): void =>
     this.setState({
       isReady: stateOfReady,
     });
 
-  handleSetMessage = (newMessage: messageType): void => {
+  public handleSetMessage = (newMessage: messageType): void => {
     if (newMessage.text && newMessage.text.length) {
       const newId: number = new Date().getTime();
       const showingTime = newMessage.text.length < 100 ? newMessage.text.length * 150 : 10000;
@@ -120,42 +121,41 @@ class Main extends React.Component<{}, MainStateType> {
     }
   };
 
-  handleClearMessage = (id: number): void => {
-    if (this.state.message && this.state.message.id === id) {
+  public handleClearMessage = (id: number): void => {
+    if (this.state.message && this.state.message.id === id)
       this.setState({
         message: null,
       });
-    }
   };
 
-  handleSetPlayerRef = (ref: any): void => {
+  public handleSetPlayerRef = (ref: any): void => {
     this.setState({
       PlayerRef: ref,
     });
   };
 
-  handlePlay = (): void => {
+  public handlePlay = (): void => {
     const { isReady, isPlaying, currentTrackNumber, playList } = this.state;
-    if (isReady) {
-      if (isPlaying) {
+
+    if (isReady)
+      if (isPlaying)
         this.setState({
           isPlaying: false,
         });
-      } else if (playList.length && currentTrackNumber !== NaN) {
+      else if (playList.length && !Number.isNaN(currentTrackNumber))
         this.setState({
           isPlaying: true,
         });
-      }
-    }
   };
 
-  handleShakeTracks = (): void => {
+  public handleShakeTracks = (): void => {
     if (this.state.settings.playStrategic === 'randome') {
       const { playList } = this.state;
+      const newArray: IPlayItemTypeV2[] = [];
+      // tslint:disable-next-line:one-variable-per-declaration
       let currentIndex: number = playList.length,
-        temporaryValue: playItemType,
-        randomIndex: number,
-        newArray: playItemType[];
+        temporaryValue: IPlayItemTypeV2,
+        randomIndex: number;
 
       // While there remain elements to shuffle...
       while (0 !== currentIndex) {
@@ -169,36 +169,32 @@ class Main extends React.Component<{}, MainStateType> {
         newArray[randomIndex] = temporaryValue;
       }
       this.setState({ playList: newArray });
-    } else {
     }
   };
 
-  handleNext = (): void => {
+  public handleNext = (): void => {
     const countOfTracks = this.state.playList.length;
 
-    if (countOfTracks > 0) {
-      if (this.state.settings.playStrategic !== 'replay') {
-        //"normal" | "replay" | "randome" | "once"
-        if (this.state.currentTrackNumber < countOfTracks - 1) {
+    if (countOfTracks > 0)
+      if (this.state.settings.playStrategic !== 'replay')
+        if (this.state.currentTrackNumber < countOfTracks - 1)
+          // "normal" | "replay" | "randome" | "once"
           this.setState({
             currentTrackNumber: this.state.currentTrackNumber + 1,
           });
-        } else if (this.state.settings.playStrategic !== 'once') {
+        else if (this.state.settings.playStrategic !== 'once')
           if (this.state.settings.playStrategic !== 'randome') this.handleShakeTracks();
 
-          this.setState({
-            currentTrackNumber: 0,
-          });
-        }
-      }
-    }
+    this.setState({
+      currentTrackNumber: 0,
+    });
   };
 
-  handlePrev = (): void => {
+  public handlePrev = (): void => {
     const countOfTracks = this.state.playList.length;
     const secondsForChangeTrack = 5;
 
-    if (countOfTracks > 0) {
+    if (countOfTracks > 0)
       // if (this.state.duration < secondsForChangeTrack) {
       switch (this.state.settings.playStrategic) {
         case 'once':
@@ -228,19 +224,17 @@ class Main extends React.Component<{}, MainStateType> {
           });
           break;
       }
-      // } else {
-      //   this.handleSetSeek(0);
-      // }
-    }
+    // } else {
+    //   this.handleSetSeek(0);
+    // }
   };
 
-  handleSetSeek = (seconds: number): void => {
-    if (this.state.PlayerRef && this.state.PlayerRef.current) {
+  public handleSetSeek = (seconds: number): void => {
+    if (this.state.PlayerRef && this.state.PlayerRef.current)
       this.state.PlayerRef.current.seekTo(seconds);
-    }
   };
 
-  handleSetVolume = (newVolume: number): void => {
+  public handleSetVolume = (newVolume: number): void => {
     this.setState({
       settings: {
         ...this.state.settings,
@@ -249,43 +243,43 @@ class Main extends React.Component<{}, MainStateType> {
     });
   };
 
-  handleSetBlurBg = (newState: boolean): void => {
+  public handleSetBlurBg = (newState: boolean): void => {
     this.setState({
       isBlurBg: newState,
     });
   };
 
-  handleTogglePlaylist = (): void => {
-    if (this.state.isShowHeader) {
+  public handleTogglePlaylist = (): void => {
+    if (this.state.isShowHeader)
       this.setState({
-        isShowPlaylist: !this.state.isShowPlaylist,
         isBlurBg: !this.state.isShowPlaylist,
+        isShowPlaylist: !this.state.isShowPlaylist,
       });
-    }
   };
 
-  handleShowSettings = (): void => {
+  public handleShowSettings = (): void => {
     this.setState({
       isBlurBg: !this.state.isBlurBg,
       isShowSettings: !this.state.isShowSettings,
     });
   };
-  handleGetStateFromStorage = async (): Promise<void> => {
+
+  public handleGetStateFromStorage = async (): Promise<void> => {
     this.setState(await useStorage.getAll('currentState'));
   };
 
-  handleAddStateToStorage = (newState: MainStateType | void): void => {
+  public handleAddStateToStorage = (newState: IMainStateType | void): void => {
     useStorage.replaceAll('currentState', newState, stateSavingItems);
   };
 
-  handleToggleHeaderAndFooter = (): void => {
+  public handleToggleHeaderAndFooter = (): void => {
     this.setState({
       isShowFooter: !(this.state.isShowFooter || this.state.isShowHeader),
       isShowHeader: !(this.state.isShowFooter || this.state.isShowHeader),
     });
   };
 
-  render(): React.ReactNode {
+  public render(): React.ReactNode {
     const {
       isBlurBg,
       isPlaying,
@@ -340,6 +334,7 @@ class Main extends React.Component<{}, MainStateType> {
             isShow={isShowHeader}
             isShowSettings={isShowSettings}
             isShowPlaylist={isShowPlaylist}
+            // tslint:disable-next-line:no-empty
             onShowMenu={(): void => {}}
             onSetVolume={this.handleSetVolume}
             setToMainState={this.handleSetState}

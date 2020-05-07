@@ -1,34 +1,35 @@
 import { createContext } from 'react';
 
-import { mainContextType } from './types/mainContextType';
-import { useIndexedDB } from 'react-indexed-db';
+import { IMainContextType } from './types/mainContextType';
+// import { useIndexedDB } from 'react-indexed-db';
 
-let mainContext: mainContextType = {
+const mainContext: IMainContextType = {
+  currentPlaylistNumber: NaN,
+  currentTrackNumber: NaN,
   duration: NaN,
   isPlaying: false,
-  currentTrackNumber: NaN,
-  currentPlaylistNumber: NaN,
+  listOfPlaylist: [],
+  playList: [],
   progress: {
-    playedSeconds: NaN,
-    played: NaN,
-    loadedSeconds: NaN,
     loaded: NaN,
+    loadedSeconds: NaN,
+    played: NaN,
+    playedSeconds: NaN,
   },
   settings: {
     directYoutubeLoad: false,
+    downloadServer: '',
     fullScreenMode: false,
     playInTray: false,
-    timeoutOfReadingFile: NaN,
-    downloadServer: '',
-    thirdPartyServerForPlaylist: false,
-    showVideo: false,
     playStrategic: 'normal',
+    showVideo: false,
+    thirdPartyServerForPlaylist: false,
+    timeoutOfReadingFile: NaN,
     volume: 1,
   },
-  playList: [],
-  listOfPlaylist: [],
+  // tslint:disable-next-line:no-empty
   showMessage: () => {},
   // getStateFromStorage: () => {},
 };
 
-export default createContext<mainContextType>(mainContext);
+export default createContext<IMainContextType>(mainContext);

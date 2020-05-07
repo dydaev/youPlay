@@ -1,26 +1,33 @@
 import * as React from 'react';
 
-import ReactPlayer from 'react-player';
 import * as axios from 'axios';
+import ReactPlayer from 'react-player';
 
-import { playItemType } from '../../types/playItemType';
+import { IPlayItemTypeV2 } from '../../types/playItemType';
 
 import MainContext from '../../context';
 
-import { mainContextType } from '../../types/mainContextType';
+import { IMainContextType } from '../../types/mainContextType';
 
-import './style.scss';
 import { progressType } from '../../types/progressType';
 import Swiper from '../Swiper';
 import Shield from './Shield';
 
-export type propsType = {
+import './style.scss';
+
+const getUrlFromId = (id: string, serverAddress: string, forBackServer: boolean): string => {
+  return forBackServer
+    ? `${serverAddress}/getTrackPath/${id}`
+    : `https://www.youtube.com/watch?v=${id}`;
+};
+
+export interface IPropsType {
   isBlur: boolean;
   isPlay: boolean;
   isShowHeader: boolean;
-  onTrackEnded(): void;
-  track: playItemType;
+  track: IPlayItemTypeV2;
   ref: any;
+  onTrackEnded(): void;
   onTogglePlaylist(): void;
   onToggleHeaderAndFooter(): void;
   onSetReady(stateOfReady: boolean): void;
@@ -29,9 +36,9 @@ export type propsType = {
   onPlay(): void;
   onNext(): void;
   onPrev(): void;
-};
-// eslint-disable-next-line react/display-name
-const Player: React.ComponentType<propsType> = React.forwardRef(
+}
+
+const Player: React.ComponentType<IPropsType> = React.forwardRef(
   (
     {
       isPlay,
@@ -47,12 +54,11 @@ const Player: React.ComponentType<propsType> = React.forwardRef(
       onTrackEnded,
       onTogglePlaylist,
       onToggleHeaderAndFooter,
-    }: propsType,
+    }: IPropsType,
     ref: any,
   ) => {
-    const context: mainContextType = React.useContext(MainContext);
+    const context: IMainContextType = React.useContext(MainContext);
     const PlayerBack = React.useRef(null);
-    const [trackUrl, setTrackUrl] = React.useState(track && track.url ? track.url : '');
 
     const handleErr = (err: any): void => {
       context.showMessage({ text: 'Cannt play track: ' + track.title, type: 'WARNING' });
@@ -67,49 +73,12 @@ const Player: React.ComponentType<propsType> = React.forwardRef(
       onTrackEnded();
     };
 
-    const handleSetTrackUrl = (newUrl: string): void => {
-      if (newUrl !== trackUrl) setTrackUrl(newUrl);
-    };
-
-    const getTrackFromServer = (): void => {
-      const trackUrl = track && track.url ? track.url.replace(/&.*/, '') : '';
-      const trackID = trackUrl.replace(/^.*v=/, '');
-
-      if (context.settings.directYoutubeLoad && trackID) {
-        // @ts-ignore
-        axios(`${context.settings.downloadServer}/getTrackPath/${trackID}`)
-          .then((res: any) => {
-            if (res.statusText === 'OK') {
-              const answerArr = res.data.split(' '); // answer: downloaded track/path, or downloading track/path
-              if (answerArr[0] === 'downloaded') {
-                handleSetTrackUrl(`${context.settings.downloadServer}/${answerArr[1]}`);
-              } else if (answerArr[0] === 'downloading') {
-                setTimeout(() => {
-                  handleSetTrackUrl(`${context.settings.downloadServer}/${answerArr[1]}`);
-                }, 500);
-              }
-            }
-          })
-          .catch((error: any) => {
-            handleSetTrackUrl(trackUrl);
-            context.showMessage({
-              text: 'Download server isn`t found. Use youtube!!!',
-              type: 'WARNING',
-            });
-            console.error('Ошибка HTTP: ' + error);
-          });
-      } else {
-        handleSetTrackUrl(trackUrl);
-      }
-    };
-
     const handleSwipe = (dir: 'up' | 'down' | 'left' | 'right'): void => {
       if (dir === 'up') onToggleHeaderAndFooter();
 
-      if (dir === 'down') {
+      if (dir === 'down')
         if (isShowHeader) onTogglePlaylist();
         else onToggleHeaderAndFooter();
-      }
 
       if (dir === 'right') onPrev();
       if (dir === 'left') onNext();
@@ -132,11 +101,7 @@ const Player: React.ComponentType<propsType> = React.forwardRef(
         if (volumControllIsClosed) onPlay();
       }
     };
-
-    React.useEffect((): void => {
-      if (context.settings.directYoutubeLoad && !context.settings.showVideo) getTrackFromServer();
-      else if (track) handleSetTrackUrl(track.url);
-    });
+    console.log(track, context.settings.downloadServer, !context.settings.showVideo);
 
     return (
       <div
@@ -154,7 +119,11 @@ const Player: React.ComponentType<propsType> = React.forwardRef(
           }}
           ref={ref}
           onError={handleErr}
-          url={trackUrl}
+          url={
+            track && track.id
+              ? getUrlFromId(track.id, context.settings.downloadServer, !context.settings.showVideo)
+              : ''
+          }
           playing={isPlay}
           onReady={handleReady}
           onEnded={handlePlayingEnded}

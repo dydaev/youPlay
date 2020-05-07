@@ -4,14 +4,14 @@ import { IndexedDB, useIndexedDB, initDB } from 'react-indexed-db';
 
 import MainContext from '../../context';
 
-import { mainContextType } from '../../types/mainContextType';
-import { playItemType } from '../../types/playItemType';
+import { IMainContextType } from '../../types/mainContextType';
+import { IPlayItemTypeV2 } from '../../types/playItemType';
 
 import './style.scss';
 
 interface AppProps {
   isVisible: boolean;
-  onSetPlaylist(newPlaylist: playItemType[]): void;
+  onSetPlaylist(newPlaylist: IPlayItemTypeV2[]): void;
   onSetCurrentTrackNumber(newTrackNumber: number): void;
 }
 
@@ -20,7 +20,7 @@ const App: React.FunctionComponent<AppProps> = ({
   onSetPlaylist,
   onSetCurrentTrackNumber,
 }: AppProps) => {
-  const mainContext: mainContextType = React.useContext<mainContextType>(MainContext);
+  const mainContext: IMainContextType = React.useContext<IMainContextType>(MainContext);
 
   const { getAll } = useIndexedDB('playLists');
 
@@ -39,7 +39,7 @@ const App: React.FunctionComponent<AppProps> = ({
         <table className="top-list">
           <tbody>
             {mainContext.playList.map(
-              (playItem: playItemType, index: number): React.ReactNode => (
+              (playItem: IPlayItemTypeV2, index: number): React.ReactNode => (
                 <tr
                   key={'playlistItem-' + index}
                   onClick={(): void => onSetCurrentTrackNumber(index)}

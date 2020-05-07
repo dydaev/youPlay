@@ -3,7 +3,7 @@ import * as React from 'react';
 import MainContext from '../../context';
 
 import { progressType } from '../../types/progressType';
-import { mainContextType } from '../../types/mainContextType';
+import { IMainContextType } from '../../types/mainContextType';
 
 import './style.scss';
 import lib from '../../lib';
@@ -47,7 +47,7 @@ const Footer = ({
 
   const [isLineMouseDown, setIsLineMouseDown] = React.useState(false);
   const [bikePosition, setBikePosition] = React.useState(moverPosition);
-  const mainContext: mainContextType = React.useContext<mainContextType>(MainContext);
+  const mainContext: IMainContextType = React.useContext<IMainContextType>(MainContext);
 
   const bikeSize = 36;
 

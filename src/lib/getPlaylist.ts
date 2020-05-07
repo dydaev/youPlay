@@ -1,11 +1,11 @@
 import Strategy from './strategy';
 
 import { messageType } from '../types/messageType';
-import { playItemType } from '../types/playItemType';
+import { IPlayItemTypeV2 } from '../types/playItemType';
 
 export interface IgetPlaylist {
   (url: string, downloadServer: string, showMessage: (message: messageType) => void): Promise<
-    playItemType[] | void
+    IPlayItemTypeV2[] | void
   >;
 }
 
@@ -20,7 +20,7 @@ export const getPlaylistFromServer: IgetPlaylist = async (url, downloadServer, s
     const listId =
       endOfListId >= 0 ? url.slice(startOfListId, endOfListId) : url.slice(startOfListId);
 
-    const content: playItemType[] | void = await fetch(`${downloadServer}/getPlayList/${listId}`)
+    const content: IPlayItemTypeV2[] | void = await fetch(`${downloadServer}/getPlayList/${listId}`)
       .then(async response => response.text())
       .then(playlistFromServer => JSON.parse(playlistFromServer))
       .catch((ee: any): void => {
@@ -60,7 +60,7 @@ export const getPlaylistFromCurlServer: IgetPlaylist = async (
     switch (true) {
       case /^\D*youtube.{5}watch\?.+$/.test(url):
         try {
-          const parsedContent: playItemType[] = Strategy.playlistWith(content);
+          const parsedContent: IPlayItemTypeV2[] = Strategy.playlistWith(content);
           if (parsedContent) return parsedContent;
 
           throw 'Can`t get playlist!';
@@ -72,7 +72,7 @@ export const getPlaylistFromCurlServer: IgetPlaylist = async (
 
       case /^\D*youtube.{5}playlist\?.+$/.test(url):
         try {
-          const parsedContent: playItemType[] = Strategy.playlist(content);
+          const parsedContent: IPlayItemTypeV2[] = Strategy.playlist(content);
           if (parsedContent) return parsedContent;
 
           throw 'Can`t get playlist!';

@@ -19,7 +19,7 @@
 // import { bodyType } from './types/bodyType';
 // import { messageType } from './types/messageType';
 // import { progressType } from './types/progressType';
-// import { playItemType } from './types/playItemType';
+// import { IPlayItemTypeV2 } from './types/playItemType';
 // import { playStrategicType } from './types/playStrategicType';
 // import { listOfPlaylistItemType } from './types/listOfPlaylistItemType';
 // import { settingsType } from './types/settingsType';
@@ -40,7 +40,7 @@
 //   bodyFill: bodyType;
 //   progress: progressType;
 //   settings: settingsType;
-//   playList: playItemType[];
+//   playList: IPlayItemTypeV2[];
 //   showMessage: messageType | null;
 //   playStrategic: playStrategicType;
 //   listOfPlaylist: listOfPlaylistItemType[];
@@ -281,7 +281,7 @@
 //   //   });
 //   // };
 
-//   // handleSetPlayList = (p: playItemType[]): void => {
+//   // handleSetPlayList = (p: IPlayItemTypeV2[]): void => {
 //   //   // console.log("set playlist", p);
 //   //   this.setState({
 //   //     playList: p,
@@ -423,7 +423,7 @@
 //       footerIsMinimize,
 //     } = this.state;
 
-//     const currentSong: playItemType | undefined =
+//     const currentSong: IPlayItemTypeV2 | undefined =
 //       Array.isArray(playList) && playList.length ? playList[currentTrackNumber] : undefined;
 
 //     // if (window) {

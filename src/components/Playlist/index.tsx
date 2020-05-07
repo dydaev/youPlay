@@ -1,32 +1,42 @@
 import * as React from 'react';
 
-import './style.scss';
-import { playItemType } from '../../types/playItemType';
+import { IPlayItemTypeV2, playItemType } from '../../types/playItemType';
 import { notShowStyle } from '../Manager/index';
 
-import { mainContextType } from '../../types/mainContextType';
 import MainContext from '../../context';
+import { IMainContextType } from '../../types/mainContextType';
 import Swiper from '../Swiper';
 import PlaylistItem from './PlaylistItem';
 
-export interface PlaylistProps {
-  isShowTopList: boolean;
-  onSetCurrentTrackNumber(newTrackNumber: number): void;
+import './style.scss';
+
+export interface IPlaylistProps {
   isShow: boolean;
+  isShowTopList: boolean;
+  onGetTrackInfoFromServer(url: string): Promise<IPlayItemTypeV2 | void>;
+  onSetCurrentTrackNumber(newTrackNumber: number): void;
 }
 
-export const Playlist: React.FunctionComponent<PlaylistProps> = ({
+export const Playlist: React.FunctionComponent<IPlaylistProps> = ({
   isShow,
   isShowTopList,
   onSetCurrentTrackNumber,
-}: PlaylistProps) => {
-  const mainContext: mainContextType = React.useContext<mainContextType>(MainContext);
+  onGetTrackInfoFromServer,
+}: IPlaylistProps) => {
+  const mainContext: IMainContextType = React.useContext<IMainContextType>(MainContext);
+
+  // const handleUpdatePlaylist = () => {
+  //   mainContext.playList
+  // }
+
+  const download = 0;
+
   return (
     <div style={isShow ? {} : notShowStyle}>
       <table className="top-list">
         <tbody>
           {mainContext.playList.map(
-            (playItem: playItemType, index: number): React.ReactNode => (
+            (playItem: IPlayItemTypeV2, index: number): React.ReactNode => (
               <tr
                 key={'playlistItem-' + index}
                 onClick={(): void => onSetCurrentTrackNumber(index)}
@@ -40,7 +50,11 @@ export const Playlist: React.FunctionComponent<PlaylistProps> = ({
                   <span>{index + 1}</span>
                 </td>
                 <td>
-                  <img src={playItem.image} alt="track Image" />
+                  <img
+                    style={playItem.downloaded < 100 ? { opacity: 0.5 } : {}}
+                    src={playItem.image}
+                    alt="track Image"
+                  />
                 </td>
                 <td className="top-list_top-list_row_track-name">
                   <Swiper>

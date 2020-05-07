@@ -4,7 +4,7 @@ import { useIndexedDB } from 'react-indexed-db';
 
 import { listOfPlaylistItemType } from '../../types/listOfPlaylistItemType';
 
-import { mainContextType } from '../../types/mainContextType';
+import { IMainContextType } from '../../types/mainContextType';
 
 import './style.scss';
 
@@ -31,7 +31,7 @@ const PlayListManager = ({
     undefined,
   );
 
-  const mainContext: mainContextType = React.useContext<mainContextType>(MainContext);
+  const mainContext: IMainContextType = React.useContext<IMainContextType>(MainContext);
 
   const getPlaylistsFromStorage = async (): Promise<void> => {
     getAll().then(

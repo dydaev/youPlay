@@ -17,7 +17,7 @@ import { listOfPlaylistItemType } from '../types/listOfPlaylistItemType';
 
 import './HeaderContainer.scss';
 
-interface IHeaderContainerProps {
+interface IListContainerProps {
   isShow: boolean;
   isShowPlaylist: boolean;
   isShowSettings: boolean;
@@ -30,7 +30,7 @@ interface IHeaderContainerProps {
   ): void;
 }
 
-const HeaderContainer = ({
+const ListContainer = ({
   isShowSettings,
   isShowPlaylist,
   onSetVolume,
@@ -39,7 +39,7 @@ const HeaderContainer = ({
   setToMainState,
   onTogglePlaylist,
   isShow,
-}: IHeaderContainerProps): JSX.Element => {
+}: IListContainerProps): JSX.Element => {
   const mainContext: IMainContextType = React.useContext<IMainContextType>(MainContext);
 
   const {
@@ -204,4 +204,4 @@ const HeaderContainer = ({
   );
 };
 
-export default HeaderContainer;
+export default ListContainer;

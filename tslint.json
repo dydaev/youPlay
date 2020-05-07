@@ -6,7 +6,9 @@
     "quotemark": false,
     "no-console": false,
     "no-namespace": false,
-    "curly": [true, "as-needed"]
+    "curly": [true, "ignore-same-line"],
+    "arrow-parens": [true, "ban-single-arg-parens"],
+    "semicolon": [true, "always", "ignore-bound-class-methods"]
   },
   "rulesDirectory": []
 }

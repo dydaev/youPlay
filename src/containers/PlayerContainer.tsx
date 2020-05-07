@@ -4,7 +4,7 @@ import Footer from '../components/Footer';
 import Player from '../components/Player';
 
 import { progressModel } from '../models/progressModel';
-import { playItemType } from '../types/playItemType';
+import { IPlayItemTypeV2 } from '../types/playItemType';
 import { progressType } from '../types/progressType';
 
 interface IPlayerContainerProps {
@@ -17,7 +17,7 @@ interface IPlayerContainerProps {
   isShowing: boolean;
   isPlaying: boolean;
   trackTitle: string;
-  track: playItemType;
+  track: IPlayItemTypeV2;
   isShowHeader: boolean;
   isBlurTitle: boolean;
   onPlay(): void;
