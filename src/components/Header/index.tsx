@@ -14,6 +14,7 @@ export type showingListType = 'playlist' | 'manager';
 interface IPropsType {
   volume: number;
   isShow: boolean;
+  isDownloadingPlaylist: boolean;
   isShowSettings: boolean;
   isShowPlaylist: boolean;
   isPlaylistEmpty: boolean;
@@ -41,6 +42,7 @@ const Header = ({
   onShowMenu,
   onSetVolume,
   onTogglePlaylist,
+  isDownloadingPlaylist,
   onGetPlaylistFromServer,
   onSetPlaylistToMainState,
   onChangePlaylistAndTrackNumbers,
@@ -74,7 +76,7 @@ const Header = ({
             style={isShowPlaylist || isShowSettings ? { fontSize: 0 } : {}}
           ></i>
           <i
-            className="fas fa-sync"
+            className={isDownloadingPlaylist ? 'fas fa-sync rotate' : 'fas fa-sync'}
             style={!isShowPlaylist || isShowSettings ? { fontSize: 0 } : {}}
           ></i>
           {/* <i className="fas fa-tools" style={isShowPlaylist ? { left: -25 } : { left: 18 }}></i>

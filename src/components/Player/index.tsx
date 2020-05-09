@@ -101,7 +101,7 @@ const Player: React.ComponentType<IPropsType> = React.forwardRef(
         if (volumControllIsClosed) onPlay();
       }
     };
-    console.log(track, context.settings.downloadServer, !context.settings.showVideo);
+    // console.log(track, context.settings.downloadServer, !context.settings.showVideo);
 
     return (
       <div

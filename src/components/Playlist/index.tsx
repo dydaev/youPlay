@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { IPlayItemTypeV2, playItemType } from '../../types/playItemType';
+import { IPlayItemTypeV2 } from '../../types/playItemType';
 import { notShowStyle } from '../Manager/index';
 
 import MainContext from '../../context';
@@ -13,7 +13,7 @@ import './style.scss';
 export interface IPlaylistProps {
   isShow: boolean;
   isShowTopList: boolean;
-  onGetTrackInfoFromServer(url: string): Promise<IPlayItemTypeV2 | void>;
+  // onGetTrackInfoFromServer(url: string): Promise<IPlayItemTypeV2 | void>;
   onSetCurrentTrackNumber(newTrackNumber: number): void;
 }
 
@@ -21,8 +21,8 @@ export const Playlist: React.FunctionComponent<IPlaylistProps> = ({
   isShow,
   isShowTopList,
   onSetCurrentTrackNumber,
-  onGetTrackInfoFromServer,
-}: IPlaylistProps) => {
+}: // onGetTrackInfoFromServer,
+IPlaylistProps) => {
   const mainContext: IMainContextType = React.useContext<IMainContextType>(MainContext);
 
   // const handleUpdatePlaylist = () => {
@@ -39,7 +39,9 @@ export const Playlist: React.FunctionComponent<IPlaylistProps> = ({
             (playItem: IPlayItemTypeV2, index: number): React.ReactNode => (
               <tr
                 key={'playlistItem-' + index}
-                onClick={(): void => onSetCurrentTrackNumber(index)}
+                onClick={(): void => {
+                  if (playItem.readiness === 100) onSetCurrentTrackNumber(index);
+                }}
                 className={
                   index === mainContext.currentTrackNumber
                     ? 'top-list_row select-row'
@@ -51,7 +53,11 @@ export const Playlist: React.FunctionComponent<IPlaylistProps> = ({
                 </td>
                 <td>
                   <img
-                    style={playItem.downloaded < 100 ? { opacity: 0.5 } : {}}
+                    style={
+                      !mainContext.settings.showVideo && playItem.readiness < 100
+                        ? { opacity: 0.2 }
+                        : {}
+                    }
                     src={playItem.image}
                     alt="track Image"
                   />
@@ -62,7 +68,7 @@ export const Playlist: React.FunctionComponent<IPlaylistProps> = ({
                       index={index}
                       playItem={playItem}
                       setCloseTools={!isShow || !isShowTopList}
-                      onSelect={onSetCurrentTrackNumber}
+                      onSelect={playItem.readiness === 100 ? onSetCurrentTrackNumber : () => 0}
                     />
                   </Swiper>
                 </td>

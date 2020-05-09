@@ -15,12 +15,23 @@ export const DBConfig = {
       store: 'currentPlayList', //`url`, `image`, `title`, `album`, `artist`, `length`
       storeConfig: { keyPath: 'id', autoIncrement: true },
       storeSchema: [
-        { name: 'url', keypath: 'url', options: { unique: false } },
-        { name: 'image', keypath: 'image', options: { unique: false } },
-        { name: 'title', keypath: 'title', options: { unique: false } },
-        { name: 'album', keypath: 'album', options: { unique: false } },
-        { name: 'artist', keypath: 'artist', options: { unique: false } },
-        { name: 'length', keypath: 'length', options: { unique: false } },
+        { name: 'pathToFile', keypath: 'pathToFile', options: { unique: false } }, //?: string;
+        { name: 'readiness', keypath: 'readiness', options: { unique: false } }, //: number;
+        { name: 'song', keypath: 'song', options: { unique: false } }, //?: string;
+        { name: 'artist', keypath: 'artist', options: { unique: false } }, //?: string;
+        { name: 'album', keypath: 'album', options: { unique: false } }, //?: string;
+        { name: 'id', keypath: 'id', options: { unique: false } }, //: string;
+        { name: 'image', keypath: 'image', options: { unique: false } }, //?: string;
+        { name: 'title', keypath: 'title', options: { unique: false } }, //: string;
+        { name: 'type', keypath: 'type', options: { unique: false } }, //?: string;
+        { name: 'description', keypath: 'description', options: { unique: false } }, //?: string;
+        { name: 'length', keypath: 'length', options: { unique: false } }, //?: number;
+        { name: 'audioBitrate', keypath: 'audioBitrate', options: { unique: false } }, //?: number;
+        { name: 'audioChannels', keypath: 'audioChannels', options: { unique: false } }, //?: number;
+        { name: 'audioSampleRate', keypath: 'audioSampleRate', options: { unique: false } }, //?: number;
+        { name: 'contentLength', keypath: 'contentLength', options: { unique: false } }, //?: number;
+        { name: 'createDate', keypath: 'createDate', options: { unique: false } }, //?: Date;
+        { name: 'lastUsedDate', keypath: 'lastUsedDate', options: { unique: false } }, //?: Date;
       ],
     },
     {

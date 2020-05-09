@@ -1,8 +1,8 @@
-import { IPlayItemTypeV2 } from '../types/playItemType';
+import { IPlayItemTypeV2, ITubeTrackType } from '../types/playItemType';
 import { youtubeOfListContentType } from '../types/youtubeOfListContentType';
 
 export default {
-  playlist: (content: string): IPlayItemTypeV2[] => {
+  playlist: (content: string): ITubeTrackType[] => {
     // tslint:disable-next-line:one-variable-per-declaration
     const startString = '{"playlistVideoListRenderer":{"contents":',
       endString = 'style":"DEFAULT"}}]}}],"playlistId"';
@@ -19,7 +19,7 @@ export default {
 
       if (Array.isArray(playObj) && playObj.length) {
         return playObj.map(
-          ({ playlistVideoRenderer }: youtubeOfListContentType): IPlayItemTypeV2 => {
+          ({ playlistVideoRenderer }: youtubeOfListContentType): ITubeTrackType => {
             // image
             const imagesArray = playlistVideoRenderer.thumbnail.thumbnails;
             const imageUrl =
@@ -46,18 +46,15 @@ export default {
                 ? playlistVideoRenderer.lengthText.runs[0]
                 : { text: '' };
 
-            const trackID = url.replace(/&.*/, '').replace(/^.*v=/, '');
+            // const trackID = url.replace(/&.*/, '').replace(/^.*v=/, '');
 
             return {
               album: '',
               artist: '',
-              downloaded: 100,
-              id: trackID || '',
               image: parsedImage,
-              // tslint:disable-next-line:radix
-              length: Number.parseInt(trackTime.text),
+              length: trackTime.text,
               title: playlistVideoRenderer.title.runs[0].text || '',
-              // url: 'https://youtube.com' + url.slice(0, url.length - 6) || '',
+              url: 'https://youtube.com' + url.slice(0, url.length - 6) || '',
             };
           },
         );
@@ -66,7 +63,7 @@ export default {
 
     return null;
   },
-  playlistWith: (content: string): IPlayItemTypeV2[] => {
+  playlistWith: (content: string): ITubeTrackType[] => {
     // tslint:disable-next-line:one-variable-per-declaration
     const startString = '"playlist":{"playlist":{',
       endString = 'currentIndex';
@@ -81,7 +78,7 @@ export default {
       // tslint:disable-next-line:no-eval
       eval(`playObj = ${stringOfPlaylist}`);
 
-      const playLists: IPlayItemTypeV2[] = playObj.playlist.contents.map((contentItem: any) => {
+      const playLists: ITubeTrackType[] = playObj.playlist.contents.map((contentItem: any) => {
         // image
         const imagesArray = contentItem.playlistPanelVideoRenderer.thumbnail.thumbnails;
         const imageUrl =
@@ -108,13 +105,12 @@ export default {
         return {
           album: '',
           artist: '',
-          id: trackID,
-          // url: 'https://youtube.com' + url.slice(0, url.length - 6) || '',
           image: parsedImage,
           length: contentItem.playlistPanelVideoRenderer.lengthText.simpleText || '',
           title: Array.isArray(contentItem.playlistPanelVideoRenderer.title.runs)
             ? contentItem.playlistPanelVideoRenderer.title.runs[0].text
             : contentItem.playlistPanelVideoRenderer.title.simpleText || '',
+          url: 'https://youtube.com' + url.slice(0, url.length - 6) || '',
         };
       });
       return playLists;

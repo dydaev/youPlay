@@ -56,7 +56,11 @@ class Main extends React.Component<any, IMainStateType> {
   };
 
   public UNSAFE_componentWillMount(): void {
-    initDB(DBConfig);
+    try {
+      initDB(DBConfig);
+    } catch (e) {
+      console.log('error of initial db', e);
+    }
   }
 
   public shouldComponentUpdate(nextProps: any, nextState: IMainStateType): boolean {
@@ -82,8 +86,9 @@ class Main extends React.Component<any, IMainStateType> {
           <K extends keyof IMainStateType>(checkingSavingKey: K): boolean =>
             this.state[checkingSavingKey] !== nextState[checkingSavingKey],
         )
-      )
+      ) {
         this.handleAddStateToStorage(nextState);
+      }
       return true;
     } else return false;
   }
@@ -123,10 +128,11 @@ class Main extends React.Component<any, IMainStateType> {
   };
 
   public handleClearMessage = (id: number): void => {
-    if (this.state.message && this.state.message.id === id)
+    if (this.state.message && this.state.message.id === id) {
       this.setState({
         message: null,
       });
+    }
   };
 
   public handleSetPlayerRef = (ref: any): void => {
@@ -138,15 +144,17 @@ class Main extends React.Component<any, IMainStateType> {
   public handlePlay = (): void => {
     const { isReady, isPlaying, currentTrackNumber, playList } = this.state;
 
-    if (isReady)
-      if (isPlaying)
+    if (isReady) {
+      if (isPlaying) {
         this.setState({
           isPlaying: false,
         });
-      else if (playList.length && !Number.isNaN(currentTrackNumber))
+      } else if (playList.length && !Number.isNaN(currentTrackNumber)) {
         this.setState({
           isPlaying: true,
         });
+      }
+    }
   };
 
   public handleShakeTracks = (): void => {
@@ -176,16 +184,20 @@ class Main extends React.Component<any, IMainStateType> {
   public handleNext = (): void => {
     const countOfTracks = this.state.playList.length;
 
-    if (countOfTracks > 0)
-      if (this.state.settings.playStrategic !== 'replay')
-        if (this.state.currentTrackNumber < countOfTracks - 1)
+    if (countOfTracks > 0) {
+      if (this.state.settings.playStrategic !== 'replay') {
+        if (this.state.currentTrackNumber < countOfTracks - 1) {
           // "normal" | "replay" | "randome" | "once"
           this.setState({
             currentTrackNumber: this.state.currentTrackNumber + 1,
           });
-        else if (this.state.settings.playStrategic !== 'once')
-          if (this.state.settings.playStrategic !== 'randome') this.handleShakeTracks();
+        }
+      }
+      //  else if (this.state.settings.playStrategic !== 'once') {
 
+      // }
+      // if (this.state.settings.playStrategic !== 'randome') this.handleShakeTracks();
+    }
     this.setState({
       currentTrackNumber: 0,
     });
@@ -266,7 +278,10 @@ class Main extends React.Component<any, IMainStateType> {
   };
 
   public handleGetStateFromStorage = async (): Promise<void> => {
-    this.setState(await useStorage.getAll('currentState'));
+    const ss = await useStorage.getAll('currentState');
+    console.log(ss);
+
+    this.setState(ss);
   };
 
   public handleAddStateToStorage = (newState: IMainStateType | void): void => {
@@ -282,12 +297,18 @@ class Main extends React.Component<any, IMainStateType> {
 
   public handleSetPlaylistToState = (
     newPlaylist: IPlayItemTypeV2[],
-    newListOfPlaylist: listOfPlaylistItemType[],
+    newListOfPlaylist?: listOfPlaylistItemType[],
   ): void => {
-    this.setState({
-      listOfPlaylist: newListOfPlaylist,
-      playList: newPlaylist,
-    });
+    if (typeof newListOfPlaylist !== 'undefined') {
+      this.setState({
+        listOfPlaylist: newListOfPlaylist,
+        playList: newPlaylist,
+      });
+    } else {
+      this.setState({
+        playList: newPlaylist,
+      });
+    }
   };
 
   public handleChangePlaylistAndTrackNumbers = (

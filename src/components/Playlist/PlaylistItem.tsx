@@ -105,15 +105,16 @@ const ManagerItem: React.FunctionComponent<IManagerItemProps> = ({
       >
         <p
           style={{
-            color: playItem.downloaded < 100 ? '#333333' : 'unset',
+            color:
+              !mainContext.settings.showVideo && playItem.readiness < 100 ? '#333333' : 'unset',
             paddingLeft: isOpenTools ? 2 : 'unset',
           }}
         >
           {playItem.title || ''}
         </p>
-        {true && (
+        {!mainContext.settings.showVideo && playItem.readiness !== 100 && (
           <div className="top-list_manager-item_info-spiner">
-            <span>83%</span>
+            <span>{playItem.readiness ? playItem.readiness.toFixed() : 0}%</span>
             <div className="spiner">
               <div className="dot1"></div>
               <div className="dot2"></div>

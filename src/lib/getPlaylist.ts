@@ -1,15 +1,15 @@
 import Strategy from './strategy';
 
 import { messageType } from '../types/messageType';
-import { IPlayItemTypeV2 } from '../types/playItemType';
+import { IPlayItemTypeV2, ITubeTrackType } from '../types/playItemType';
 
-export interface IgetPlaylist {
-  (url: string, downloadServer: string, showMessage: (message: messageType) => void): Promise<
-    IPlayItemTypeV2[] | void
-  >;
-}
+export type getPlaylistType = (
+  url: string,
+  downloadServer: string,
+  showMessage: (message: messageType) => void,
+) => Promise<ITubeTrackType[]>;
 
-export const getPlaylistFromServer: IgetPlaylist = async (url, downloadServer, showMessage) => {
+export const getPlaylistFromServer: getPlaylistType = async (url, downloadServer, showMessage) => {
   if (url.includes('list')) {
     const stringOfStartListId = 'list=';
     const stringOfEndListId = '&';
@@ -20,15 +20,15 @@ export const getPlaylistFromServer: IgetPlaylist = async (url, downloadServer, s
     const listId =
       endOfListId >= 0 ? url.slice(startOfListId, endOfListId) : url.slice(startOfListId);
 
-    const content: IPlayItemTypeV2[] | void = await fetch(`${downloadServer}/getPlayList/${listId}`)
+    const content: ITubeTrackType[] = await fetch(`${downloadServer}/getPlayList/${listId}`)
       .then(async response => response.text())
       .then(playlistFromServer => JSON.parse(playlistFromServer))
       .catch((ee: any): void => {
         console.log(ee);
 
         showMessage({
-          type: 'WARNING',
           text: 'It seems the server is busy. Try the server later(',
+          type: 'WARNING',
         });
       });
 
@@ -36,7 +36,7 @@ export const getPlaylistFromServer: IgetPlaylist = async (url, downloadServer, s
   }
 };
 
-export const getPlaylistFromCurlServer: IgetPlaylist = async (
+export const getPlaylistFromCurlServer: getPlaylistType = async (
   url,
   downloadServers,
   showMessage,
@@ -50,8 +50,8 @@ export const getPlaylistFromCurlServer: IgetPlaylist = async (
     .then(response => response.text())
     .catch(ee => {
       showMessage({
-        type: 'WARNING',
         text: 'It seems the server is busy. Try the server later(',
+        type: 'WARNING',
       });
       console.log('Cant access response. Blocked by browser?', ee);
     });
@@ -60,10 +60,9 @@ export const getPlaylistFromCurlServer: IgetPlaylist = async (
     switch (true) {
       case /^\D*youtube.{5}watch\?.+$/.test(url):
         try {
-          const parsedContent: IPlayItemTypeV2[] = Strategy.playlistWith(content);
+          const parsedContent: ITubeTrackType[] = Strategy.playlistWith(content);
           if (parsedContent) return parsedContent;
-
-          throw 'Can`t get playlist!';
+          throw new Error('Can`t get playlist!');
         } catch (e) {
           console.log(e);
           return null;
@@ -72,10 +71,10 @@ export const getPlaylistFromCurlServer: IgetPlaylist = async (
 
       case /^\D*youtube.{5}playlist\?.+$/.test(url):
         try {
-          const parsedContent: IPlayItemTypeV2[] = Strategy.playlist(content);
+          const parsedContent: ITubeTrackType[] = Strategy.playlist(content);
           if (parsedContent) return parsedContent;
 
-          throw 'Can`t get playlist!';
+          throw new Error('Can`t get playlist!');
         } catch (e) {
           console.log(e);
           return null;
@@ -84,10 +83,24 @@ export const getPlaylistFromCurlServer: IgetPlaylist = async (
 
       default:
         showMessage({
-          type: 'WARNING',
           text: "Сan't recognize playlist",
+          type: 'WARNING',
         });
         return null;
     }
   }
 };
+
+export const handleGetPlaylistFromServer = async (
+  playlistUrl: string,
+  serverAddress: string,
+  useThirdServer: boolean,
+  showMessage: (message: messageType) => void,
+): Promise<ITubeTrackType[]> =>
+  useThirdServer
+    ? await getPlaylistFromCurlServer(
+        playlistUrl,
+        'https://cors-anywhere.herokuapp.com/',
+        showMessage,
+      )
+    : await getPlaylistFromServer(playlistUrl, serverAddress, showMessage);

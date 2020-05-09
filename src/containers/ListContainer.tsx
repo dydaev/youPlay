@@ -3,13 +3,17 @@ import * as React from 'react';
 
 import { useIndexedDB } from 'react-indexed-db';
 import lib from '../lib';
-import { getPlaylistFromCurlServer, getPlaylistFromServer } from '../lib/getPlaylist';
+import {
+  getPlaylistFromCurlServer,
+  getPlaylistFromServer,
+  handleGetPlaylistFromServer,
+} from '../lib/getPlaylist';
 
 import { Manager } from '../components/Manager';
 import { Playlist } from '../components/Playlist';
 
 import { IMainContextType } from '../types/mainContextType';
-import { IPlayItemTypeV2 } from '../types/playItemType';
+import { IPlayItemTypeV2, ITubeTrackType } from '../types/playItemType';
 
 import MainContext from '../context';
 
@@ -21,6 +25,7 @@ interface IListContainerProps {
   isShow: boolean;
   showingList: string;
   onChangePlaylistAndTrackNumbers(playlistNUmber: number, trackNumber: number): void;
+  // onGetTrackInfoFromServer(url: string): Promise<IPlayItemTypeV2 | void>;
   onGetPlaylistFromServer(): void;
   onSetPlaylistToMainState(
     newPlaylist: IPlayItemTypeV2[],
@@ -32,10 +37,13 @@ const ListContainer = ({
   isShow,
   showingList,
   onChangePlaylistAndTrackNumbers,
+  // onGetTrackInfoFromServer,
   onGetPlaylistFromServer,
   onSetPlaylistToMainState,
 }: IListContainerProps): JSX.Element => {
   const mainContext: IMainContextType = React.useContext<IMainContextType>(MainContext);
+
+  const [tList, setTList] = React.useState<ITubeTrackType | []>([]);
 
   const {
     getAll: getPlaylist,
@@ -54,6 +62,7 @@ const ListContainer = ({
     try {
       const playList: IPlayItemTypeV2[] = await getPlaylist();
       const listOfPlayLists: listOfPlaylistItemType[] = await getListOfPlaylists();
+      console.log(playList);
 
       if (
         !lib.equal(playList, mainContext.playList) ||
@@ -64,28 +73,6 @@ const ListContainer = ({
     } catch (err) {
       console.log('Cannt get playlist items from storage', err);
     }
-  };
-
-  const handleGetTrackInfoFromServer = async (url: string): Promise<IPlayItemTypeV2 | void> => {
-    const trackUrl = url.replace(/&.*/, '');
-    const trackID = trackUrl.replace(/^.*v=/, '');
-
-    if (mainContext.settings.directYoutubeLoad && trackID) {
-      try {
-        // @ts-ignore
-        const res = await Axios(`${mainContext.settings.downloadServer}/getInfo/${trackID}`);
-
-        return JSON.parse(res);
-      } catch (e) {
-        mainContext.showMessage({
-          text: 'Can`t get track(' + trackID + ') info!',
-          type: 'WARNING',
-        });
-        console.error('Ошибка HTTP: ' + e);
-        return null;
-      }
-    }
-    return null;
   };
 
   const handleAddNewPlaylistToListOfPlaylist = (newPlaylist: listOfPlaylistItemType): void => {
@@ -129,7 +116,9 @@ const ListContainer = ({
     onChangePlaylistAndTrackNumbers(mainContext.currentPlaylistNumber, newNumber);
 
   React.useEffect((): void => {
-    getListsFromStorage();
+    if (!mainContext.listOfPlaylist || !mainContext.listOfPlaylist.length) {
+      getListsFromStorage();
+    }
   });
 
   return (
@@ -137,7 +126,6 @@ const ListContainer = ({
       <Playlist
         isShowTopList={isShow}
         isShow={showingList === 'playlist'}
-        onGetTrackInfoFromServer={handleGetTrackInfoFromServer}
         onSetCurrentTrackNumber={handleSetCurrentTrackNumber}
       />
       <Manager

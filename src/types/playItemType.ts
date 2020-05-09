@@ -1,16 +1,16 @@
-type playItemType = {
+interface ITubeTrackType {
   url: string;
   image: string;
   title: string;
   album: string;
   artist: string;
   length: string;
-};
+  idOfUpdatingInterval?: number;
+}
 
 interface IPlayItemTypeV2 {
   pathToFile?: string;
-  downloaded: number;
-  converted?: number;
+  readiness: number;
   song?: string;
   artist?: string;
   album?: string;
@@ -26,6 +26,7 @@ interface IPlayItemTypeV2 {
   contentLength?: number;
   createDate?: Date;
   lastUsedDate?: Date;
+  idOfUpdatingInterval?: NodeJS.Timeout | void;
 }
 
-export { playItemType, IPlayItemTypeV2 };
+export { ITubeTrackType, IPlayItemTypeV2 };
