@@ -149,7 +149,12 @@ class Main extends React.Component<any, IMainStateType> {
         this.setState({
           isPlaying: false,
         });
-      } else if (playList.length && !Number.isNaN(currentTrackNumber)) {
+      } else if (
+        playList.length &&
+        !Number.isNaN(currentTrackNumber) &&
+        playList[currentTrackNumber].readiness === 100 &&
+        playList[currentTrackNumber].pathToFile
+      ) {
         this.setState({
           isPlaying: true,
         });
@@ -181,34 +186,66 @@ class Main extends React.Component<any, IMainStateType> {
     }
   };
 
+  // public handleChangeTrack = (newIndex: number): void => {
+  //   const { currentTrackNumber, playList } = this.state;
+
+  //   if (playList[currentTrackNumber].readiness === 100 && playList[currentTrackNumber].pathToFile) {
+  //   }
+  // };
+
   public handleNext = (): void => {
     const countOfTracks = this.state.playList.length;
 
-    if (countOfTracks > 0) {
+    if (
+      countOfTracks > 0 &&
+      this.state.playList.some(
+        (track: IPlayItemTypeV2): boolean => track.readiness === 100 && !!track.pathToFile,
+      )
+    ) {
       if (this.state.settings.playStrategic !== 'replay') {
+        // "normal" | "replay" | "randome" | "once"
         if (this.state.currentTrackNumber < countOfTracks - 1) {
-          // "normal" | "replay" | "randome" | "once"
+          const trueMask: boolean[] = this.state.playList.map(
+            (track: IPlayItemTypeV2, index: number): boolean =>
+              track.readiness === 100 && !!track.pathToFile,
+          );
+
+          let nextTrackNumber = trueMask.indexOf(true, this.state.currentTrackNumber + 1);
+
+          if (nextTrackNumber < 0) nextTrackNumber = trueMask.indexOf(true);
+
+          if (nextTrackNumber >= 0) {
+            this.setState({
+              currentTrackNumber: nextTrackNumber,
+            });
+          }
+        } else if (this.state.settings.playStrategic !== 'once') {
+          if (this.state.settings.playStrategic !== 'randome') this.handleShakeTracks();
+
           this.setState({
-            currentTrackNumber: this.state.currentTrackNumber + 1,
+            currentTrackNumber: 0,
           });
         }
       }
-      //  else if (this.state.settings.playStrategic !== 'once') {
-
-      // }
-      // if (this.state.settings.playStrategic !== 'randome') this.handleShakeTracks();
     }
-    this.setState({
-      currentTrackNumber: 0,
-    });
   };
 
   public handlePrev = (): void => {
     const countOfTracks = this.state.playList.length;
     const secondsForChangeTrack = 5;
 
-    if (countOfTracks > 0)
+    if (
+      countOfTracks > 0 &&
+      this.state.playList.some(
+        (track: IPlayItemTypeV2): boolean => track.readiness === 100 && !!track.pathToFile,
+      )
+    ) {
       // if (this.state.duration < secondsForChangeTrack) {
+      const trueMask: boolean[] = this.state.playList.map(
+        (track: IPlayItemTypeV2, index: number): boolean =>
+          track.readiness === 100 && !!track.pathToFile,
+      );
+
       switch (this.state.settings.playStrategic) {
         case 'once':
           this.handleSetSeek(0);
@@ -229,22 +266,25 @@ class Main extends React.Component<any, IMainStateType> {
           break;
 
         case 'normal':
+          let nextTrackNumber = trueMask.lastIndexOf(true, this.state.currentTrackNumber - 1);
+
+          if (nextTrackNumber < 0) nextTrackNumber = trueMask.lastIndexOf(true);
+
           this.setState({
-            currentTrackNumber:
-              this.state.currentTrackNumber === 0
-                ? countOfTracks - 1
-                : this.state.currentTrackNumber - 1,
+            currentTrackNumber: nextTrackNumber,
           });
           break;
       }
+    }
     // } else {
     //   this.handleSetSeek(0);
     // }
   };
 
   public handleSetSeek = (seconds: number): void => {
-    if (this.state.PlayerRef && this.state.PlayerRef.current)
+    if (this.state.PlayerRef && this.state.PlayerRef.current) {
       this.state.PlayerRef.current.seekTo(seconds);
+    }
   };
 
   public handleSetVolume = (newVolume: number): void => {
@@ -263,11 +303,12 @@ class Main extends React.Component<any, IMainStateType> {
   };
 
   public handleTogglePlaylist = (): void => {
-    if (this.state.isShowHeader)
+    if (this.state.isShowHeader) {
       this.setState({
         isBlurBg: !this.state.isShowPlaylist,
         isShowPlaylist: !this.state.isShowPlaylist,
       });
+    }
   };
 
   public handleShowSettings = (): void => {

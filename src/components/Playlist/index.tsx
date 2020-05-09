@@ -65,6 +65,7 @@ IPlaylistProps) => {
                 <td className="top-list_top-list_row_track-name">
                   <Swiper>
                     <PlaylistItem
+                      isShowingPlaylist={isShow}
                       index={index}
                       playItem={playItem}
                       setCloseTools={!isShow || !isShowTopList}

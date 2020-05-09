@@ -62,7 +62,6 @@ const ListContainer = ({
     try {
       const playList: IPlayItemTypeV2[] = await getPlaylist();
       const listOfPlayLists: listOfPlaylistItemType[] = await getListOfPlaylists();
-      console.log(playList);
 
       if (
         !lib.equal(playList, mainContext.playList) ||

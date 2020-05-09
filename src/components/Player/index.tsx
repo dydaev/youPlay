@@ -102,6 +102,14 @@ const Player: React.ComponentType<IPropsType> = React.forwardRef(
       }
     };
     // console.log(track, context.settings.downloadServer, !context.settings.showVideo);
+    const url = context.settings.showVideo
+      ? `https://www.youtube.com/watch?v=${track.id}`
+      : track &&
+        typeof track.readiness !== 'undefined' &&
+        track.readiness === 100 &&
+        track.pathToFile
+      ? `${context.settings.downloadServer}/${track.pathToFile}`
+      : '';
 
     return (
       <div
@@ -119,11 +127,7 @@ const Player: React.ComponentType<IPropsType> = React.forwardRef(
           }}
           ref={ref}
           onError={handleErr}
-          url={
-            track && track.id
-              ? getUrlFromId(track.id, context.settings.downloadServer, !context.settings.showVideo)
-              : ''
-          }
+          url={url}
           playing={isPlay}
           onReady={handleReady}
           onEnded={handlePlayingEnded}

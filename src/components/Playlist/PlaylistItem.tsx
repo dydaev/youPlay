@@ -15,11 +15,13 @@ export interface IManagerItemProps {
   swipeLeft?: number;
   swipeRight?: number;
   isSwipeTouch?: boolean;
+  isShowingPlaylist: boolean;
   setCloseTools?: boolean;
   onSelect(index: number): void;
 }
 
 const ManagerItem: React.FunctionComponent<IManagerItemProps> = ({
+  isShowingPlaylist,
   index,
   playItem,
   swipeLeft,
@@ -56,7 +58,7 @@ const ManagerItem: React.FunctionComponent<IManagerItemProps> = ({
       .then(blob => {
         const a = document.createElement('a');
         a.href = window.URL.createObjectURL(blob);
-        a.download = `${trackName}.webm`;
+        a.download = `${trackName}.mp3`;
         document.body.appendChild(a);
         a.click();
         a.remove();
@@ -110,7 +112,7 @@ const ManagerItem: React.FunctionComponent<IManagerItemProps> = ({
             paddingLeft: isOpenTools ? 2 : 'unset',
           }}
         >
-          {playItem.title || ''}
+          {playItem && playItem.title ? playItem.title + ' - ' + playItem.length : ''}
         </p>
         {!mainContext.settings.showVideo && playItem.readiness !== 100 && (
           <div className="top-list_manager-item_info-spiner">
