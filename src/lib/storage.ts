@@ -26,17 +26,35 @@ const useStorage = {
     nameOfStorage: dbTableNamesType,
     newData: any,
     useForKeys?: string[],
+    is2D: boolean = false,
   ): Promise<void> => {
     const { add, clear }: any = useIndexedDB(nameOfStorage);
 
     await clear().then((): void => {
-      const replacingKeys = Array.isArray(useForKeys) ? useForKeys : Object.keys(newData);
+      const replacingKeys =
+        Array.isArray(useForKeys) && useForKeys.length ? useForKeys : Object.keys(newData);
 
-      replacingKeys.forEach((key: string): void => {
-        add({ stateItem: key, value: newData[key] }).catch((err: any): void =>
-          console.log('Cannt replace key ' + key + ' in storage.', err),
-        );
-      });
+      if (is2D && Array.isArray(newData)) {
+        newData.forEach((savingObject: any): void => {
+          add(
+            replacingKeys.reduce(
+              (acc: any, key: string): any => ({
+                ...acc,
+                [key]: savingObject[key],
+              }),
+              {},
+            ),
+          ).catch((err: any): void =>
+            console.log('Cannt replace object ' + savingObject + ' in storage.', err),
+          );
+        });
+      } else {
+        replacingKeys.forEach((key: string): void => {
+          add({ stateItem: key, value: newData[key] }).catch((err: any): void =>
+            console.log('Cannt replace key ' + key + ' in storage.', err),
+          );
+        });
+      }
     });
   },
 };

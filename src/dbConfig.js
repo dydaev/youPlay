@@ -13,7 +13,7 @@ export const DBConfig = {
     },
     {
       store: 'currentPlayList', //`url`, `image`, `title`, `album`, `artist`, `length`
-      storeConfig: { keyPath: 'id', autoIncrement: true },
+      storeConfig: { keyPath: '$id', autoIncrement: true },
       storeSchema: [
         { name: 'pathToFile', keypath: 'pathToFile', options: { unique: false } }, //?: string;
         { name: 'readiness', keypath: 'readiness', options: { unique: false } }, //: number;

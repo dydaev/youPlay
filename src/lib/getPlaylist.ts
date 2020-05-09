@@ -30,6 +30,7 @@ export const getPlaylistFromServer: getPlaylistType = async (url, downloadServer
           text: 'It seems the server is busy. Try the server later(',
           type: 'WARNING',
         });
+        throw Error(ee);
       });
 
     return content;

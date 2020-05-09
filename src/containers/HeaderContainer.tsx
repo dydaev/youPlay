@@ -5,6 +5,7 @@ import * as Axios from 'axios';
 import { useIndexedDB } from 'react-indexed-db';
 import lib from '../lib';
 import { getPlaylistFromCurlServer, getPlaylistFromServer } from '../lib/getPlaylist';
+import useStorage from '../lib/storage';
 
 import MainContext from '../context';
 
@@ -16,6 +17,26 @@ import Header from '../components/Header';
 import { listOfPlaylistItemType } from '../types/listOfPlaylistItemType';
 
 import './HeaderContainer.scss';
+
+const savingKeysForStorage = [
+  'artist',
+  'audioBitrate',
+  'audioChannels',
+  'audioSampleRate',
+  'contentLength',
+  'createDate',
+  'description',
+  'id',
+  'idOfUpdatingInterval',
+  'image',
+  'lastUsedDate',
+  'length',
+  'pathToFile',
+  'readiness',
+  'song',
+  'title',
+  'type',
+];
 
 interface IHeaderContainerProps {
   isShow: boolean;
@@ -49,11 +70,11 @@ const HeaderContainer = ({
 
   const [isGetingPlaylist, setGetingPlaylist] = React.useState(false);
 
-  const {
-    // getAll: getPlaylist,
-    add: addPlaylistItem,
-    clear: clearPlaylistItems,
-  }: any = useIndexedDB('currentPlayList');
+  // const {
+  //   // getAll: getPlaylist,
+  //   add: addPlaylistItem,
+  //   clear: clearPlaylistItems,
+  // }: any = useIndexedDB('currentPlayList');
 
   const handleGetTrackInfoFromServer = async (url: string): Promise<IPlayItemTypeV2 | void> => {
     const trackUrl = url.replace(/&.*/, '');
@@ -179,8 +200,7 @@ const HeaderContainer = ({
 
       onSetPlaylistToMainState(newPlaylist);
       setGetingPlaylist(false);
-      // setPlaylist(newPlaylist);
-      console.log('converted list', newPlaylist);
+      useStorage.replaceAll('currentPlayList', newPlaylist, savingKeysForStorage, true);
     }
   };
 
