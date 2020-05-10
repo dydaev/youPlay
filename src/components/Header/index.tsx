@@ -24,6 +24,7 @@ interface IPropsType {
   onGetPlaylistFromServer(): void;
   onChangePlaylistAndTrackNumbers(playlistNUmber: number, trackNumber: number): void;
   onSetVolume(newVolume: number): void;
+  onUpdateTrackForce(trackForceId: string): void;
   onSetPlaylistToMainState(
     newPlaylist: IPlayItemTypeV2[],
     newListOfPlaylist: listOfPlaylistItemType[],
@@ -43,6 +44,7 @@ const Header = ({
   onSetVolume,
   onTogglePlaylist,
   isDownloadingPlaylist,
+  onUpdateTrackForce,
   onGetPlaylistFromServer,
   onSetPlaylistToMainState,
   onChangePlaylistAndTrackNumbers,
@@ -126,6 +128,7 @@ const Header = ({
         onGetPlaylistFromServer={onGetPlaylistFromServer}
         onChangePlaylistAndTrackNumbers={onChangePlaylistAndTrackNumbers}
         onSetPlaylistToMainState={onSetPlaylistToMainState}
+        onUpdateTrackForce={onUpdateTrackForce}
       />
       <button
         className={

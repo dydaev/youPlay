@@ -27,6 +27,7 @@ interface IListContainerProps {
   onChangePlaylistAndTrackNumbers(playlistNUmber: number, trackNumber: number): void;
   // onGetTrackInfoFromServer(url: string): Promise<IPlayItemTypeV2 | void>;
   onGetPlaylistFromServer(): void;
+  onUpdateTrackForce(trackForceId: string): void;
   onSetPlaylistToMainState(
     newPlaylist: IPlayItemTypeV2[],
     newListOfPlaylist: listOfPlaylistItemType[],
@@ -37,8 +38,8 @@ const ListContainer = ({
   isShow,
   showingList,
   onChangePlaylistAndTrackNumbers,
-  // onGetTrackInfoFromServer,
   onGetPlaylistFromServer,
+  onUpdateTrackForce,
   onSetPlaylistToMainState,
 }: IListContainerProps): JSX.Element => {
   const mainContext: IMainContextType = React.useContext<IMainContextType>(MainContext);
@@ -125,6 +126,7 @@ const ListContainer = ({
       <Playlist
         isShowTopList={isShow}
         isShow={showingList === 'playlist'}
+        onUpdateTrackForce={onUpdateTrackForce}
         onSetCurrentTrackNumber={handleSetCurrentTrackNumber}
       />
       <Manager

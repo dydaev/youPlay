@@ -176,10 +176,10 @@ const Footer = ({
             <button
               className={isBlurTitle ? 'is_blur2' : ''}
               style={{
-                marginLeft: bikePosition || 0, //`${bikeProgress}%`,
                 color: isLineMouseDown ? 'gray' : 'blueviolet',
                 fontSize: isLineMouseDown ? 38 : bikeSize,
-                transition: isLineMouseDown || bikePosition === 0 ? 'unset' : 'margin-left 2s',
+                marginLeft: bikePosition || 0, //`${bikeProgress}%`,
+                // transition: isLineMouseDown || bikePosition === 0 ? 'unset' : ' 2s',
               }}
             >
               <i id="progress_mover" className="fas fa-biking"></i>

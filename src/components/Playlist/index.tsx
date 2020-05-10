@@ -13,7 +13,7 @@ import './style.scss';
 export interface IPlaylistProps {
   isShow: boolean;
   isShowTopList: boolean;
-  // onGetTrackInfoFromServer(url: string): Promise<IPlayItemTypeV2 | void>;
+  onUpdateTrackForce(trackForceId: string): void;
   onSetCurrentTrackNumber(newTrackNumber: number): void;
 }
 
@@ -21,6 +21,7 @@ export const Playlist: React.FunctionComponent<IPlaylistProps> = ({
   isShow,
   isShowTopList,
   onSetCurrentTrackNumber,
+  onUpdateTrackForce,
 }: // onGetTrackInfoFromServer,
 IPlaylistProps) => {
   const mainContext: IMainContextType = React.useContext<IMainContextType>(MainContext);
@@ -69,6 +70,7 @@ IPlaylistProps) => {
                       index={index}
                       playItem={playItem}
                       setCloseTools={!isShow || !isShowTopList}
+                      onUpdateTrackForce={onUpdateTrackForce}
                       onSelect={playItem.readiness === 100 ? onSetCurrentTrackNumber : () => 0}
                     />
                   </Swiper>

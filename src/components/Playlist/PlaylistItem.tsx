@@ -18,6 +18,7 @@ export interface IManagerItemProps {
   isShowingPlaylist: boolean;
   setCloseTools?: boolean;
   onSelect(index: number): void;
+  onUpdateTrackForce(trackForceId: string): void;
 }
 
 const ManagerItem: React.FunctionComponent<IManagerItemProps> = ({
@@ -28,6 +29,7 @@ const ManagerItem: React.FunctionComponent<IManagerItemProps> = ({
   swipeRight,
   isSwipeTouch,
   setCloseTools = false,
+  onUpdateTrackForce,
   onSelect,
 }: IManagerItemProps) => {
   // const [isShowForm, setIsShowForm] = React.useState(false);
@@ -35,7 +37,7 @@ const ManagerItem: React.FunctionComponent<IManagerItemProps> = ({
   const [isOpenTools, setIsOpenTools] = React.useState(false);
   const [currentWidth, setCurrentWidth] = React.useState(0);
 
-  const widthOfOpenTools = 100;
+  const widthOfOpenTools = 140;
   const minWidthForOpen = 30;
 
   const handleShowTools = (isShow: boolean): void => {
@@ -96,6 +98,27 @@ const ManagerItem: React.FunctionComponent<IManagerItemProps> = ({
     if (setCloseTools && isOpenTools) handleShowTools(false);
   })();
 
+  const handleUpdateTrackForce = () => {
+    handleShowTools(false);
+    onUpdateTrackForce(playItem.id);
+  };
+
+  const trackIsLoading =
+    typeof playItem !== 'undefined' &&
+    playItem.idOfUpdatingInterval &&
+    // @ts-ignore
+    Array.isArray(window.intervals) &&
+    // @ts-ignore
+    window.intervals.includes(playItem.idOfUpdatingInterval);
+
+  let trackTime = '';
+  if (playItem && playItem.length) {
+    trackTime =
+      playItem.length > 3600
+        ? new Date(1000 * playItem.length).toISOString().substr(11, 8)
+        : new Date(1000 * playItem.length).toISOString().substr(14, 5);
+  }
+
   return (
     <div className="top-list_manager-item">
       <div
@@ -112,45 +135,33 @@ const ManagerItem: React.FunctionComponent<IManagerItemProps> = ({
             paddingLeft: isOpenTools ? 2 : 'unset',
           }}
         >
-          {playItem && playItem.title ? playItem.title + ' - ' + playItem.length : ''}
+          {playItem && playItem.title ? playItem.title + ' - ' + trackTime : ''}
         </p>
         {!mainContext.settings.showVideo && playItem.readiness !== 100 && (
           <div className="top-list_manager-item_info-spiner">
             <span>{playItem.readiness ? playItem.readiness.toFixed() : 0}%</span>
-            <div className="spiner">
-              <div className="dot1"></div>
-              <div className="dot2"></div>
-            </div>
+            {trackIsLoading && (
+              <div className="spiner">
+                <div className="dot1"></div>
+                <div className="dot2"></div>
+              </div>
+            )}
           </div>
         )}
       </div>
       <div
         style={{
-          width: currentWidth,
+          minWidth: currentWidth,
         }}
         className="top-list_manager-item_tools"
       >
         <div>
-          <button onClick={(e): void => download(playItem.id, playItem.title, e)}>
-            <img
-              style={{
-                height: 50,
-                opacity: 0.7,
-                padding: 3,
-                position: 'absolute',
-                right: 0,
-                top: '50%',
-                transform: 'translate(-15%, -50%)',
-                width: 50,
-              }}
-              src={
-                process.env.NODE_ENV === 'development'
-                  ? '../../img/download.png'
-                  : 'img/download.png'
-              }
-            />
+          <button onClick={handleUpdateTrackForce}>
+            <i style={{ fontSize: 45 }} className="fas fa-sync"></i>
           </button>
-          <button style={{ display: 'none' }} />
+          <button onClick={(e): void => download(playItem.id, playItem.title, e)}>
+            <i className="fas fa-download"></i>
+          </button>
         </div>
       </div>
     </div>

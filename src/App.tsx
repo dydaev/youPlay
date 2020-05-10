@@ -382,6 +382,7 @@ class Main extends React.Component<any, IMainStateType> {
     } = this.state;
 
     const currentTrack = playList[currentTrackNumber];
+    console.log(this);
 
     return (
       <MainContext.Provider

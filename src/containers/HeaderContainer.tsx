@@ -76,14 +76,19 @@ const HeaderContainer = ({
   //   clear: clearPlaylistItems,
   // }: any = useIndexedDB('currentPlayList');
 
-  const handleGetTrackInfoFromServer = async (url: string): Promise<IPlayItemTypeV2 | void> => {
-    const trackUrl = url.replace(/&.*/, '');
-    const trackID = trackUrl.replace(/^.*v=/, '');
+  const handleGetTrackInfoFromServer = async (
+    trackID: string,
+    force = false,
+  ): Promise<IPlayItemTypeV2 | void> => {
+    // const trackUrl = url.replace(/&.*/, '');
+    // const trackID = trackUrl.replace(/^.*v=/, '');
 
     if (/* mainContext.settings.directYoutubeLoad && */ trackID) {
       try {
         // @ts-ignore
-        const res = await Axios(`${mainContext.settings.downloadServer}/getInfo/${trackID}`);
+        const res = await Axios(
+          `${mainContext.settings.downloadServer}/getInfo/${trackID}${force ? '?force' : ''}`,
+        );
         if (res.statusText === 'OK') return res.data;
         else return null;
       } catch (e) {
@@ -136,9 +141,8 @@ const HeaderContainer = ({
 
     if (typeof trackInfo !== 'undefined') {
       // if (trackInfo.readiness < 100) {
-      const urlOfTrack = `https://www.youtube.com/watch?v=${trackId}`;
-      const updatedInfo = await handleGetTrackInfoFromServer(urlOfTrack);
-      console.log('updated trackInfo(' + trackId + '), readiness:', updatedInfo);
+      const updatedInfo = await handleGetTrackInfoFromServer(trackId);
+      // console.log('updated trackInfo(' + trackId + '), readiness:', updatedInfo);s
 
       if (updatedInfo) {
         reff.current.setPlaylist(
@@ -147,6 +151,26 @@ const HeaderContainer = ({
               if (ti.id === trackId) {
                 if (updatedInfo.readiness === 100 && ti.idOfUpdatingInterval) {
                   clearInterval(ti.idOfUpdatingInterval);
+                  setTimeout(() => {
+                    useStorage.replaceAll(
+                      'currentPlayList',
+                      reff.current.statePlaylist,
+                      savingKeysForStorage,
+                      true,
+                    );
+                  }, 500);
+
+                  if (
+                    // @ts-ignore
+                    Array.isArray(window.intervals) &&
+                    // @ts-ignore
+                    window.intervals.includes(ti.idOfUpdatingInterval)
+                  ) {
+                    // @ts-ignore
+                    window.intervals = window.intervals.filter(
+                      (intId: NodeJS.Timeout): boolean => intId !== ti.idOfUpdatingInterval,
+                    );
+                  }
                 }
 
                 return {
@@ -167,30 +191,73 @@ const HeaderContainer = ({
     }
   };
 
-  const handleConvertTubeList = async (tubeList: ITubeTrackType[]): Promise<void> => {
+  const handleConvertTubeList = async (
+    tubeList: ITubeTrackType[],
+    forceId: any = null,
+  ): Promise<void> => {
     if (tubeList && tubeList.length) {
       const newPlaylist = await tubeList.reduce(
         async (
           playlist: Promise<IPlayItemTypeV2[]>,
           tubeTrackInfo: ITubeTrackType,
         ): Promise<IPlayItemTypeV2[]> => {
-          const trackInfo = await handleGetTrackInfoFromServer(tubeTrackInfo.url);
+          const trackUrl = tubeTrackInfo.url.replace(/&.*/, '');
+          const trackID = trackUrl.replace(/^.*v=/, '');
+
+          const isForceUpdating = forceId && forceId === trackID;
+
+          const trackInfo = isForceUpdating
+            ? await handleGetTrackInfoFromServer(trackID, true)
+            : await handleGetTrackInfoFromServer(trackID);
 
           const oldTrackInfo = trackInfo
-            ? mainContext.playList.find((st: IPlayItemTypeV2): boolean => st.id === trackInfo.id)
+            ? mainContext.playList.find((st: IPlayItemTypeV2): boolean => trackInfo.id === st.id)
             : null;
+
+          let idOfUpdatingInterval: any = { idOfUpdatingInterval: null };
+
+          if (
+            trackInfo &&
+            typeof trackInfo.readiness !== 'undefined' &&
+            trackInfo.readiness < 100
+          ) {
+            const Interval = (func: any, time: number, id: string): NodeJS.Timeout => {
+              const intervalId: NodeJS.Timeout = setInterval(func, time, id);
+              // @ts-ignore
+              window.intervals = [
+                // @ts-ignore
+                ...(Array.isArray(window.intervals) ? window.intervals : []),
+                intervalId,
+              ];
+              return intervalId;
+            };
+
+            // don`t rewrite intervalID if is(doubling interval)
+            const updatingIntervalIsSet = oldTrackInfo && oldTrackInfo.idOfUpdatingInterval;
+
+            const updatingIntervalIsLife =
+              updatingIntervalIsSet &&
+              // @ts-ignore
+              Array.isArray(window.intervals) &&
+              // @ts-ignore
+              window.intervals.includes(oldTrackInfo.idOfUpdatingInterval);
+
+            if (!updatingIntervalIsSet || !updatingIntervalIsLife) {
+              if (!forceId || (forceId && isForceUpdating)) {
+                idOfUpdatingInterval = {
+                  idOfUpdatingInterval: Interval(handleCheckAndUpdateReadiness, 2000, trackInfo.id),
+                };
+              }
+            }
+          }
 
           return trackInfo
             ? [
                 ...(await playlist),
                 {
+                  ...oldTrackInfo,
                   ...trackInfo,
-                  idOfUpdatingInterval:
-                    oldTrackInfo && oldTrackInfo.idOfUpdatingInterval && trackInfo.readiness < 100
-                      ? oldTrackInfo.idOfUpdatingInterval // don`t rewrite intervalID if is(doubling interval)
-                      : trackInfo.readiness < 100
-                      ? setInterval(handleCheckAndUpdateReadiness, 2000, trackInfo.id)
-                      : null,
+                  ...idOfUpdatingInterval,
                 },
               ]
             : [...(await playlist)];
@@ -204,13 +271,40 @@ const HeaderContainer = ({
     }
   };
 
-  const handleUpdatePlaylistFromServer = async (): Promise<void> => {
+  const handleUpdatePlaylistFromServer = async (trackForForce: any = null): Promise<void> => {
     const tubeList = await handleGetPlaylistFromServer();
 
     if (tubeList && tubeList.length) {
-      await handleConvertTubeList(tubeList);
+      await handleConvertTubeList(tubeList, trackForForce ? trackForForce : null);
     }
   };
+
+  const handleUpdateTrackForce = (trackForceId: string): void => {
+    // onSetPlaylistToMainState(
+    //   mainContext.playList.filter(
+    //     (playItem: IPlayItemTypeV2): boolean => playItem.id !== trackForceId,
+    //   ),
+    // );
+    if (trackForceId) handleUpdatePlaylistFromServer(trackForceId);
+  };
+
+  // React.useEffect(() => {
+  //   if (Array.isArray(mainContext.playList) && mainContext.playList.length) {
+  //     mainContext.playList.forEach((listItem: IPlayItemTypeV2): void => {
+  //       const isNotLoadedTrack = listItem.readiness < 100;
+  //       const trackIsLoading =
+  //         listItem.idOfUpdatingInterval &&
+  //         // @ts-ignore
+  //         Array.isArray(window.intervals) &&
+  //         // @ts-ignore
+  //         window.intervals.includes(listItem.idOfUpdatingInterval);
+
+  //       if (isNotLoadedTrack && !trackIsLoading) {
+  //         handleCheckAndUpdateReadiness(listItem.id);
+  //       }
+  //     });
+  //   }
+  // });
 
   return (
     <Header
@@ -225,6 +319,7 @@ const HeaderContainer = ({
       onShowSettings={onShowSettings}
       onTogglePlaylist={onTogglePlaylist}
       onSetPlaylistToMainState={onSetPlaylistToMainState}
+      onUpdateTrackForce={handleUpdateTrackForce}
       onGetPlaylistFromServer={handleUpdatePlaylistFromServer}
       onChangePlaylistAndTrackNumbers={onChangePlaylistAndTrackNumbers}
     />
